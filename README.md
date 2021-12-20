@@ -5,7 +5,7 @@
     git clone https://github.com/scateu/tsv_edl.vim
 
     make install-utils 
-    # tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_py
+    # tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_all
 
 ## SRT -> TSV
 
