@@ -110,10 +110,14 @@ will yield a `Some podcast E01.mkv`
 ## See Also
 
  - sc-im: spreadsheet in terminal
- - http://podcasts.bluepill.life/ a firefox podcast addon, so convinient to download mp3 files
+ - http://podcasts.bluepill.life/ a firefox podcast addon, so convenient to download mp3 files
  - REFERENCE 
 	- Python vs Vimscript: https://gist.github.com/yegappan/16d964a37ead0979b05e655aa036cad0
 	- Vimscript cheatsheet: https://devhints.io/vimscript
+ - BBC Paper Edit
+ 	- https://docs.google.com/presentation/d/1vVe_hgTj6JhLhU2WuZBOWx41ajcKX-8m8Xa0NIVZT2M/edit#slide=id.g6b51b79a88_2_245
+ 	- https://github.com/bbc/digital-paper-edit-client
+ 	- https://bbcnewslabs.co.uk/projects/digital-paper-edit/
 
 ## TODOs
 
