@@ -43,7 +43,7 @@ Press `Tab` will:
  - Invoke `ffplay` the `*clipname*.!(tsv|srt|txt)'` in current directory, starting from time `record_in`
  - Press `q` to stop
  - Will try to infer a playback timecode according to cursor position
-    - `Shift-Tab` will bypass guessing position
+    - `Shift-Tab` will bypass position guessing
 
 Press `J` will:
  - Merge the next line. Join those two timecode
