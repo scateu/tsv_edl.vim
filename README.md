@@ -46,7 +46,7 @@ Press `Tab` will:
     - `Shift-Tab` will bypass position guessing
 
 Press `J` will:
- - Merge the next line. Join those two timecode
+ - Merge with next line, join those two timecode
 
 Press `|` on a character will:
  - Split this line into two. 
