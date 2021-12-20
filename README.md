@@ -121,11 +121,8 @@ will yield a `Some podcast E01.mkv`
 
 ## TODOs
 
- - [X] srt handling: fill in the caps. extend ~~the first to 00:00:00.00~~, and the end of every following clips to the next start TC, using a threshold of 0.3sec
- - [X] edl2srt: convert back.
- - [X] Tab: deduce a location regarding the start timecode, so that when you start in the middle of a long line won't make you wait for long time.
  - [ ] Gap: EDLSPACE?
- - [ ] When there's only one tab, `Enter` and `Space` cease to work. 
+ - [ ] When there's only one tab, `Enter` should cease to work. 
 
- ## Know bugs
+ ## Known bugs
  - macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
