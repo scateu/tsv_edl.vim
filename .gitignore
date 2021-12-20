@@ -1,0 +1,7 @@
+tags
+*.swp
+*.mkv
+*.mp4
+.DS_Store
+ffmpeg*
+ffplay*
