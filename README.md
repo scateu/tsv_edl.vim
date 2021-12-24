@@ -1,7 +1,7 @@
 ## Overview
 
 ```
-.srt --- [srt2tsv] --> .tsv
+.srt --- [srt2tsv] --> .tsv file
                        |
 		       V
 		      Vim: proofread ---- tsv2srt ---> .srt file
@@ -19,16 +19,15 @@
 	       Google Spreadsheet: Invite your editor friends to edit
 		       |
 		       |
-		       \----> a cherry-picked .tsv file 
+		       \----> a selected .tsv file 
 		                        \
 					 \
-			              [tsv2edl]
-				           \
-				       	    \
-				 	     \--> DaVinci Resolve: fine tuning
-						              \
-							       \
-							        \---> Production
+			              [tsv2edl] --> .edl file
+				                          \
+				 	                   \--> DaVinci Resolve: fine tuning
+						                      \
+							               \
+							                \---> Production
 ```
 
 ## Install
