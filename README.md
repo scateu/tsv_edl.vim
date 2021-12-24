@@ -1,16 +1,20 @@
 ## INSTALL
 
-    mkdir -p ~/.vim/pack/plugins/start
-    cd ~/.vim/pack/plugins/start
-    git clone https://github.com/scateu/tsv_edl.vim
+```bash
+mkdir -p ~/.vim/pack/plugins/start
+cd ~/.vim/pack/plugins/start
+git clone https://github.com/scateu/tsv_edl.vim
 
-    make install-utils 
-    # tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_all
+make install-utils 
+# tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_all
+```
 
 ## SRT to TSV
 
-    cd /path/to/srt/
-    srt2tsv_all
+```bash
+cd /path/to/srt/
+srt2tsv_all
+```
 
 or: in vim, `:!srt2tsv_all`
 
@@ -19,8 +23,10 @@ to filter this region through the corresponding util.
 
 ## Cherry-pick
 
-    touch selection1.tsv
-    vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
+```bash
+touch selection1.tsv
+vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
+```
 
 | Key                | Function                                            |
 |--------------------|-----------------------------------------------------|
@@ -128,7 +134,7 @@ Or ...
 Due to the limitation of Davinci Resolve that EDL file cannot be reconstructed into a timeline refering to pure audio file, 
 a helper bash script is prepared in `utils/audio2srtvideo.sh`
 
-```
+```bash
 audio2srtvideo "Some podcast E01.mp3"
 ```
 
