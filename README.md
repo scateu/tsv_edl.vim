@@ -1,4 +1,4 @@
-## INSTALLATION
+## INSTALL
 
     mkdir -p ~/.vim/pack/plugins/start
     cd ~/.vim/pack/plugins/start
@@ -7,7 +7,7 @@
     make install-utils 
     # tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_all
 
-## SRT -> TSV
+## SRT to TSV
 
     cd /path/to/srt/
     srt2tsv_all
@@ -30,11 +30,11 @@ to filter this region through the corresponding util.
 | Shift-Tab          | mpv/ffplay this line from start (no guessing pos)   |
 | J                  | Join (timecode) with the next line                  |
 | \|                 | Split this line into two, guessing a new timecode   |
-| Shift-Left         | Roll timecode with previous line                    |
+| Shift-Left/Right   | Roll timecode with the previous line for 1 sec      |
 | g0                 | go to the start of subtitle                         |
 | g9                 | go to `record_in` timecode                          |
 
-<details markdown="1"><summary>Details of those keys</summary>
+<details markdown="1"><summary>Full description of those keys</summary>
 
 On media files tab, press 'Enter' will:
  - Copy this line to the end of `tab 1`
