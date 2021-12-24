@@ -3,28 +3,32 @@
 ```
 .srt --- [srt2tsv] --> .tsv
                        |
-		       v
-		      vim: proofread ---- tsv2srt ---> .srt file
+		       V
+		      Vim: proofread ---- tsv2srt ---> .srt file
 		       |
-		       v
-		      vim: add notes and '* Section' '** Subsection'
 		       |
-		       v
-		      vim: [Tab(Preview)] 
-		       |   [Enter(Select)] 
-		       |   [Delete(Reject)] 
+		       V
+		      Vim: add notes and '* Section' '** Subsection'
+		       |
+		       V
+		      Vim: Tab    (Preview)
+		       |   Enter  (Select)
+		       |   Delete (Reject)
 		       |   cherry-pick / re-arrange
+		       V 
+	       Google Spreadsheet: Invite your editor friends to edit
+		       |
 		       |
 		       \----> a cherry-picked .tsv file 
 		                        \
 					 \
-					  \--- [tsv2edl]
-					          \
-						   \
-						    \--> DaVinci Resolve: fine tuning
-						                  \
-								   \
-								    \---> Production
+			              [tsv2edl]
+				           \
+				       	    \
+				 	     \--> DaVinci Resolve: fine tuning
+						              \
+							       \
+							        \---> Production
 ```
 
 ## Install
