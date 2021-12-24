@@ -4,7 +4,7 @@
 .srt --- [srt2tsv] --> .tsv file
                        |
 		       V
-		      Vim: proofread ---- tsv2srt ---> .srt file
+		      Vim: proofread ---- [tsv2srt] -----------------------> .srt file
 		       |
 		       |
 		       V
