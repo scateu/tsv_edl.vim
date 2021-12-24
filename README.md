@@ -76,7 +76,9 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 
-On media files tab, press 'Enter' will:
+On media files tab, 
+
+Press 'Enter' will:
  - Copy this line to the end of `tab 1`
  - Mark this line as used `---`
  - Move to the next line 
@@ -94,7 +96,7 @@ Press `Space` will:
 </del>
 
 Press `Tab` will:
- - Invoke `mpv` ~~ `ffplay` ~~ the `*clipname*.!(tsv|srt|txt)'` in current directory, starting from time `record_in`
+ - Invoke `mpv`/`ffplay` the `*clipname*.!(tsv|srt|txt)'` in current directory, starting from time `record_in`
  - Press `q` to stop
  - Will try to infer a playback timecode according to cursor position
     - `Shift-Tab` will bypass position guessing
@@ -163,7 +165,7 @@ Or find your way to convert it to .fcpxml
 
 Or ...
 
-## Convert MP3/Audio to Dummy video with SRT
+## Convert MP3/Audio to a dummy video from .srt
 
 Due to the limitation of Davinci Resolve that EDL file cannot be reconstructed into a timeline refering to pure audio file, 
 a helper bash script is prepared in `utils/audio2srtvideo.sh`
