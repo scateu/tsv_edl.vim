@@ -40,7 +40,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | g0                 | go to the start of subtitle                         |
 | g9                 | go to `record_in` timecode                          |
 
-<details markdown="1"><summary>Full description of those keys</summary>
+<details markdown="1"><summary>Click here to see full description of those keys</summary>
 
 On media files tab, press 'Enter' will:
  - Copy this line to the end of `tab 1`
