@@ -1,4 +1,33 @@
-## INSTALL
+## Overview
+
+```
+.srt --- [srt2tsv] --> .tsv
+                       |
+		       v
+		      vim: proofread ---- tsv2srt ---> .srt file
+		       |
+		       v
+		      vim: add notes and '* Section' '** Subsection'
+		       |
+		       v
+		      vim: [Tab(Preview)] 
+		       |   [Enter(Select)] 
+		       |   [Delete(Reject)] 
+		       |   cherry-pick / re-arrange
+		       |
+		       \----> a cherry-picked .tsv file 
+		                        \
+					 \
+					  \--- [tsv2edl]
+					          \
+						   \
+						    \--> DaVinci Resolve: fine tuning
+						                  \
+								   \
+								    \---> Production
+```
+
+## Install
 
 ```bash
 mkdir -p ~/.vim/pack/plugins/start
@@ -9,7 +38,7 @@ make install-utils
 # tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_all
 ```
 
-## SRT to TSV
+## .srt to .tsv
 
 ```bash
 cd /path/to/srt/
@@ -30,10 +59,11 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 
 | Key                | Function                                            |
 |--------------------|-----------------------------------------------------|
-| Enter              | pick this line to tab 1                             |
+| Enter              | pick this line to Vim Tab 1                         |
 | Backspace / Delete | reject this line                                    |
 | Tab                | mpv/ffplay this line (guessing start pos at cursor) |
 | Shift-Tab          | mpv/ffplay this line from start (no guessing pos)   |
+| Space              | mpv/ffplay from this line till EOF                  |
 | J                  | Join (timecode) with the next line                  |
 | \|                 | Split this line into two, guessing a new timecode   |
 | Shift-Left/Right   | Roll timecode with the previous line for 1 sec      |
