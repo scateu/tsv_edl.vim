@@ -13,8 +13,8 @@ else
 endif
 
 syn match tsv_edlEDL	/^\zsEDL\ze\t\d\d:/ conceal cchar=➡
-syn match tsv_edlUsed /^---.*$/ conceal
-syn match tsv_edlRejected /^xxx.*$/ conceal
+syn match tsv_edlUsed /^---.*$/ conceal cchar=☑
+syn match tsv_edlRejected /^xxx.*$/ conceal cchar=X
 
 syn match tsv_edlTimecode	/\t\d\d:\d\d:\d\d[,.:]\d\d\+/ conceal
 syn match tsv_edlClipname   /\t|.*|\t/ conceal
