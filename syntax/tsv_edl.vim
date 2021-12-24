@@ -12,25 +12,35 @@ else
   command! -nargs=+ HiLink hi def link <args>
 endif
 
-syn match tsv_edlEDL	/^EDL/ conceal 
-syn match tsv_edlTimecode	/\d\d:\d\d:\d\d[,.:]\d\d\+/ conceal
-syn match tsv_edlUsed /^---.*$/ conceal cchar=-
-syn match tsv_edlRejected /^xxx.*$/ conceal cchar=x
+syn match tsv_edlEDL	/^\zsEDL\ze\t\d\d:/ conceal cchar=➡
+syn match tsv_edlUsed /^---.*$/ conceal
+syn match tsv_edlRejected /^xxx.*$/ conceal
+
+syn match tsv_edlTimecode	/\t\d\d:\d\d:\d\d[,.:]\d\d\+/ conceal
 syn match tsv_edlClipname   /\t|.*|\t/ conceal
 
-set concealcursor=nvic
-set cursorline
+syn match tsv_edlHead /^EDL\tRecord In\tRecord Out\tClipname\tSubtitle$/
+
+syn match tsv_edlSpace /\[ SPACE .* secs \]/
 
 syn sync fromstart
 
 HiLink tsv_edlEDL	Comment
 HiLink tsv_edlTimecode  Special
 HiLink tsv_edlClipname  Identifier
-"HiLink tsv_edlUsed 	Comment
 HiLink tsv_edlRejected  NonText
 HiLink tsv_edlUsed 	NonText
+HiLink tsv_edlHead	Comment
+HiLink tsv_edlSpace	Comment
+
+" conceal reference: https://vimjc.com/vim-conceal-text.html
+"syn match Concealed '^...\t.*\t|.*|\t' conceal contained
+set concealcursor=nvc
+hi Conceal ctermfg=109 guifg=#83a598 ctermbg=NONE guibg=NONE
 
 " ['Title', 'Constant', 'Identifier', 'Statement', 'PreProc', 'Type', 'Special']
+
+set cursorline
 
 
 " =======================

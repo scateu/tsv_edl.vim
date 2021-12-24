@@ -22,6 +22,20 @@ to filter this region through the corresponding util.
     touch selection1.tsv
     vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
 
+| Key                | Function                                            |
+|--------------------|-----------------------------------------------------|
+| Enter              | pick this line to tab 1                             |
+| Backspace / Delete | reject this line                                    |
+| Tab                | mpv/ffplay this line (guessing start pos at cursor) |
+| Shift-Tab          | mpv/ffplay this line from start (no guessing pos)   |
+| J                  | Join (timecode) with the next line                  |
+| \|                 | Split this line into two, guessing a new timecode   |
+| Shift-Left         | Roll timecode with previous line                    |
+| g0                 | go to the start of subtitle                         |
+| g9                 | go to `record_in` timecode                          |
+
+<details markdown="1"><summary>Details of those keys</summary>
+
 On media files tab, press 'Enter' will:
  - Copy this line to the end of `tab 1`
  - Mark this line as used `---`
@@ -40,7 +54,7 @@ Press `Space` will:
 </del>
 
 Press `Tab` will:
- - Invoke `ffplay` the `*clipname*.!(tsv|srt|txt)'` in current directory, starting from time `record_in`
+ - Invoke `mpv` ~~ `ffplay` ~~ the `*clipname*.!(tsv|srt|txt)'` in current directory, starting from time `record_in`
  - Press `q` to stop
  - Will try to infer a playback timecode according to cursor position
     - `Shift-Tab` will bypass position guessing
@@ -63,8 +77,23 @@ Press `g0` will:
 Press `g9` will:
  - Go to `record_in` timecode. You may like this keybinding with `C-a` `C-x` to increase/decrease number.
 
+</details>
+
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
+## Conceal: Hide the first 4 columns
+
+... to stay more focused when listening to tape.
+
+```
+:set conceallevel=2
+```
+
+or 
+
+```
+:set cole=2
+```
 ## Assemble a timeline
 
 (You may want to change the `FPS` value in `utils/tsv2edl.py`)
