@@ -22,7 +22,7 @@ for file_name in glob.glob('*.tsv'):
             for line in lines:
                 if not line:
                     continue
-                if line.startswith('EDL') or line.startswith('---') or line.startswith("xxx"):
+                if (line.startswith('EDL') or line.startswith('---') or line.startswith("xxx")) and not ('[ SPACE' in line):
                     _l = line.strip()
                     fields = _l.split('\t')
                     if fields[1].count(":") == 2 and fields[2].count(":") == 2:

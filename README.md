@@ -127,13 +127,13 @@ Press `g9` will:
 ... to stay more focused when listening to tape.
 
 ```
-:set conceallevel=2
+:set conceallevel=1  (or 2)
 ```
 
 or 
 
 ```
-:set cole=2
+:set cole=1  (or 2)
 ```
 ## Assemble a timeline
 
