@@ -19,7 +19,7 @@
 	       Google Spreadsheet: Invite your editor friends to edit
 		       |
 		       |
-		       \----> a selected .tsv file 
+		       \----> selected .tsv file 
 		                        \
 					 \
 			              [tsv2edl] --> .edl file
