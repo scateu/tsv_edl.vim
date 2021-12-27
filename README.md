@@ -4,9 +4,9 @@
 .srt --- [srt2tsv] --> .tsv file
                        |
 		       V
-		      Vim: proofread ---- [tsv2srt] -----------------------> .srt file
-		       |
-		       |
+		      Vim: proofread ---- [tsv2srt] ------> .srt file 
+		       |                                       \- [audio2srtvideo]
+		       |                                                \---> .mkv (with TC)
 		       V
 		      Vim: add notes and '* Section' '** Subsection'
 		       |
