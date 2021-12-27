@@ -30,6 +30,8 @@
 							                \---> Production
 ```
 
+![screenshot](screenshots/a.png)
+
 ## Install
 
 ```bash
@@ -135,6 +137,9 @@ or
 ```
 :set cole=1  (or 2)
 ```
+
+![screenshot: conceal](screenshots/b.png)
+
 ## Assemble a timeline
 
 (You may want to change the `FPS` value in `utils/tsv2edl.py`)
