@@ -198,6 +198,8 @@ will yield a `Some podcast E01.mkv`
 
  - [ ] Gap: EDLSPACE?
  - [ ] When there's only one tab, `Enter` should cease to work. 
+ - [ ] Tab/Space key on a visual region
+ 
 
  ## Known bugs
  - macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
