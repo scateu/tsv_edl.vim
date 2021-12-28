@@ -91,15 +91,15 @@ if __name__ == "__main__":
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("Open tempdir: ", tempdirname)
             for f,r_in,r_out in output_queue:
-                eprint("[ffmpeg] writing %05d.mkv"%counter)
-                subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -to %s -i \"%s\" %s/%05d.mkv"%(r_in.replace(',','.'), r_out.replace(',','.'), f, tempdirname,counter), shell=True)
+                eprint("[ffmpeg] writing %05d.ts"%counter)
+                subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), tempdirname,counter), shell=True)
                 # NOTE -ss -to placed before -i, cannot be used with -c copy
                 # See https://trac.ffmpeg.org/wiki/Seeking
                 counter += 1
 
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for i in range(len(output_queue)):
-                    output_file.write("file '%s/%05d.mkv'\n"%(tempdirname,i))
+                    output_file.write("file '%s/%05d.ts'\n"%(tempdirname,i))
 
             roughcut_filename = "roughcut.mkv"
             if os.path.exists("roughcut.mkv"):
