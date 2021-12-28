@@ -144,6 +144,8 @@ if __name__ == "__main__":
             if _l.count('|'):
                 clipname = _l.split('|')[1]
                 _l = _l.split('|')[0]
+            else:
+                continue
                 #import pdb;pdb.set_trace()
             _l = _l.split() #['EDL', '01:26:16.12', '01:27:22.10']
             record_in = convert_srt_time_to_EDL_time(_l[1], shift_hour=RECORD_START_FROM_HOUR)

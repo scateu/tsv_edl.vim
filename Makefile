@@ -10,11 +10,18 @@ install-utils:
 	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2srt.py
 	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2srt_all.py
 	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/audio2srtvideo.sh
+	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2roughcut.py
+	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp3
+	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp4
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2edl.py /usr/local/bin/tsv2edl
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2srt.py /usr/local/bin/tsv2srt
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2srt_all.py /usr/local/bin/tsv2srt_all
+	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2roughcut.py /usr/local/bin/tsv2roughcut
+	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp4 /usr/local/bin/mkgap_10_mp4
+	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp3 /usr/local/bin/mkgap_10_mp3
+
 uninstall-utils:
 	rm /usr/local/bin/tsv2edl
 	rm /usr/local/bin/srt2tsv_all
