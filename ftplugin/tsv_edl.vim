@@ -24,6 +24,7 @@ nmap <silent> <delete> :s/^EDL/xxx/<cr>j
 nmap <silent> <backspace> :s/^EDL/xxx/<cr>j
 
 nmap <silent> <tab> :call tsv_edl#ffplay_current_range()<CR>
+nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#ffplay_current_range()<CR>
 
 " Play clips continously from current line if starts with 'EDL'.
 " One can press Ctrl-C very hard to stop.
@@ -38,7 +39,8 @@ nnoremap <silent> g8 0k2f,l
 " Go to the start of subtitle
 nnoremap <silent> g0 02f\|2l
 
-nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#ffplay_current_range()<CR>
+" append a gap for 5 secs below current line.
+nnoremap <silent> go oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
 
 nmap <silent> \| :call tsv_edl#break_line()<CR>
 nmap <silent> J :call tsv_edl#join_with_next_line()<CR>
