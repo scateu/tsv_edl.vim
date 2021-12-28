@@ -138,7 +138,7 @@ function!  tsv_edl#join_with_next_line()
 
 	    if (tc2 < tc1)
 		    echohl WarningMsg
-		    echo "Refuse to join a gap with reverse time-space"
+		    echo "Refuse to join a gap with reversed time-space"
 		    echohl None
 		    return
 	    endif
