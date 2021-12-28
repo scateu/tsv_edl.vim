@@ -127,13 +127,22 @@ function!  tsv_edl#join_with_next_line()
   let cur_line=getline('.')
   let next_line=getline(line('.')+1)
 
-  "TODO add a WARNING: gap too long
-  
   if len(cur_line) > 0 && len(next_line) > 0
     let cur_line_list = split(cur_line, '\t')
     let next_line_list = split(next_line, '\t')
 
-    if (cur_line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx') && (next_line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx')
+    if (cur_line_list[0] == 'EDL' || cur_line_list[0] == '---' || cur_line_list[0] == 'xxx') 
+  \ && (next_line_list[0] == 'EDL' || next_line_list[0] == '---' || next_line_list[0] == 'xxx')
+	    let tc1 = tsv_edl#timecode_to_secs(cur_line_list[2])
+	    let tc2 = tsv_edl#timecode_to_secs(next_line_list[1])
+
+	    if (tc2 - tc1 > 10)
+		    echohl WarningMsg
+		    echo "Refuse to join a gap longer than 10 sec"
+		    echohl None
+		    return
+	    endif
+
 	    let a = cur_line_list[0]
 	    let b = cur_line_list[1]
 	    let c = next_line_list[2]
@@ -143,8 +152,14 @@ function!  tsv_edl#join_with_next_line()
 		    echohl None
 		    return
 	    endif
+
 	    let d = cur_line_list[3]
-	    let e = cur_line_list[4] .' '. next_line_list[4]
+	    if (next_line_list[4] =~# "^[ SPACE ")
+		    let e = cur_line_list[4]
+	    else
+		    let e = cur_line_list[4] .' '. next_line_list[4]
+	    endif
+
             let new_line = printf("%s\t%s\t%s\t%s\t%s",a,b,c,d,e)
             call setline(".", new_line )
 	    call setline(line(".")+1, "")
