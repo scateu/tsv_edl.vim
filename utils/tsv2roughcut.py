@@ -78,6 +78,7 @@ if __name__ == "__main__":
                 for i in range(len(output_queue)):
                     output_file.write("file '%s/%05d.mp3'\n"%(tempdirname,i))
 
+            roughcut_filename = "roughcut.mp3"
             if os.path.exists("roughcut.mp3"):
                 rename_counter = 1
                 roughcut_filename = "roughcut_1.mp3"
@@ -91,13 +92,16 @@ if __name__ == "__main__":
             eprint("Open tempdir: ", tempdirname)
             for f,r_in,r_out in output_queue:
                 eprint("[ffmpeg] writing %05d.mkv"%counter)
-                subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:a copy %s/%05d.mkv"%(f,r_in.replace(',','.'),r_out.replace(',','.'),tempdirname,counter), shell=True)
+                subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -to %s -i \"%s\" %s/%05d.mkv"%(r_in.replace(',','.'), r_out.replace(',','.'), f, tempdirname,counter), shell=True)
+                # NOTE -ss -to placed before -i, cannot be used with -c copy
+                # See https://trac.ffmpeg.org/wiki/Seeking
                 counter += 1
 
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for i in range(len(output_queue)):
                     output_file.write("file '%s/%05d.mkv'\n"%(tempdirname,i))
 
+            roughcut_filename = "roughcut.mkv"
             if os.path.exists("roughcut.mkv"):
                 rename_counter = 1
                 roughcut_filename = "roughcut_1.mkv"
