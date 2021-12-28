@@ -136,6 +136,12 @@ function!  tsv_edl#join_with_next_line()
 	    let tc1 = tsv_edl#timecode_to_secs(cur_line_list[2])
 	    let tc2 = tsv_edl#timecode_to_secs(next_line_list[1])
 
+	    if (tc2 < tc1)
+		    echohl WarningMsg
+		    echo "Refuse to join a gap with reverse time-space"
+		    echohl None
+		    return
+	    endif
 	    if (tc2 - tc1 > 10)
 		    echohl WarningMsg
 		    echo "Refuse to join a gap longer than 10 sec"
