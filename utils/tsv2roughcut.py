@@ -92,7 +92,30 @@ if __name__ == "__main__":
             eprint("Open tempdir: ", tempdirname)
             for f,r_in,r_out in output_queue:
                 eprint("[ffmpeg] writing %05d.ts"%counter)
-                subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), tempdirname,counter), shell=True)
+                if 0: # it worked.
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), tempdirname,counter), shell=True)
+
+                if 1: # but this works faster in seeking
+                    a = r_in.replace(',',':').split(':')
+                    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
+                    if (t1 - 30 > 0):
+                        t2 = t1 - 30
+                        t3 = 30 + int(a[3])/1000.0
+                    else:
+                        t2 = 0
+                        t3 = t1 + int(a[3])/1000.0
+
+                    b = r_out.replace(',',':').split(':')
+                    duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
+
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
+
+                if 0:
+                    a = r_in.replace(',',':').split(':')
+                    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
+                    b = r_out.replace(',',':').split(':')
+                    t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -vf \"trim=start=%s:end=%s,setpts=PTS-STARTPTS\" -af \"atrim=start=%s:end=%s,asetpts=PTS-STARTPTS\" -c:v h264_videotoolbox  %s/%05d.ts"%(f, t1, t2, t1, t2, tempdirname,counter), shell=True)
                 # NOTE -ss -to placed before -i, cannot be used with -c copy
                 # See https://trac.ffmpeg.org/wiki/Seeking
                 counter += 1
