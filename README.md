@@ -20,12 +20,12 @@
 		       |
 		       |
 		       \----> selected .tsv file 
-		                        \
-					 \
-			              [tsv2edl] --> .edl file
-				                          \
-				 	                   \--> DaVinci Resolve: fine tuning
-						                      \
+		                |       \
+				|	 \
+			        |     [tsv2edl] --> .edl file
+				|                         \
+				v  	                   \--> DaVinci Resolve: fine tuning
+			 [tsv2roughcut]	                              \
 							               \
 							                \---> Production
 ```
