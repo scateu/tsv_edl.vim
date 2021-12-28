@@ -61,32 +61,49 @@ if __name__ == "__main__":
                     continue
             output_queue.append([filename, record_in, record_out])
 
-    if is_pure_audio_project:
+    if len(output_queue) > 99999:
+        eprint("Too much. That's too much.")
+        sys.exit(-1)
+
+    if is_pure_audio_project: #Audio only
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("Open tempdir: ", tempdirname)
             counter = 0
             for f,r_in,r_out in output_queue:
-                eprint("writing %05d.mp3"%counter)
-                subprocess.call("ffmpeg -hide_banner -i \"%s\" -ss %s -to %s -c:a copy %s/%05d.mp3"%(f,r_in.replace(',','.'),r_out.replace(',','.'),tempdirname,counter), shell=True)
+                eprint("[ffmpeg] writing %05d.mp3"%counter)
+                subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:a copy %s/%05d.mp3"%(f,r_in.replace(',','.'),r_out.replace(',','.'),tempdirname,counter), shell=True)
                 counter += 1
 
-            with open("%s/selection.txt"%tempdirname,"w") as output_file:
+            with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for i in range(len(output_queue)):
                     output_file.write("file '%s/%05d.mp3'\n"%(tempdirname,i))
 
-            eprint("writing selection.mp3")
-            subprocess.call("ffmpeg -hide_banner -safe 0 -f concat -i %s/selection.txt -c copy selection.mp3"%tempdirname, shell=True)
-    else:
+            if os.path.exists("roughcut.mp3"):
+                rename_counter = 1
+                roughcut_filename = "roughcut_1.mp3"
+                while os.path.exists(roughcut_filename):
+                    rename_counter += 1
+                    roughcut_filename = "roughcut_%d.mp3"%rename_counter
+            eprint("[ffmpeg concat] writing ",roughcut_filename)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
+    else: # VIDEEEEO
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("Open tempdir: ", tempdirname)
             for f,r_in,r_out in output_queue:
-                eprint("writing %05d.mkv"%counter)
-                subprocess.call("ffmpeg -hide_banner -i \"%s\" -ss %s -to %s -c:a copy %s/%05d.mkv"%(f,r_in.replace(',','.'),r_out.replace(',','.'),tempdirname,counter), shell=True)
+                eprint("[ffmpeg] writing %05d.mkv"%counter)
+                subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:a copy %s/%05d.mkv"%(f,r_in.replace(',','.'),r_out.replace(',','.'),tempdirname,counter), shell=True)
                 counter += 1
 
-            with open("%s/selection.txt"%tempdirname,"w") as output_file:
+            with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for i in range(len(output_queue)):
                     output_file.write("file '%s/%05d.mkv'\n"%(tempdirname,i))
 
-            eprint("writing selection.mkv")
-            subprocess.call("ffmpeg -hide_banner -safe 0 -f concat -i %s/selection.txt -c copy selection.mkv"%tempdirname, shell=True)
+            if os.path.exists("roughcut.mkv"):
+                rename_counter = 1
+                roughcut_filename = "roughcut_1.mkv"
+                while os.path.exists(roughcut_filename):
+                    rename_counter += 1
+                    roughcut_filename = "roughcut_%d.mkv"%rename_counter
+            eprint("[ffmpeg concat] writing",roughcut_filename)
+
+            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
