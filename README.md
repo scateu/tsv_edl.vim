@@ -76,6 +76,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | g8                 | go to `record_out` timecode in prev line            |
 | g9                 | go to `record_in` timecode                          |
 | go                 | append a gap for 5 secs below current line          |
+| V (region) Space   | pipe those highlighted lines to `tsv2roughcut`      |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 
