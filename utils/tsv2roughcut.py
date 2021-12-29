@@ -124,13 +124,14 @@ if __name__ == "__main__":
                 for i in range(len(output_queue)):
                     output_file.write("file '%s/%05d.ts'\n"%(tempdirname,i))
 
-            roughcut_filename = "roughcut.mkv"
-            if os.path.exists("roughcut.mkv"):
+            roughcut_output_type = ".mp4" # or ".mkv"
+            roughcut_filename = "roughcut" + roughcut_output_type
+            if os.path.exists("roughcut"+roughcut_output_type):
                 rename_counter = 1
-                roughcut_filename = "roughcut_1.mkv"
+                roughcut_filename = "roughcut_1"+roughcut_output_type
                 while os.path.exists(roughcut_filename):
                     rename_counter += 1
-                    roughcut_filename = "roughcut_%d.mkv"%rename_counter
+                    roughcut_filename = "roughcut_%d"%rename_counter + roughcut_output_type
             eprint("[ffmpeg concat] writing",roughcut_filename)
 
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
