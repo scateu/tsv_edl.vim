@@ -72,6 +72,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | Backspace / Delete | reject this line                                    |
 | Tab                | mpv/ffplay this line (guessing start pos at cursor) |
 | Shift-Tab          | mpv/ffplay this line from start (no guessing pos)   |
+| \ Tab              | mpv/ffplay this line (from cursor) don't stop       |
 | Space              | mpv/ffplay from this line till EOF                  |
 | J                  | Join (timecode) with the next line                  |
 | \|                 | Split this line into two, guessing a new timecode   |
@@ -80,7 +81,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | g8                 | go to `record_out` timecode in prev line            |
 | g9                 | go to `record_in` timecode                          |
 | go                 | append a gap for 5 secs below current line          |
-| V (region) Space   | pipe those highlighted lines to `tsv2roughcut`      |
+| V (region) Space   | render those highlighted lines with `tsv2roughcut`  |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 

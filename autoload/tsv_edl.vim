@@ -25,7 +25,7 @@ function! tsv_edl#infer_time_pos(line)
       return _p
 endfunction
 
-function! tsv_edl#ffplay_current_range()
+function! tsv_edl#ffplay_current_range(stop_at_end = v:true)
   let line=getline('.')
   if len(line) > 0
     let line_list = split(line, '\t')
@@ -51,18 +51,22 @@ function! tsv_edl#ffplay_current_range()
       "echo "[deduced_timecode]: ". deduced_timecode
       
       """""" command, go!
-      let command_play_from_start = 'ffplay -hide_banner -noborder -seek_interval 1 -ss ' . record_in . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)&'
-      let command_play_from_cursor = printf('ffplay -autoexit -hide_banner -noborder -seek_interval 1 -ss %s -t %.3f ./*"%s"*.!(tsv|srt|txt)', deduced_start_pos_secs, deduced_line_duration, filename)
+      "let command_play_from_start = 'ffplay -hide_banner -noborder -seek_interval 1 -ss ' . record_in . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)&'
+      "let command_play_from_cursor = printf('ffplay -autoexit -hide_banner -noborder -seek_interval 1 -ss %s -t %.3f ./*"%s"*.!(tsv|srt|txt)', deduced_start_pos_secs, deduced_line_duration, filename)
       "let command_mpv_from_cursor = 'mpv --profile=low-latency --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)'
       
-      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"*.!(tsv|srt|txt) | head -n1)"'
-      " on the nested quote inside brackets
-      " > Once one is inside $(...), quoting starts all over from scratch.
-      " -- https://unix.stackexchange.com/questions/289574/nested-double-quotes-in-assignment-with-command-substitution
-      "
-      " --profile=low-latency 
-     
-      "echo '[Ctrl-C to stop.] '
+      if a:stop_at_end == v:true
+	      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"*.!(tsv|srt|txt) | head -n1)"'
+	      " on the nested quote inside brackets
+	      " > Once one is inside $(...), quoting starts all over from scratch.
+	      " -- https://unix.stackexchange.com/questions/289574/nested-double-quotes-in-assignment-with-command-substitution
+	      "
+	      " --profile=low-latency 
+	      "echo '[Ctrl-C to stop.] '
+      else
+	      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' "$(ls *"' . filename . '"*.!(tsv|srt|txt) | head -n1)"'
+      endif
+
       let command = command_mpv_from_cursor
       echo command
       call system(command)
