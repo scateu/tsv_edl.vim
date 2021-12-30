@@ -81,3 +81,5 @@ nmap <silent> <S-Right> 02f:l<C-A>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-A>:.,/^
 
 set guioptions=aiAe "for macVim
 " https://stackoverflow.com/questions/12177686/how-do-i-get-macvim-tabs-to-display-graphically/30108155
+
+set wrap linebreak "to avoid words broken into characters
