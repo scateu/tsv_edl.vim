@@ -55,7 +55,7 @@ function! tsv_edl#ffplay_current_range()
       let command_play_from_cursor = printf('ffplay -autoexit -hide_banner -noborder -seek_interval 1 -ss %s -t %.3f ./*"%s"*.!(tsv|srt|txt)', deduced_start_pos_secs, deduced_line_duration, filename)
       "let command_mpv_from_cursor = 'mpv --profile=low-latency --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)'
       
-      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' $(ls *' . filename . '*.!(tsv|srt|txt) | head -n1)'
+      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"*.!(tsv|srt|txt) | head -n1)"'
       "--profile=low-latency 
      
       "echo '[Ctrl-C to stop.] '
