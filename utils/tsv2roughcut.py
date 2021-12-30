@@ -12,15 +12,31 @@ is_pure_audio_project = True
 
 FPS = 24
 RECORD_START_FROM_HOUR = 0  # or 1
+GENERATE_SRT = True
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
+def srttime_to_sec(srttime):
+    assert(srttime.count(":") == 2)
+    assert(srttime.count(",") == 1)
+    HH, MM, SS, MS = [int(d) for d in srttime.replace(",",":").split(":")]
+    return HH*3600 + MM*60 + SS + MS/1000.0
+
+def sec_to_srttime(sec):
+    HH = int(sec/3600.0)
+    MM = int((sec - 3600.0*HH)/60.0)
+    SS = int(sec - HH*3600.0 - MM*60.0)
+    MS = (sec - int(sec))*1000.0
+    return "%02d:%02d:%02d,%03d"%(HH,MM,SS,MS)
+
 output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
 
-if __name__ == "__main__":
-    counter = 0
+srt_queue = []
 
+if __name__ == "__main__":
+    srt_counter = 0
+    srt_last_position = 0.0 #in sec
     while True:
         line = sys.stdin.readline()
         if not line:
@@ -37,6 +53,18 @@ if __name__ == "__main__":
             _l = _l.split() #['EDL', '01:26:16.12', '01:27:22.10']
             record_in = _l[1]
             record_out  = _l[2]
+
+            if GENERATE_SRT:
+                if srt_counter != 0: #not first block
+                    srt_queue.append("")
+                srt_queue.append("%d"%srt_counter)
+                t2 = srttime_to_sec(record_out)
+                t1 = srttime_to_sec(record_in)
+                srt_duration = t2 - t1
+                srt_queue.append("%s --> %s"%(sec_to_srttime(srt_last_position), sec_to_srttime(srt_last_position + srt_duration)))
+                srt_queue.append(line.strip().split('\t')[4])
+                srt_last_position += srt_duration
+                srt_counter += 1
 
             filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
             filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
@@ -79,17 +107,27 @@ if __name__ == "__main__":
                     output_file.write("file '%s/%05d.mp3'\n"%(tempdirname,i))
 
             roughcut_filename = "roughcut.mp3"
+            srt_filename = "roughcut.srt"
             if os.path.exists("roughcut.mp3"):
                 rename_counter = 1
                 roughcut_filename = "roughcut_1.mp3"
+                srt_filename = "roughcut_1.srt"
                 while os.path.exists(roughcut_filename):
                     rename_counter += 1
                     roughcut_filename = "roughcut_%d.mp3"%rename_counter
+                    srt_filename = "roughcut_%d.srt"%rename_counter
             eprint("[ffmpeg concat] writing ",roughcut_filename)
+
+            if GENERATE_SRT:
+                eprint("[srt] writing ",srt_filename)
+                with open(srt_filename, "w") as output_file:
+                    output_file.write('\n'.join(srt_queue))
+
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
     else: # VIDEEEEO
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("Open tempdir: ", tempdirname)
+            counter = 0
             for f,r_in,r_out in output_queue:
                 eprint("[ffmpeg] writing %05d.ts"%counter)
                 if 0: # it worked.
@@ -126,12 +164,20 @@ if __name__ == "__main__":
 
             roughcut_output_type = ".mp4" # or ".mkv"
             roughcut_filename = "roughcut" + roughcut_output_type
+            srt_filename = "roughcut.srt"
             if os.path.exists("roughcut"+roughcut_output_type):
                 rename_counter = 1
                 roughcut_filename = "roughcut_1"+roughcut_output_type
+                srt_filename = "roughtcut_1.srt"
                 while os.path.exists(roughcut_filename):
                     rename_counter += 1
                     roughcut_filename = "roughcut_%d"%rename_counter + roughcut_output_type
+                    srt_filename = "roughtcut_%d.srt"%rename_counter
             eprint("[ffmpeg concat] writing",roughcut_filename)
+
+            if GENERATE_SRT:
+                eprint("[srt] writing ",srt_filename)
+                with open(srt_filename, "w") as output_file:
+                    output_file.write('\n'.join(srt_queue))
 
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
