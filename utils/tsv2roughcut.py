@@ -168,11 +168,11 @@ if __name__ == "__main__":
             if os.path.exists("roughcut"+roughcut_output_type):
                 rename_counter = 1
                 roughcut_filename = "roughcut_1"+roughcut_output_type
-                srt_filename = "roughtcut_1.srt"
+                srt_filename = "roughcut_1.srt"
                 while os.path.exists(roughcut_filename):
                     rename_counter += 1
                     roughcut_filename = "roughcut_%d"%rename_counter + roughcut_output_type
-                    srt_filename = "roughtcut_%d.srt"%rename_counter
+                    srt_filename = "roughcut_%d.srt"%rename_counter
             eprint("[ffmpeg concat] writing",roughcut_filename)
 
             if GENERATE_SRT:
