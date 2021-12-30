@@ -66,6 +66,8 @@ touch selection1.tsv
 vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
 ```
 
+## Keys
+
 | Key                | Function                                            |
 |--------------------|-----------------------------------------------------|
 | Enter              | pick this line to Vim Tab 1                         |
@@ -132,18 +134,27 @@ Press `g9` will:
 
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
+## utils
+
+ - audio2srtvideo.sh
+ - mkgap_10_mp3
+ - mkgap_10_mp4
+ - srt2tsv_all
+ - tsv2srt
+ - tsv2srt_all: perform on all .tsv file in current directory
+ - tsv2srt_reflow: reflow timestamp in exported srt file from start
+ - tsv2roughcut
+ - tsv2edl: to DaVinci Resolve, or Adobe Premiere
+
 ## Conceal: Hide the first 4 columns
 
 ... to stay more focused when listening to tape.
 
 ```
 :set conceallevel=1  (or 2)
-```
 
-or 
-
-```
-:set cole=1  (or 2)
+(for short) 
+:set cole=1 
 ```
 
 ![screenshot: conceal](screenshots/b.png)
@@ -207,7 +218,7 @@ will yield a `Some podcast E01.mkv`
  - [X] Gap: EDLSPACE?  `go`
  - [ ] When there's only one tab, `Enter` should cease to work. 
  - [X] Tab/Space key on a visual region. render the region into a media file
- - [ ] tsv2srt -reflow: reassign the timestamp of each srt block. generate a srt for the rendered region
+ - [X] tsv2srt -reflow: reassign the timestamp of each srt block. generate a srt for the rendered region
 
  ## Known bugs
  - macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
