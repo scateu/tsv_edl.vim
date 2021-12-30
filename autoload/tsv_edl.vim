@@ -56,7 +56,11 @@ function! tsv_edl#ffplay_current_range()
       "let command_mpv_from_cursor = 'mpv --profile=low-latency --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)'
       
       let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"*.!(tsv|srt|txt) | head -n1)"'
-      "--profile=low-latency 
+      " on the nested quote inside brackets
+      " > Once one is inside $(...), quoting starts all over from scratch.
+      " -- https://unix.stackexchange.com/questions/289574/nested-double-quotes-in-assignment-with-command-substitution
+      "
+      " --profile=low-latency 
      
       "echo '[Ctrl-C to stop.] '
       let command = command_mpv_from_cursor
