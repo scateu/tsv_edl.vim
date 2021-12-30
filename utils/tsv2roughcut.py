@@ -10,8 +10,6 @@ audio_formats = ['wav', 'mp3', 'm4a']
 
 is_pure_audio_project = True
 
-FPS = 24
-RECORD_START_FROM_HOUR = 0  # or 1
 GENERATE_SRT = True
 
 def eprint(*args, **kwargs):
@@ -55,16 +53,17 @@ if __name__ == "__main__":
             record_out  = _l[2]
 
             if GENERATE_SRT:
-                if srt_counter != 0: #not first block
-                    srt_queue.append("")
-                srt_queue.append("%d"%srt_counter)
                 t2 = srttime_to_sec(record_out)
                 t1 = srttime_to_sec(record_in)
                 srt_duration = t2 - t1
-                srt_queue.append("%s --> %s"%(sec_to_srttime(srt_last_position), sec_to_srttime(srt_last_position + srt_duration)))
-                srt_queue.append(line.strip().split('\t')[4])
+                if not ('[ SPACE' in line):
+                    if srt_counter != 0: #not first block
+                        srt_queue.append("")
+                    srt_queue.append("%d"%srt_counter)
+                    srt_queue.append("%s --> %s"%(sec_to_srttime(srt_last_position), sec_to_srttime(srt_last_position + srt_duration)))
+                    srt_queue.append(line.strip().split('\t')[4])
+                    srt_counter += 1
                 srt_last_position += srt_duration
-                srt_counter += 1
 
             filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
             filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
