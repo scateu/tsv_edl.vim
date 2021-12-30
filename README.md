@@ -39,6 +39,10 @@ mkdir -p ~/.vim/pack/plugins/start
 cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
 
+#install mpv, ffmpeg
+# sudo apt install mpv ffmpeg
+brew install mpv ffmpeg
+
 make install-utils 
 # tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_all
 ```
