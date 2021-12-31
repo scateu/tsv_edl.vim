@@ -138,6 +138,7 @@ endfunction
 function!  tsv_edl#join_with_next_line()
   let cur_line=getline('.')
   let next_line=getline(line('.')+1)
+  let cur_line_end_col = col('$') "record the pos of EOL
 
   if len(cur_line) > 0 && len(next_line) > 0
     let cur_line_list = split(cur_line, '\t')
@@ -181,7 +182,8 @@ function!  tsv_edl#join_with_next_line()
             let new_line = printf("%s\t%s\t%s\t%s\t%s",a,b,c,d,e)
             call setline(".", new_line )
 	    call setline(line(".")+1, "")
-	    execute "normal! jddk$"
+	    execute "normal! jddk"
+	    call cursor(0, cur_line_end_col) "place cursor right between the joined lines
 	    echo "Clips joined."
     endif
   endif
