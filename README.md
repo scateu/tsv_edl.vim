@@ -136,6 +136,8 @@ Press `g9` will:
 
 ## utils
 
+<details markdown="1"><summary>Click here to see full description of `utils/`</summary>
+
  - audio2srtvideo.sh
  - mkgap_10_mp3
  - mkgap_10_mp4
@@ -145,6 +147,8 @@ Press `g9` will:
  - tsv2srt_reflow: reflow timestamp in exported srt file from start
  - tsv2roughcut
  - tsv2edl: to DaVinci Resolve, or Adobe Premiere
+
+</details>
 
 ## Conceal: Hide the first 4 columns
 
