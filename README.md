@@ -155,10 +155,7 @@ Press `g9` will:
 ... to stay more focused when listening to tape.
 
 ```
-:set conceallevel=1  (or 2)
-
-(for short) 
-:set cole=1 
+:set conceallevel=1  (or 2. For short, :set cole=1)
 ```
 
 ![screenshot: conceal](screenshots/b.png)
