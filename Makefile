@@ -14,6 +14,7 @@ install-utils:
 	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp3
 	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp4
 	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2srt_reflow.py
+	chmod +x ~/.vim/pack/plugins/start/tsv_edl.vim/utils/srt2tsv.sh
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2edl.py /usr/local/bin/tsv2edl
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
@@ -23,6 +24,7 @@ install-utils:
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp4 /usr/local/bin/mkgap_10_mp4
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/mkgap_10_mp3 /usr/local/bin/mkgap_10_mp3
 	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2srt_reflow.py /usr/local/bin/tsv2srt_reflow
+	ln -s ~/.vim/pack/plugins/start/tsv_edl.vim/utils/srt2tsv.sh /usr/local/bin/srt2tsv
 
 uninstall-utils:
 	rm /usr/local/bin/tsv2edl
