@@ -21,6 +21,7 @@ function convert_it () {
 	# # 余下所有
 	# x; s/\n/\t/g; s/^/EDL\t/;p'
 	# }
+}
 
 if [ $# -eq 1 ]; then
 	basename="${1%.*}"
