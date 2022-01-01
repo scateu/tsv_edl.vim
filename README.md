@@ -35,31 +35,25 @@
 ## Install
 
 ```bash
-mkdir -p ~/.vim/pack/plugins/start
-cd ~/.vim/pack/plugins/start
+mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
 
-#install mpv, ffmpeg
-# sudo apt install mpv ffmpeg
+#sudo apt install mpv ffmpeg
 brew install mpv ffmpeg
 
 (sudo -E) make install-utils 
-# tsv2edl srt2tsv_all audio2srtvideo tsv2srt tsv2srt_all
 ```
 
 ## .srt to .tsv
 
 ```bash
-cd /path/to/srt/
-srt2tsv_all
+cd /path/to/srt/; srt2tsv_all
 ```
 
-or: in vim, `:!srt2tsv_all`
+ - or: in vim, `:!srt2tsv_all`
+ - or: in vim, `V` to mark a region, and press `:` then type `%!srt2tsv`, to filter this region through the corresponding util.
 
-or: in vim, `V` to mark a region, and press `:` then type `!srt2tsv`, 
-to filter this region through the corresponding util.
-
-.tsv format is defined as: (see `utils/srt2tsv.sh`)
+- .tsv format is defined as: (see `utils/srt2tsv.sh`)
 
 ```bash
 cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |/; h; d;}; /^$/! {H; $!d;}; x; s/\n/\t/g; s/^/EDL\t/;p' > some.tsv
@@ -69,7 +63,6 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 ## Cherry-pick
 
 ```bash
-touch selection1.tsv
 vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
 ```
 
