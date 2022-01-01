@@ -219,6 +219,7 @@ will yield a `Some podcast E01.mkv`
  - [ ] When there's only one tab, `Enter` should cease to work. 
  - [X] Tab/Space key on a visual region. render the region into a media file
  - [X] tsv2srt -reflow: reassign the timestamp of each srt block. generate a srt for the rendered region
+ - [ ] mpv --input-ipc-server 
 
  ## Known bugs
  - macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur

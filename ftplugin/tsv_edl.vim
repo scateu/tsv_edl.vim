@@ -17,6 +17,10 @@ set shell+=\ -O\ extglob
 
 nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
 
+" split style :sp cherrypick.tsv
+"nmap <cr> yy<C-w><C-w>Gp<C-W><C-w>j
+
+
 " add a space in tab 1, nah.. too radical
 "nmap <silent> <space> 1gtG2o<esc>g<tab>
 
