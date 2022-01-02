@@ -70,8 +70,8 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 
 | Key                | Function                                            |
 |--------------------|-----------------------------------------------------|
-| Enter              | pick this line to Vim Tab 1                         |
-| Backspace / Delete | reject this line                                    |
+| Enter              | pick this line to Vim Tab 1, then mark used "---"   |
+| Backspace / Delete | reject this line, then mark "xxx"                   |
 | Tab                | mpv/ffplay this line (guessing start pos at cursor) |
 | Shift-Tab          | mpv/ffplay this line from start (no guessing pos)   |
 | \ Tab              | mpv/ffplay this line (from cursor) don't stop       |
