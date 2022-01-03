@@ -32,6 +32,6 @@ for file_name in glob.glob('*.tsv'):
                         file_out.write('\n')
                         file_out.write("%s --> %s"%(fields[1], fields[2]))
                         file_out.write('\n')
-                        file_out.write(fields[4])
+                        file_out.write(fields[4].replace("\\N",'\n'))
                         file_out.write('\n')
                     counter += 1

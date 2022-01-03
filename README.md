@@ -56,7 +56,7 @@ cd /path/to/srt/; srt2tsv_all
 - .tsv format is defined as: (see `utils/srt2tsv.sh`)
 
 ```bash
-cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |/; h; d;}; /^$/! {H; $!d;}; x; s/\n/\t/g; s/^/EDL\t/;p' > some.tsv
+cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p' > some.tsv
 sed -i "" 's/_CLIPNAME_/some/' some.tsv
 ```
 

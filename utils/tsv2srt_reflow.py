@@ -36,6 +36,6 @@ if __name__ == "__main__":
                 t1 = srttime_to_sec(fields[1])
                 duration = t2 - t1
                 print("%s --> %s"%(sec_to_srttime(last_position), sec_to_srttime(last_position + duration)))
-                print(fields[4])
+                print(fields[4].replace("\\N",'\n'))
                 last_position += duration
             counter += 1

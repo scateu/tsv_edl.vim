@@ -19,7 +19,8 @@ def srt_block_to_tsv(block, fname):
     if not match:
         return None
     num, ts, te, content = match.groups()
-    co = content.replace('\n', ' ')
+    #co = content.replace('\n', ' ') #multiple lines of subtitle
+    co = content.replace('\n', '\\N') #multiple lines of subtitle
     return 'EDL\t{record_in}\t{record_out}\t| {clipname} |\t{comments}\n'.format(clipname=fname.replace(".srt","") ,record_in=ts, record_out=te, comments=co)
 
 def srt_tc_to_seconds(srt_tc): #00:03:04,020
