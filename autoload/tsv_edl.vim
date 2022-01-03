@@ -56,19 +56,21 @@ function! tsv_edl#ffplay_current_range(stop_at_end = v:true)
       "let command_mpv_from_cursor = 'mpv --profile=low-latency --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)'
       
       if a:stop_at_end == v:true
-	      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"*.!(tsv|srt|txt) | head -n1)"'
+	      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
 	      " on the nested quote inside brackets
 	      " > Once one is inside $(...), quoting starts all over from scratch.
 	      " -- https://unix.stackexchange.com/questions/289574/nested-double-quotes-in-assignment-with-command-substitution
 	      "
 	      " --profile=low-latency 
 	      "echo '[Ctrl-C to stop.] '
+	      let prompt = "[mpv] " . filename . " " . deduced_timecode . " --> " . record_out
       else
-	      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' "$(ls *"' . filename . '"*.!(tsv|srt|txt) | head -n1)"'
+	      let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
+	      let prompt = "[mpv] " . filename . " " . deduced_timecode . " --> EOF"
       endif
 
       let command = command_mpv_from_cursor
-      echo command
+      echo prompt
       call system(command)
 
       "silent execute "!".command
