@@ -222,5 +222,4 @@ will yield a `Some podcast E01.mkv`
  - [X] tsv2srt -reflow: reassign the timestamp of each srt block. generate a srt for the rendered region
  - [ ] mpv --input-ipc-server 
 
- ## Known bugs
- - macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
+ - [X] bug: macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
