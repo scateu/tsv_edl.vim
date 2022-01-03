@@ -22,6 +22,7 @@ syn match tsv_edlClipname   /\t|.*|\t/ conceal
 syn match tsv_edlHead /^EDL\tRecord In\tRecord Out\tClipname\tSubtitle$/
 
 syn match tsv_edlSpace /\[ SPACE .* secs \]/
+syn match tsv_edlNewline /\\N/ conceal cchar=_
 
 
 HiLink tsv_edlEDL	Comment
@@ -31,6 +32,7 @@ HiLink tsv_edlRejected  NonText
 HiLink tsv_edlUsed 	NonText
 HiLink tsv_edlHead	Comment
 HiLink tsv_edlSpace	Comment
+HiLink tsv_edlNewline	Comment
 
 
 " conceal reference: https://vimjc.com/vim-conceal-text.html

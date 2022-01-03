@@ -134,22 +134,6 @@ Press `g9` will:
 
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
-## utils
-
-<details markdown="1"><summary>Click here to see full description of `utils/`</summary>
-
- - audio2srtvideo.sh
- - mkgap_10_mp3
- - mkgap_10_mp4
- - srt2tsv_all
- - tsv2srt
- - tsv2srt_all: perform on all .tsv file in current directory
- - tsv2srt_reflow: reflow timestamp in exported srt file from start
- - tsv2roughcut
- - tsv2edl: to DaVinci Resolve, or Adobe Premiere
-
-</details>
-
 ## Conceal: Hide the first 4 columns
 
 ... to stay more focused when listening to tape.
@@ -209,7 +193,7 @@ will yield a `Some podcast E01.mkv`
  - REFERENCE 
 	- Python vs Vimscript [gist](https://gist.github.com/yegappan/16d964a37ead0979b05e655aa036cad0)
 	- Vimscript cheatsheet: https://devhints.io/vimscript
- - BBC Paper Edit: [Slides](https://docs.google.com/presentation/d/1vVe_hgTj6JhLhU2WuZBOWx41ajcKX-8m8Xa0NIVZT2M/edit#slide=id.g6b51b79a88_2_245) | [github/bbc](https://github.com/bbc/digital-paper-edit-client) | [bbcnewslab](https://bbcnewslabs.co.uk/projects/digital-paper-edit/)
+ - BBC Paper Edit: [Slides](https://docs.google.com/presentation/d/1vVe_hgTj6JhLhU2WuZBOWx41ajcKX-8m8Xa0NIVZT2M/edit#slide=id.g6b51b79a88_2_245) | [github](https://github.com/bbc/digital-paper-edit-client) | [bbcnewslab](https://bbcnewslabs.co.uk/projects/digital-paper-edit/)
 
 ## TODOs
 
