@@ -27,19 +27,45 @@ nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
 nmap <silent> <delete> :s/^EDL/xxx/<cr>j
 nmap <silent> <backspace> :s/^EDL/xxx/<cr>j
 
-nnoremap <silent> <tab> :call tsv_edl#ffplay_current_range()<CR>
+"======================
+" Play and Preview
+"====================== 
+
 " start from cursor, stop at the end
+nnoremap <silent> <tab> :call tsv_edl#ffplay_current_range()<CR>
 
-nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#ffplay_current_range()<CR>
 " start from head of line, stop at the end
+nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#ffplay_current_range()<CR>
 
-nnoremap <silent> \<tab> :call tsv_edl#ffplay_current_range(v:false)<CR>
 " start from cursor, play all along passing the end of this line
+nnoremap <silent> \<tab> :call tsv_edl#ffplay_current_range(v:false)<CR>
 
 " Play clips continously from current line if starts with 'EDL'.
 " One can press Ctrl-C very hard to stop.
 nmap <silent> <space> 0:call tsv_edl#continous_play()<CR>
 
+"======================
+" IPC Seeking & Preview
+"====================== 
+
+" IPC Load media. mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause 
+nmap <silent> \\ 0:call tsv_edl#ipc_open_media()<CR>
+
+" Play clips continously from current line if starts with 'EDL'.
+" One can press Ctrl-C very hard to stop.
+nmap <silent> \<space> 0:call tsv_edl#ipc_continous_play()<CR>
+
+" control mpv with mpvc, seek with mpvc
+" mpv --input-ipc-server=/tmp/mpvsocket
+" wget https://raw.githubusercontent.com/lwilletts/mpvc/master/mpvc
+map <silent> <Up> k:call tsv_edl#ipc_seek()<CR>
+map <silent> <Down> j:call tsv_edl#ipc_seek()<CR>
+map <silent> <Left> h:call tsv_edl#ipc_seek()<CR>
+map <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
+
+"==================== 
+" timecode editing
+"==================== 
 " Go to record_in timecode
 nnoremap <silent> g9 0f,l
 
@@ -55,6 +81,9 @@ nnoremap <silent> go oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]
 nmap <silent> \| :call tsv_edl#break_line()<CR>
 nmap <silent> J :call tsv_edl#join_with_next_line()<CR>
 
+"==================== 
+"Export
+"==================== 
 "vnoremap <space> :'<,'>w !tsv2roughcut<CR>
 vnoremap <space> :w !tsv2roughcut<CR>
 
@@ -86,8 +115,6 @@ nmap <silent> <S-Right> 02f:l<C-A>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-A>:.,/^
 " }}}
 
 
-"map <Up> gk
-"map <Down> gj
 
 set guioptions=aiAe "for macVim
 " https://stackoverflow.com/questions/12177686/how-do-i-get-macvim-tabs-to-display-graphically/30108155

@@ -193,3 +193,103 @@ endfunction
 
 "" see !shopt
 ""     extglob off
+
+function! tsv_edl#ipc_open_media()
+	let line=getline('.')
+	if len(line) > 0
+		let line_list = split(line, '\t')
+		if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
+			let filename = trim(line_list[3],'|')
+			let filename = trim(filename)
+			let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause ' . '"$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . "&"
+			echo "[mpv] load media: " . filename
+			call system(command)
+		endif
+	endif
+endfunction
+
+function! tsv_edl#ipc_seek()
+  let line=getline('.')
+  if len(line) > 0
+    let line_list = split(line, '\t')
+    if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
+      let filename = trim(line_list[3],'|')
+      let filename = trim(filename)
+      let record_in = substitute(line_list[1], ',' , '.', 'g') 
+      let record_out = substitute(line_list[2], ',' , '.', 'g') 
+      
+      let cursor_pos_percentage = tsv_edl#infer_time_pos(line)
+      
+      "echo "[cursor_pos_percentage]: ".float2nr(cursor_pos_percentage*100)."%"
+      let _rec_in_secs = tsv_edl#timecode_to_secs(record_in)
+      let _rec_out_secs = tsv_edl#timecode_to_secs(record_out)
+      let line_duration =  _rec_out_secs - _rec_in_secs
+      let deduced_line_duration = line_duration * ( 1 - cursor_pos_percentage)
+      "echo printf("[_rec_in_secs, _rec_out_secs, line_duration, deduced_line_duration]: %.3f, %.3f, %.3f, %.3f", _rec_in_secs, _rec_out_secs, line_duration, deduced_line_duration)
+      let deduced_start_pos_secs = line_duration * cursor_pos_percentage + _rec_in_secs
+      "echo "[deduced_start_pos_secs]: ". printf("%.3f", deduced_start_pos_secs)
+"
+      let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
+      "echo "[deduced_timecode]: ". deduced_timecode
+      
+      let command = 'mpvc -T '. deduced_timecode 
+      let prompt = "[mpvc] seek to " .  deduced_timecode
+
+      echo prompt
+      call system(command)
+
+      "silent execute "!".command
+      redraw!
+    endif
+  endif
+endfunction
+
+function! tsv_edl#ipc_continous_play()
+	call cursor(0,0) " current line, first column
+	let next_line_number = search('^EDL', 'ncW')
+
+	call system("mpvc -P")
+
+	while next_line_number > 0
+		call cursor(next_line_number, 0) " next line, first column
+	        redraw!
+
+		let line=getline('.')
+		if len(line) > 0
+		  let line_list = split(line, '\t')
+		  if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
+		    let filename = trim(line_list[3],'|')
+		    let filename = trim(filename)
+		    let record_in = substitute(line_list[1], ',' , '.', 'g') 
+		    let record_out = substitute(line_list[2], ',' , '.', 'g') 
+		    
+		    let cursor_pos_percentage = tsv_edl#infer_time_pos(line)
+		    
+		    "echo "[cursor_pos_percentage]: ".float2nr(cursor_pos_percentage*100)."%"
+		    let _rec_in_secs = tsv_edl#timecode_to_secs(record_in)
+		    let _rec_out_secs = tsv_edl#timecode_to_secs(record_out)
+		    let line_duration =  _rec_out_secs - _rec_in_secs
+		    let deduced_line_duration = line_duration * ( 1 - cursor_pos_percentage)
+		    "echo printf("[_rec_in_secs, _rec_out_secs, line_duration, deduced_line_duration]: %.3f, %.3f, %.3f, %.3f", _rec_in_secs, _rec_out_secs, line_duration, deduced_line_duration)
+		    let deduced_start_pos_secs = line_duration * cursor_pos_percentage + _rec_in_secs
+		    "echo "[deduced_start_pos_secs]: ". printf("%.3f", deduced_start_pos_secs)
+	      "
+		    let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
+		    "echo "[deduced_timecode]: ". deduced_timecode
+		    
+		    let command = 'mpvc -T '. deduced_timecode . ' &'
+		    let prompt = "[mpvc] seek to " .  deduced_timecode
+
+		    echo prompt
+		    call system(command)
+		    let sleeptime = float2nr(deduced_line_duration * 1000)
+		    exe 'sleep '. sleeptime . 'm'
+
+		    "silent execute "!".command
+		    redraw!
+		  endif
+		endif
+
+		let next_line_number = search('^EDL', 'nW')
+	endwhile
+endfunction

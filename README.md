@@ -186,6 +186,20 @@ will yield a `Some podcast E01.mkv`
 
 *NOTE*: You may want to move those mkv files into a subdirectory named, for example, `mkvs`, so that `Tab` key `ffplay` will not be confused.
 
+## mpv conf suggestion
+
+~/.config/mpv/mpv.conf
+
+```
+screen=1
+fs-screen=1
+window-maximized=yes
+geometry=100%
+#profile=low-latency
+#no-focus-on-open
+#keep-open=always
+#untimed=yes
+```
 ## See Also
 
  - sc-im: spreadsheet in terminal
@@ -204,3 +218,4 @@ will yield a `Some podcast E01.mkv`
  - [ ] mpv --input-ipc-server 
 
  - [X] bug: macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
+
