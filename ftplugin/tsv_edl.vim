@@ -13,16 +13,15 @@ set cpo&vim
 " > If the extglob shell option is enabled using the shopt builtin
 " for the use of ffplay
 
-"map keybindings
+" MAP KEYBINDINGS
+"======================
+" Editorial Decision
+"======================
 
 nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
 
 " split style :sp cherrypick.tsv
 "nmap <cr> yy<C-w><C-w>Gp<C-W><C-w>j
-
-
-" add a space in tab 1, nah.. too radical
-"nmap <silent> <space> 1gtG2o<esc>g<tab>
 
 nmap <silent> <delete> :s/^EDL/xxx/<cr>j
 nmap <silent> <backspace> :s/^EDL/xxx/<cr>j
@@ -64,7 +63,7 @@ map <silent> <Left> h:call tsv_edl#ipc_seek()<CR>
 map <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
 
 "==================== 
-" timecode editing
+" Timecode Editing
 "==================== 
 " Go to record_in timecode
 nnoremap <silent> g9 0f,l
@@ -82,7 +81,7 @@ nmap <silent> \| :call tsv_edl#break_line()<CR>
 nmap <silent> J :call tsv_edl#join_with_next_line()<CR>
 
 "==================== 
-"Export
+" Export & Render
 "==================== 
 "vnoremap <space> :'<,'>w !tsv2roughcut<CR>
 vnoremap <space> :w !tsv2roughcut<CR>
