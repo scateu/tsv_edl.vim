@@ -205,7 +205,7 @@ will yield a `Some podcast E01.mkv`
 ## See Also
 
  - sc-im: spreadsheet in terminal
- - http://podcasts.bluepill.life/ a firefox podcast addon, so convenient to download mp3 files
+ - a [firefox podcast addon](http://podcasts.bluepill.life/), useful to download mp3 files
  - REFERENCE 
 	- Python vs Vimscript [gist](https://gist.github.com/yegappan/16d964a37ead0979b05e655aa036cad0)
 	- Vimscript cheatsheet: https://devhints.io/vimscript
