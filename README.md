@@ -1,71 +1,3 @@
-## Overview
-
-```
-.srt --- [srt2tsv] --> .tsv file
-                       |
-		       V
-		      Vim: proofread ---- [tsv2srt] ------> .srt file 
-		       |                                       \- [audio2srtvideo]
-		       |                                                \---> .mkv (with TC)
-		       V
-		      Vim: add notes and '* Section' '** Subsection'
-		       |
-		       V
-		      Vim: Tab    (Preview)
-		       |   Enter  (Select)
-		       |   Delete (Reject)
-		       |   cherry-pick / re-arrange
-		       V 
-	       Google Spreadsheet: Invite your editor friends to edit
-		       |
-		       |
-		       \----> selected .tsv file 
-		                |       \
-				|	 \
-			        |     [tsv2edl] --> .edl file
-				|                         \
-				v  	                   \--> DaVinci Resolve: fine tuning
-			 [tsv2roughcut]	                              \
-							               \
-							                \---> Production
-```
-
-![screenshot](screenshots/a.png)
-
-## Install
-
-```bash
-mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
-git clone https://github.com/scateu/tsv_edl.vim
-
-#sudo apt install mpv ffmpeg
-brew install mpv ffmpeg
-
-(sudo -E) make install-utils 
-```
-
-## .srt to .tsv
-
-```bash
-cd /path/to/srt/; srt2tsv_all
-```
-
- - or: in vim, `:!srt2tsv_all`
- - or: in vim, `V` to mark a region, and press `:` then type `%!srt2tsv`, to filter this region through the corresponding util.
-
-- .tsv format is defined as: (see `utils/srt2tsv.sh`)
-
-```bash
-cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p' > some.tsv
-sed -i "" 's/_CLIPNAME_/some/' some.tsv
-```
-
-## Cherry-pick
-
-```bash
-vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
-```
-
 ## Keys
 
 | Key          | Function                                                             |
@@ -142,6 +74,75 @@ Press `g9` will:
 </details>
 
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
+
+## Overview
+
+```
+.srt --- [srt2tsv] --> .tsv file
+                       |
+		       V
+		      Vim: proofread ---- [tsv2srt] ------> .srt file 
+		       |                                       \- [audio2srtvideo]
+		       |                                                \---> .mkv (with TC)
+		       V
+		      Vim: add notes and '* Section' '** Subsection'
+		       |
+		       V
+		      Vim: Tab    (Preview)
+		       |   Enter  (Select)
+		       |   Delete (Reject)
+		       |   cherry-pick / re-arrange
+		       V 
+	       Google Spreadsheet: Invite your editor friends to edit
+		       |
+		       |
+		       \----> selected .tsv file 
+		                |       \
+				|	 \
+			        |     [tsv2edl] --> .edl file
+				|                         \
+				v  	                   \--> DaVinci Resolve: fine tuning
+			 [tsv2roughcut]	                              \
+							               \
+							                \---> Production
+```
+
+![screenshot](screenshots/a.png)
+
+## Install
+
+```bash
+mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
+git clone https://github.com/scateu/tsv_edl.vim
+
+#sudo apt install mpv ffmpeg
+brew install mpv ffmpeg
+
+(sudo -E) make install-utils 
+```
+
+## .srt to .tsv
+
+```bash
+cd /path/to/srt/; srt2tsv_all
+```
+
+ - or: in vim, `:!srt2tsv_all`
+ - or: in vim, `V` to mark a region, and press `:` then type `%!srt2tsv`, to filter this region through the corresponding util.
+
+- .tsv format is defined as: (see `utils/srt2tsv.sh`)
+
+```bash
+cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p' > some.tsv
+sed -i "" 's/_CLIPNAME_/some/' some.tsv
+```
+
+## Cherry-pick
+
+```bash
+vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
+```
+
 
 ## Conceal: Hide the first 4 columns
 
