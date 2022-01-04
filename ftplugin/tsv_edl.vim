@@ -31,13 +31,13 @@ nmap <silent> <backspace> :s/^EDL/xxx/<cr>j
 "====================== 
 
 " start from cursor, stop at the end
-nnoremap <silent> <tab> :call tsv_edl#ffplay_current_range()<CR>
+nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
 
 " start from head of line, stop at the end
-nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#ffplay_current_range()<CR>
+nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
 
 " start from cursor, play all along passing the end of this line
-nnoremap <silent> \<tab> :call tsv_edl#ffplay_current_range(v:false)<CR>
+nnoremap <silent> \<tab> :call tsv_edl#play_current_range(v:false)<CR>
 
 " Play clips continously from current line if starts with 'EDL'.
 " One can press Ctrl-C very hard to stop.

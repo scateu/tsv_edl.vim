@@ -25,7 +25,7 @@ function! tsv_edl#infer_time_pos(line)
       return _p
 endfunction
 
-function! tsv_edl#ffplay_current_range(stop_at_end = v:true)
+function! tsv_edl#play_current_range(stop_at_end = v:true)
   let line=getline('.')
   if len(line) > 0
     let line_list = split(line, '\t')
@@ -85,7 +85,7 @@ function! tsv_edl#continous_play()
 	while next_line_number > 0
 		call cursor(next_line_number, 0) " next line, first column
 	        redraw!
-		call tsv_edl#ffplay_current_range() 
+		call tsv_edl#play_current_range() 
 		let next_line_number = search('^EDL', 'nW')
 	endwhile
 	" Reference {{{
@@ -232,7 +232,7 @@ function! tsv_edl#ipc_seek()
       let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
       "echo "[deduced_timecode]: ". deduced_timecode
       
-      let command = 'mpvc -T '. deduced_timecode 
+      let command = 'mpvc -T '. deduced_timecode  . ' &'
       let prompt = "[mpvc] seek to " .  deduced_timecode
 
       echo prompt
