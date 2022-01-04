@@ -208,7 +208,7 @@ function! tsv_edl#ipc_load_media()
 	endif
 
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
-		echo "an opened mpvsocket found"
+		echo "[pgrep] existing mpvsocket found, reuse"
 		let result=system('echo { \"command\": [\"get_property\", \"filename\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data')
 		"echo result
 		let clipname = fnamemodify(result, ":r")
