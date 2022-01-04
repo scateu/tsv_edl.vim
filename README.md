@@ -83,7 +83,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | g8                 | go to `record_out` timecode in prev line            |
 | g9                 | go to `record_in` timecode                          |
 | go                 | append a gap for 5 secs below current line          |
-|                    | EDITORIAL DECISION                                 ||
+|                    EDITORIAL DECISION                                   ||
 | Enter              | pick this line to Vim Tab 1, then mark used "---"   |
 | Backspace / Delete | reject this line, then mark "xxx"                   |
 | V (region) Space   | render those highlighted lines with `tsv2roughcut`  |
