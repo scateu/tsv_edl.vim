@@ -71,7 +71,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | Key          | Function                                            |
 |--------------|-----------------------------------------------------|
 |              | PREVIEW                                             |
-| ⇥            | mpv/ffplay this line (guessing start pos at cursor) |
+| ⇥ (tab)      | mpv/ffplay this line (guessing start pos at cursor) |
 | ⇧⇥           | mpv/ffplay this line from start (no guessing pos)   |
 | \ ⇥          | mpv/ffplay this line (from cursor) don't stop       |
 | ⎵            | mpv/ffplay from this line till EOF                  |
@@ -84,7 +84,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | g9           | go to `record_in` timecode                          |
 | go           | append a gap for 5 secs below current line          |
 |              | EDITORIAL DECISION                                  |
-| Enter        | pick this line to Vim ⇥ 1, then mark used "---"     |
+| ⏎ (enter)    | pick this line to Vim ⇥ 1, then mark used "---"     |
 | ⌫ / Delete   | reject this line, then mark "xxx"                   |
 | V (region) ⎵ | render those highlighted lines with `tsv2roughcut`  |
 |              | MPV IPC Control                                     |
