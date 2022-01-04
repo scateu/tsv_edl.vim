@@ -115,8 +115,9 @@ Press `g9` will:
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
 
-#sudo apt install mpv ffmpeg
-brew install mpv ffmpeg
+#sudo apt install mpv ffmpeg jq socat
+brew install mpv ffmpeg  
+brew install jq socat   #for mpv IPC support
 
 (sudo -E) make install-utils 
 ```
