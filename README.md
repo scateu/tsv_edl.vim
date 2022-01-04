@@ -70,12 +70,13 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 
 | Key                | Function                                            |
 |--------------------|-----------------------------------------------------|
-| Enter              | pick this line to Vim Tab 1, then mark used "---"   |
-| Backspace / Delete | reject this line, then mark "xxx"                   |
+|                    | PREVIEW                                             |
 | Tab                | mpv/ffplay this line (guessing start pos at cursor) |
 | Shift-Tab          | mpv/ffplay this line from start (no guessing pos)   |
 | \ Tab              | mpv/ffplay this line (from cursor) don't stop       |
 | Space              | mpv/ffplay from this line till EOF                  |
+|                    |                                                     |
+|                    | TIMECODE EDITING                                    |
 | J                  | Join (timecode) with the next line                  |
 | \|                 | Split this line into two, guessing a new timecode   |
 | Shift-Left/Right   | Roll timecode with the previous line for 1 sec      |
@@ -83,14 +84,17 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | g8                 | go to `record_out` timecode in prev line            |
 | g9                 | go to `record_in` timecode                          |
 | go                 | append a gap for 5 secs below current line          |
+|                    |                                                     |
+|                    | EDITORIAL DECISION                                  |
+| Enter              | pick this line to Vim Tab 1, then mark used "---"   |
+| Backspace / Delete | reject this line, then mark "xxx"                   |
 | V (region) Space   | render those highlighted lines with `tsv2roughcut`  |
-|--------------------|-----------------------------------------------------|
+|                    |                                                     |
 | \ \                | mpv --input-ipc-server=/tmp/mpvsocket --pause clip  |
 | \ \ (again)        | send quit signal via ipc socket to mpc              |
 | Left, Right arrow  | move, then [mpv ipc] seek to location of subtitle   |
 | Up, Down arrow     | move, then [mpv ipc] seek; reload when clip changed |
 | \ Space            | mpv [ipc] play from this line till EOF              |
-|--------------------|-----------------------------------------------------|
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 
