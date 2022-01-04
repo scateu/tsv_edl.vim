@@ -212,7 +212,7 @@ function! tsv_edl#ipc_load_media()
 				let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause ' . '"$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . "& echo $?"
 				"echo command
 				echo "[mpv] load media: " . filename
-				"echo system(command)
+				call system(command)
 				if v:shell_error
 					" FIXME doen't work for now
 					echo '[mpv] could not load media'
