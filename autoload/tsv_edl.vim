@@ -201,7 +201,7 @@ endfunction
 let g:ipc_media_ready = v:false
 let g:ipc_loaded_media_name = ""
 
-function! tsv_edl#ipc_load_media()
+function! tsv_edl#ipc_load_media(pause = v:true)
 	if g:ipc_media_ready
 		call tsv_edl#ipc_quit()
 		return
@@ -215,6 +215,8 @@ function! tsv_edl#ipc_load_media()
 		"echo clipname
 		let g:ipc_media_ready = v:true
 		let g:ipc_loaded_media_name = clipname
+		call tsv_edl#ipc_seek()
+		return
 	endif
 
 	let line=getline('.')
@@ -228,9 +230,14 @@ function! tsv_edl#ipc_load_media()
 	let filename = trim(trim(line_list[3],'|'))
 
 	let start_tc = string(tsv_edl#timecode_to_secs( substitute(line_list[1], ',' , '.', 'g')))
-	let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc . ' --pause ' . '"$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
-	echon command
-	"echo "[mpv] load media: " . filename
+
+	let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc 
+	if a:pause
+		let command = command . ' --pause' 
+	endif
+	let command = command . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
+	"echo command
+	echon "[mpv] load media: " . filename
 	call system(command)
 	if v:shell_error
 		" FIXME doen't work for now
@@ -319,8 +326,14 @@ function! tsv_edl#ipc_continous_play()
 		if len(line) > 0
 			let line_list = split(line, '\t')
 			if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
-				let filename = trim(line_list[3],'|')
-				let filename = trim(filename)
+				let filename = trim(trim(line_list[3],'|'))
+
+				if filename !=# g:ipc_loaded_media_name
+					echon "[mpv ipc] different clip, load new. "
+					call tsv_edl#ipc_quit()
+					call tsv_edl#ipc_load_media(v:false)
+				endif
+
 				let record_in = substitute(line_list[1], ',' , '.', 'g') 
 				let record_out = substitute(line_list[2], ',' , '.', 'g') 
 
