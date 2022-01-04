@@ -208,7 +208,7 @@ function! tsv_edl#ipc_load_media()
 	endif
 
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
-		echo "[pgrep] existing mpvsocket found, reuse"
+		echon '[pgrep] existing mpvsocket found, reuse. '
 		let result=system('echo { \"command\": [\"get_property\", \"filename\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data')
 		"echo result
 		let clipname = fnamemodify(result, ":r")
@@ -229,12 +229,12 @@ function! tsv_edl#ipc_load_media()
 
 	let start_tc = string(tsv_edl#timecode_to_secs( substitute(line_list[1], ',' , '.', 'g')))
 	let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc . ' --pause ' . '"$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
-	echo command
+	echon command
 	"echo "[mpv] load media: " . filename
 	call system(command)
 	if v:shell_error
 		" FIXME doen't work for now
-		echo '[mpv] could not load media'
+		echon '[mpv] could not load media. '
 		let g:ipc_media_ready = v:false
 		let g:ipc_loaded_media_name = ""
 	else
@@ -251,12 +251,12 @@ function! tsv_edl#ipc_quit()
 	call system(command)
 	let g:ipc_media_ready = v:false
 	let g:ipc_loaded_media_name = ""
-	echo "[mpv ipc] quit"
+	echon "[mpv ipc] quit. "
 endfunction
 
 function! tsv_edl#ipc_seek()
 	if ! g:ipc_media_ready
-		echo "[mpv ipc] not loaded."
+		echon "[mpv ipc] not loaded. "
 		return
 	endif
 
@@ -271,7 +271,7 @@ function! tsv_edl#ipc_seek()
 	let filename = trim(trim(line_list[3],'|'))
 
 	if filename !=# g:ipc_loaded_media_name
-		echo "[mpv ipc] different clip, load new."
+		echon "[mpv ipc] different clip, load new. "
 		call tsv_edl#ipc_quit()
 		call tsv_edl#ipc_load_media()
 	endif
@@ -296,9 +296,9 @@ function! tsv_edl#ipc_seek()
 	"let command = 'mpvc -T '. string(deduced_start_pos_secs)  . ' &'
 	let command = 'echo { \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . " ] } | socat - /tmp/mpvsocket > /dev/null &"
 	" socat can be replaced by: nc -U -N $SOCKET
-	let prompt = "[mpv ipc] seek to " . string(deduced_start_pos_secs)
+	let prompt = "[mpv ipc] seek to " . string(deduced_start_pos_secs) . "  "
 
-	echo prompt
+	echon prompt
 	call system(command)
 
 	"silent execute "!".command
