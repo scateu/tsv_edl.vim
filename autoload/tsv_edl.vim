@@ -229,11 +229,13 @@ function! tsv_edl#ipc_seek()
       let deduced_start_pos_secs = line_duration * cursor_pos_percentage + _rec_in_secs
       "echo "[deduced_start_pos_secs]: ". printf("%.3f", deduced_start_pos_secs)
 "
-      let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
+      "let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
       "echo "[deduced_timecode]: ". deduced_timecode
       
-      let command = 'mpvc -T '. deduced_timecode  . ' &'
-      let prompt = "[mpvc] seek to " .  deduced_timecode
+      "let command = 'mpvc -T '. string(deduced_start_pos_secs)  . ' &'
+      let command = 'echo { \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . " ] } | socat - /tmp/mpvsocket > /dev/null &"
+      " socat can be replaced by: nc -U -N $SOCKET
+      let prompt = "[mpv ipc] seek to " . string(deduced_start_pos_secs)
 
       echo prompt
       call system(command)
@@ -277,8 +279,8 @@ function! tsv_edl#ipc_continous_play()
 		    let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
 		    "echo "[deduced_timecode]: ". deduced_timecode
 		    
-		    let command = 'mpvc -T '. deduced_timecode . ' &'
-		    let prompt = "[mpvc] seek to " .  deduced_timecode
+		    let command = 'echo { \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . " ] } | socat - /tmp/mpvsocket > /dev/null &"
+		    let prompt = "[mpv ipc] seek to " .  string(deduced_start_pos_secs)
 
 		    echo prompt
 		    call system(command)
