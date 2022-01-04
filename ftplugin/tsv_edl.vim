@@ -80,21 +80,6 @@ nnoremap <silent> go oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]
 nmap <silent> \| :call tsv_edl#break_line()<CR>
 nmap <silent> J :call tsv_edl#join_with_next_line()<CR>
 
-"==================== 
-" Export & Render
-"==================== 
-"vnoremap <space> :'<,'>w !tsv2roughcut<CR>
-vnoremap <space> :w !tsv2roughcut<CR>
-
-"Folding Behavior {{{
-set fdm=marker
-"set foldopen=all
-set foldclose=all
-" }}}
-
-set nrformats=
-" only decimal
-
 " shift the record_in timecode by 1 sec  {{{
 nmap <silent> <S-Left> 02f:l<C-X>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-X>:.,/^EDL\\|---\\|xxx/s/[:\t]\zs\ze\d[,:]/0/ge<CR>/^EDL\\|xxx\\|---/<CR>02f:l
 "                                                   ^^ this line and prev EDL line
@@ -113,7 +98,20 @@ nmap <silent> <S-Right> 02f:l<C-A>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-A>:.,/^
 
 " }}}
 
+"==================== 
+" Export & Render
+"==================== 
+"vnoremap <space> :'<,'>w !tsv2roughcut<CR>
+vnoremap <space> :w !tsv2roughcut<CR>
 
+"Folding Behavior {{{
+set fdm=marker
+"set foldopen=all
+set foldclose=all
+" }}}
+
+set nrformats=
+" only decimal
 
 set guioptions=aiAe "for macVim
 " https://stackoverflow.com/questions/12177686/how-do-i-get-macvim-tabs-to-display-graphically/30108155
