@@ -85,7 +85,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | go           | append a gap for 5 secs below current line          |
 |              | EDITORIAL DECISION                                  |
 | ⏎ (enter)    | pick this line to Vim tab 1, then mark used `---`   |
-| ⌫ / Delete   | reject this line, then mark `xxx`                   |
+| ⌫/⌦ (BS/DEL) | reject this line, then mark `xxx`                   |
 | V (region) ⎵ | render those highlighted lines with `tsv2roughcut`  |
 |              | MPV IPC Control                                     |
 | \ \          | mpv --input-ipc-server=/tmp/mpvsocket --pause clip  |
