@@ -169,7 +169,7 @@ function!  tsv_edl#join_with_next_line()
 			let c = next_line_list[2]
 			if cur_line_list[3] !=# next_line_list[3]
 				echohl WarningMsg
-				echo "Cannot join different clips"
+				echo "Cannot join clips from different media"
 				echohl None
 				return
 			endif
@@ -278,7 +278,7 @@ function! tsv_edl#ipc_seek()
 	let filename = trim(trim(line_list[3],'|'))
 
 	if filename !=# g:ipc_loaded_media_name
-		echon "[mpv ipc] different clip, load new. "
+		echon "[mpv ipc] different media, load new. "
 		call tsv_edl#ipc_quit()
 		call tsv_edl#ipc_load_media()
 	endif
@@ -329,7 +329,7 @@ function! tsv_edl#ipc_continous_play()
 				let filename = trim(trim(line_list[3],'|'))
 
 				if filename !=# g:ipc_loaded_media_name
-					echon "[mpv ipc] different clip, load new. "
+					echon "[mpv ipc] different media, load new. "
 					call tsv_edl#ipc_quit()
 					call tsv_edl#ipc_load_media(v:false)
 				endif
