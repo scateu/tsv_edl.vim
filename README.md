@@ -85,8 +85,8 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 | go                 | append a gap for 5 secs below current line          |
 | V (region) Space   | render those highlighted lines with `tsv2roughcut`  |
 |--------------------|-----------------------------------------------------|
-| \\                 | mpv --input-ipc-server=/tmp/mpvsocket --pause clip  |
-| \\ (again)         | send quit signal via ipc socket to mpc              |
+| \ \                | mpv --input-ipc-server=/tmp/mpvsocket --pause clip  |
+| \ \ (again)        | send quit signal via ipc socket to mpc              |
 | Left, Right arrow  | move, then [mpv ipc] seek to location of subtitle   |
 | Up, Down arrow     | move, then [mpv ipc] seek; reload when clip changed |
 | \ Space            | mpv [ipc] play from this line till EOF              |
