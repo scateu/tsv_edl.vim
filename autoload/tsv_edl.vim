@@ -256,7 +256,7 @@ endfunction
 
 function! tsv_edl#ipc_seek()
 	if ! g:ipc_media_ready
-		echon "[mpv ipc] not loaded. "
+		echon "[mpv ipc] not loaded. press \\\\ to init or connect."
 		return
 	endif
 
