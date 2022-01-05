@@ -7,7 +7,9 @@ let b:did_ftplugin = 1
 let s:save_cpo = &cpo
 set cpo&vim
 
-"set shell=/bin/bash " macOS. zsh doesn't work
+set shell=/bin/bash " macOS. zsh doesn't work
+"autoload/tsv_edl.vim  system( socat, jq )
+
 "set shell+=\ -O\ extglob
 " see 'man bash'
 " > If the extglob shell option is enabled using the shopt builtin
