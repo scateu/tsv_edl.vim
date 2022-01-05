@@ -20,11 +20,12 @@
 | ⌫/⌦ (BS/DEL) | reject this line, then mark `xxx`                                    |
 | V (region) ⎵ | render those highlighted lines with `tsv2roughcut`                   |
 |              | MPV IPC Control                                                      |
-| \ \          | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4  ` |
+| \ \          | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4`   |
 | \ \ (again)  | send quit signal via ipc socket to mpc                               |
 | ← →          | move, then [mpv ipc] seek to location of subtitle                    |
 | ↑ ↓          | move, then [mpv ipc] seek; reload when clip changed                  |
 | \ ⎵          | mpv [ipc] play from this line till EOF                               |
+| ⎵            | mpv [ipc] toggle play                                                |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 

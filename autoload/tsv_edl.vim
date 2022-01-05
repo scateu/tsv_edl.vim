@@ -207,9 +207,11 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 		return
 	endif
 
+	nmap <silent> <space> :call tsv_edl#ipc_toggle_play()<CR>
+
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
 		echon '[pgrep] existing mpvsocket found, reuse. '
-		let result=system('echo { \"command\": [\"get_property\", \"filename\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data')
+		let result=trim(system('echo { \"command\": [\"get_property\", \"filename\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 		"echo result
 		let clipname = fnamemodify(result, ":r")
 		"echo clipname
@@ -259,6 +261,19 @@ function! tsv_edl#ipc_quit()
 	let g:ipc_media_ready = v:false
 	let g:ipc_loaded_media_name = ""
 	echon "[mpv ipc] quit. "
+	nmap <silent> <space> 0:call tsv_edl#continous_play()<CR>
+endfunction
+
+function! tsv_edl#ipc_toggle_play()
+	"let command = 'echo { \"command\": [\"quit\"] } | socat - /tmp/mpvsocket > /dev/null &'
+	let result=trim(system('echo { \"command\": [\"get_property\", \"pause\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	
+	if result ==? "true"
+		call system('echo { \"command\": [\"set_property\", \"pause\", false ] } | socat - /tmp/mpvsocket > /dev/null &')
+		echo 'playit'
+	elseif result ==? "false"
+		call system('echo { \"command\": [\"set_property\", \"pause\", true ] } | socat - /tmp/mpvsocket > /dev/null &')
+	endif
 endfunction
 
 function! tsv_edl#ipc_seek()
