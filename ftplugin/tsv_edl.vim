@@ -119,4 +119,4 @@ set guioptions=aiAe "for macVim
 " https://stackoverflow.com/questions/12177686/how-do-i-get-macvim-tabs-to-display-graphically/30108155
 
 set wrap linebreak "to avoid words broken into characters
-set so=10 "scrolloff
+set so=100 "scrolloff , center
