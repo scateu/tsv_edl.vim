@@ -55,15 +55,18 @@ if __name__ == "__main__":
             if GENERATE_SRT:
                 t2 = srttime_to_sec(record_out)
                 t1 = srttime_to_sec(record_in)
-                srt_duration = t2 - t1
+                srt_duration = round(t2 - t1, 3)
+                #eprint("srt_duration:", srt_duration)
                 if not ('[ SPACE' in line):
                     if srt_counter != 0: #not first block
                         srt_queue.append("")
                     srt_queue.append("%d"%srt_counter)
-                    srt_queue.append("%s --> %s"%(sec_to_srttime(srt_last_position), sec_to_srttime(srt_last_position + srt_duration)))
+                    srt_queue.append("%s --> %s"%(sec_to_srttime(srt_last_position), sec_to_srttime( round(srt_last_position + srt_duration,3) ) ) )
+                    # FIXME: accumulatived error. may have something to do with varied FPS
                     srt_queue.append(line.strip().split('\t')[4].replace("\\N",'\n'))
                     srt_counter += 1
                 srt_last_position += srt_duration
+                srt_last_position = round(srt_last_position, 3)
 
             filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
             filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
@@ -143,9 +146,15 @@ if __name__ == "__main__":
                         t3 = t1 + int(a[3])/1000.0
 
                     b = r_out.replace(',',':').split(':')
-                    duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
+                    #duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
+                    #subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
 
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
+                    # use -to to get more accuracy
+                    to = round(srttime_to_sec(r_out) - t2, 3)
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, to, tempdirname,counter), shell=True)
+                    # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
+                    # a FPS filter is very good.
+                    # -r? no good.
 
                 if 0:
                     a = r_in.replace(',',':').split(':')
