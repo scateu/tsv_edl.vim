@@ -156,11 +156,25 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 
 ![screenshot: conceal](screenshots/b.png)
 
-## Assemble a timeline
+## Assemble a rough cut
+
+for example:
+
+```bash
+grep -C3 beep | tsv2rough
+```
+
+`-C` for context.
+
+A file with the increasing number `roughtcut.mp4`, `roughtcut_1.mp4` ... will be generated.
+
+## Assemble a EDL timeline
 
 (You may want to change the `FPS` value in `utils/tsv2edl.py`)
 
-    grep EDL selection.tsv | tsv2edl > selection.edl
+```bash
+grep EDL selection.tsv | tsv2edl > selection.edl
+```
 
 or with Makefile, you can do `:make` or `:make selection2.edl` or `:make %[Tab Key] [backspace..].edl` within vim.
 
