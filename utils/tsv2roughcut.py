@@ -133,6 +133,7 @@ if __name__ == "__main__":
             for f,r_in,r_out in output_queue:
                 eprint("[ffmpeg] writing %05d.ts"%counter)
                 if 0: # it worked.
+                    #FIXME detect if it's macOS. otherwise libx264
                     subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), tempdirname,counter), shell=True)
 
                 if 1: # but this works faster in seeking
