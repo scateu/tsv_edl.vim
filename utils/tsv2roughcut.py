@@ -145,7 +145,7 @@ if __name__ == "__main__":
                     b = r_out.replace(',',':').split(':')
                     duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
 
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
 
                 if 0:
                     a = r_in.replace(',',':').split(':')
