@@ -200,6 +200,7 @@ endfunction
 
 let g:ipc_media_ready = v:false
 let g:ipc_loaded_media_name = ""
+let g:ipc_timecode = ""
 
 function! tsv_edl#ipc_load_media(pause = v:true)
 	if g:ipc_media_ready
@@ -218,6 +219,7 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	nmap <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> s n:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
+
 
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
 		echon '[pgrep] existing mpvsocket found, reuse. '
@@ -293,7 +295,9 @@ function! tsv_edl#ipc_toggle_play()
 		call system('echo { \"command\": [\"set_property\", \"pause\", true ] } | socat - /tmp/mpvsocket > /dev/null &')
 
 		let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
-		echo "[mpv ipc] pause at: " .. tsv_edl#sec_to_timecode(str2float(playback_time))
+		let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
+		let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
+		echo "[mpv ipc] paused at: " .. playback_time_in_timecode
 	endif
 
 endfunction
@@ -334,7 +338,8 @@ function! tsv_edl#ipc_seek()
 	let deduced_start_pos_secs = line_duration * cursor_pos_percentage + _rec_in_secs
 	"echo "[deduced_start_pos_secs]: ". printf("%.3f", deduced_start_pos_secs)
 	"
-	"let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
+	let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
+	let g:ipc_timecode = deduced_timecode
 	"echo "[deduced_timecode]: ". deduced_timecode
 
 	"let command = 'mpvc -T '. string(deduced_start_pos_secs)  . ' &'
@@ -387,6 +392,7 @@ function! tsv_edl#ipc_continous_play()
 				"
 				let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
 				"echo "[deduced_timecode]: ". deduced_timecode
+				let g:ipc_timecode = deduced_timecode
 
 				let command = 'echo { \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . " ] } | socat - /tmp/mpvsocket > /dev/null &"
 				let prompt = "[mpv ipc] seek to " .  string(deduced_start_pos_secs)
@@ -406,3 +412,21 @@ function! tsv_edl#ipc_continous_play()
 
 	call system('echo { \"command\": [\"set_property\", \"pause\", true ] } | socat - /tmp/mpvsocket > /dev/null &')
 endfunction
+
+"--------------------
+"status line for vim-airline
+"or raw status line
+"--------------------
+function! tsv_edl#status_line()
+	if g:ipc_media_ready
+		return printf("> " . g:ipc_timecode .  " | " . g:ipc_loaded_media_name . " | /tmp/mpvsocket" )
+	else
+		"let g:airline_section_y='%{airline#util#wrap(airline#parts#ffenc(),0)}'
+		return printf("<")
+	endif
+endfunction
+
+let g:airline_section_x='%{tsv_edl#status_line()}'
+set statusline+=%{tsv_edl#status_line()}
+
+"--------------------
