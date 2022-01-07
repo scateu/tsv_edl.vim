@@ -29,10 +29,12 @@ nmap \c :set <C-R>=&conceallevel ? 'conceallevel=0' : 'conceallevel=1'<CR><CR>
 " Editorial Decision
 "======================
 
-nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
+"nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
+"will be mapped after \p is pressed
+noremap <silent> \p :call tsv_edl#enter_cherry_pick_mode()<CR>
 
-" split style :sp cherrypick.tsv
-"nmap <cr> yy<C-w><C-w>Gp<C-W><C-w>j
+"horizontally split cherry-pick ~~:sp selection.tsv~~
+noremap <silent> \P :call tsv_edl#enter_cherry_pick_mode_horizontally()<CR>
 
 nmap <silent> <backspace> :s/^EDL/xxx/<cr>j
 nmap <silent> <delete> :if getline('.') =~# '^EDL' \| s/^EDL/xxx/ \| else \| s/^xxx/EDL/e \| s/^---/EDL/e \| endif<cr>

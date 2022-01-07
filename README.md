@@ -24,12 +24,15 @@
 
 ### EDITORIAL DECISION
 
-| Key          | Function                                                           |
-|--------------|--------------------------------------------------------------------|
-| ⏎ (enter)    | pick this line to Vim tab 1, then mark used `---`                  |
-| ⌫ (BS)       | reject this line, mark `xxx`, then go to next line                 |
-| ⌦ (DEL, ⌥⌫)  | toggle between `EDL` and `xxx`; toggle `---` to `EDL`              |
-| V (region) ⎵ | render those highlighted lines with `tsv2roughcut`                 |
+| Key          | Function                                              |
+|--------------|-------------------------------------------------------|
+| \ p          | Enter cherry-pick mode. tabnew on the left, map ⏎     |
+| ⏎ (enter)    | pick this line to Vim tab 1, then mark used `---`     |
+| \ P          | Enter cherry-pick mode (split horizontally), map ⏎    |
+| ⏎            | pick this line to next window, then mark used `---`   |
+| ⌫ (BS)       | reject this line, mark `xxx`, then go to next line    |
+| ⌦ (DEL, ⌥⌫)  | toggle between `EDL` and `xxx`; toggle `---` to `EDL` |
+| V (region) ⎵ | render those highlighted lines with `tsv2roughcut`    |
 
 ### MPV IPC Control Mode
 
@@ -40,10 +43,11 @@
 | \ \ (again) | send quit signal via ipc socket to mpc                                         |
 | ←, →        | move, then [mpv ipc] seek to cursor                                            |
 | ↑, ↓        | move, then [mpv ipc] seek; reload when clip changed                            |
-| \ ⎵         | mpv [ipc] play from this line till EOF                                         |
-| ⎵           | mpv [ipc] toggle play                                                          |
-| ⏎           | mpv [ipc] seek to cursor                                                       |
-| s           | mpv [ipc] search next (`n`), and seek                                          |
+| \ ⎵         | [mpv ipc] play from this line till EOF                                         |
+| ⎵           | [mpv ipc] toggle play                                                          |
+| ⏎, s        | [mpv ipc] seek to cursor                                                       |
+| S           | [mpv ipc] search next (`n`), and seek                                          |
+| ⇥           | seek to line head, [mpv ipc] alway play                                        |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 

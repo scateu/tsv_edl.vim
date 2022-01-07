@@ -217,8 +217,15 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	nmap <silent> <Down> j:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> <Left> h:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
-	nmap <silent> s n:call tsv_edl#ipc_seek()<CR>
-	nmap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
+	nmap <silent> s :call tsv_edl#ipc_seek()<CR>
+	nmap <silent> S n:call tsv_edl#ipc_seek()<CR>
+	nmap <silent> <tab> :call tsv_edl#ipc_play_current_range()<CR>
+	if g:cherry_pick_mode_entered
+		echon "already in cherry_pick_mode, do not map Enter to seek"
+	else
+		noremap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
+		let g:cr_map_status = "[⏎ = seek] "
+	endif
 
 
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
@@ -281,12 +288,19 @@ function! tsv_edl#ipc_quit()
 	unmap <Left>
 	unmap <Right>
 	unmap s
-	nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
+	nmap <silent> <tab> tsv_edl#play_current_range()<CR>
+
+	unmap <cr>
+	let g:cr_map_status = "[⏎ = ⏎]"
+	let g:cherry_pick_mode_entered = v:false "for now, it stands for enter key remapped to 'pick'
 endfunction
 
-function! tsv_edl#ipc_toggle_play()
+function! tsv_edl#ipc_toggle_play(always_play=v:false)
 	"let command = 'echo { \"command\": [\"quit\"] } | socat - /tmp/mpvsocket > /dev/null &'
 	let result=trim(system('echo { \"command\": [\"get_property\", \"pause\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	if a:always_play
+		let result = "true"
+	endif
 	
 	if result ==? "true"
 		call system('echo { \"command\": [\"set_property\", \"pause\", false ] } | socat - /tmp/mpvsocket > /dev/null &')
@@ -300,6 +314,13 @@ function! tsv_edl#ipc_toggle_play()
 		echo "[mpv ipc] paused at: " .. playback_time_in_timecode
 	endif
 
+endfunction
+
+function! tsv_edl#ipc_play_current_range()
+	"Tab key
+	"for now: simply seek() and play()
+	call tsv_edl#ipc_seek()
+	call tsv_edl#ipc_toggle_play(v:true)
 endfunction
 
 function! tsv_edl#ipc_seek()
@@ -419,14 +440,68 @@ endfunction
 "--------------------
 function! tsv_edl#status_line()
 	if g:ipc_media_ready
-		return printf("> " . g:ipc_timecode .  " | " . g:ipc_loaded_media_name . " | /tmp/mpvsocket" )
+		let _status_line =  printf("> " . g:ipc_timecode .  " | " . g:ipc_loaded_media_name . " | /tmp/mpvsocket". ' ' )
 	else
 		"let g:airline_section_y='%{airline#util#wrap(airline#parts#ffenc(),0)}'
-		return printf("<")
+		let _status_line =  printf("< ")
 	endif
+	let _status_line = _status_line . g:cr_map_status 
+	if g:cherry_pick_mode_entered
+		"nothing to do
+	endif
+	return _status_line
 endfunction
 
 let g:airline_section_x='%{tsv_edl#status_line()}'
 set statusline+=%{tsv_edl#status_line()}
 
 "--------------------
+
+let g:cherry_pick_mode_entered = v:false
+let g:cr_map_status = "[⏎ = ⏎]"
+
+function! tsv_edl#enter_cherry_pick_mode()
+	if !g:cherry_pick_mode_entered
+		tabnew
+		tabmove 0
+		set ft=tsv_edl
+		noremap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
+		let g:cr_map_status = "[⏎ = pick] "
+		exe "normal! g\<Tab>"
+		let g:cherry_pick_mode_entered = v:true
+	else
+		if !g:ipc_media_ready
+			unmap <cr>
+			let g:cr_map_status = "[⏎ = ⏎]"
+		else
+			noremap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
+			let g:cr_map_status = "[⏎ = seek] "
+		endif
+		let g:cherry_pick_mode_entered = v:false
+	endif
+endfunction
+
+function! tsv_edl#enter_cherry_pick_mode_horizontally()
+	if !g:cherry_pick_mode_entered
+		"split selection.tsv
+		new
+		"move to bottom
+		exe "normal! \<C-w>J"
+		set ft=tsv_edl
+
+		"switch back
+		exe "normal! \<C-w>\<C-w>"
+		noremap <silent> <cr> yy<C-w><C-w>Gp<C-W><C-w>0cw---<ESC>0j
+		let g:cr_map_status = "[⏎ = pick] "
+		let g:cherry_pick_mode_entered = v:true
+	else
+		if !g:ipc_media_ready
+			unmap <cr>
+			let g:cr_map_status = "[⏎ = ⏎]"
+		else
+			noremap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
+			let g:cr_map_status = "[⏎ = seek] "
+		endif
+		let g:cherry_pick_mode_entered = v:false
+	endif
+endfunction
