@@ -139,23 +139,27 @@ if __name__ == "__main__":
                 if 1: # but this works faster in seeking
                     a = r_in.replace(',',':').split(':')
                     t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
-                    if (t1 - 30 > 0):
-                        t2 = t1 - 30
-                        t3 = 30 + int(a[3])/1000.0
+                    skip_time = 15
+                    if (t1 - skip_time > 0):
+                        t2 = t1 - skip_time
+                        t3 = skip_time + int(a[3])/1000.0
                     else:
                         t2 = 0
                         t3 = t1 + int(a[3])/1000.0
 
                     b = r_out.replace(',',':').split(':')
-                    #duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
-                    #subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
 
-                    # use -to to get more accuracy
-                    to = round(srttime_to_sec(r_out) - t2, 3)
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, to, tempdirname,counter), shell=True)
-                    # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
-                    # a FPS filter is very good.
-                    # -r? no good.
+                    if 1:
+                        #eprint("fps=24, scale=1920:1080")
+                        # use -to to get more accuracy
+                        to = round(srttime_to_sec(r_out) - t2, 3)
+                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, to, tempdirname,counter), shell=True)
+                        # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
+                        # a FPS filter is very good.
+                        # -r? no good.
+                    else:
+                        duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
+                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
 
                 if 0:
                     a = r_in.replace(',',':').split(':')
