@@ -289,7 +289,7 @@ function! tsv_edl#ipc_quit()
 	unmap <Left>
 	unmap <Right>
 	unmap s
-	nmap <silent> <tab> tsv_edl#play_current_range()<CR>
+	nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
 	nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
 
 	unmap <cr>
