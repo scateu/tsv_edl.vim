@@ -152,6 +152,12 @@ cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME
 sed -i "" 's/_CLIPNAME_/some/' some.tsv
 ```
 
+## tsv to srt
+
+`tsv2srt` `tsv2srt_all`
+
+tips: you may `s/，/, /g`, to make Chinese lines wrap. Otherwise ,`mpv` treat those as a bloody long line.
+
 ## Cherry-pick
 
 ```bash
