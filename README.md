@@ -34,7 +34,7 @@
 | ⌦ (DEL, ⌥⌫)  | toggle between `EDL` and `xxx`; toggle `---` to `EDL` |
 | V (region) ⎵ | render those highlighted lines with `tsv2roughcut`    |
 
-### MPV IPC Control Mode
+### MPV IPC CONTROL MODE
 
 | Key         | Function                                                                       |
 |-------------|--------------------------------------------------------------------------------|
@@ -47,7 +47,8 @@
 | ⎵           | [mpv ipc] toggle play                                                          |
 | ⏎, s        | [mpv ipc] seek to cursor                                                       |
 | S           | [mpv ipc] search next (`n`), and seek                                          |
-| ⇥           | seek to line head, [mpv ipc] alway play                                        |
+| ⇥           | seek to cursor, [mpv ipc] alway play                                           |
+| ⇧⇥          | seek to line head, then ⇥                                                      |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 
