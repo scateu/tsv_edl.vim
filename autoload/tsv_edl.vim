@@ -270,10 +270,14 @@ function! tsv_edl#ipc_toggle_play()
 	
 	if result ==? "true"
 		call system('echo { \"command\": [\"set_property\", \"pause\", false ] } | socat - /tmp/mpvsocket > /dev/null &')
-		echo 'playit'
+		echo '[mpv ipc] PLAY'
 	elseif result ==? "false"
 		call system('echo { \"command\": [\"set_property\", \"pause\", true ] } | socat - /tmp/mpvsocket > /dev/null &')
+
+		let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+		echo "[mpv ipc] pause at: " .. tsv_edl#sec_to_timecode(str2float(playback_time))
 	endif
+
 endfunction
 
 function! tsv_edl#ipc_seek()
