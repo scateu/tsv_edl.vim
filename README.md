@@ -2,12 +2,12 @@
 
 ### PREVIEW
 
-| Key          | Function                                                           |
-|--------------|--------------------------------------------------------------------|
-| ⇥ (tab)      | mpv/ffplay this line (guessing start pos at cursor)                |
-| ⇧⇥           | mpv/ffplay this line from start (no guessing pos)                  |
-| \ ⇥          | mpv/ffplay this line (from cursor) don't stop                      |
-| ⎵            | mpv/ffplay from this line till EOF                                 |
+| Key     | Function                                                         |
+|---------|------------------------------------------------------------------|
+| ⇥ (tab) | [mpv] play this line (guessing start pos at cursor), stop at end |
+| ⇧⇥      | [mpv] play this line from start (no guessing pos), stop at end   |
+| \ ⇥     | [mpv] play this line (from cursor), don't stop                   |
+| ⎵       | [mpv] play line by line from this one till EOF                   |
 
 ### TIMECODE EDITING
 
