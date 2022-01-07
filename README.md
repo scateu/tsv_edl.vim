@@ -1,8 +1,9 @@
 ## Keys
 
+### PREVIEW
+
 | Key          | Function                                                           |
 |--------------|--------------------------------------------------------------------|
-|              | PREVIEW                                                            |
 | ⇥ (tab)      | mpv/ffplay this line (guessing start pos at cursor)                |
 | ⇧⇥           | mpv/ffplay this line from start (no guessing pos)                  |
 | \ ⇥          | mpv/ffplay this line (from cursor) don't stop                      |
