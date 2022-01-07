@@ -6,6 +6,8 @@ else
   SED=sed
 fi
 
+echo "Renaming roughcut.{mp3,srt} to $1.{mp3,srt}"
+
 mv roughcut.mp3 "$1.mp3"
 mv roughcut.srt "$1.srt"
 audio2srtvideo "$1.mp3"

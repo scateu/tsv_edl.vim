@@ -216,8 +216,8 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	nmap <silent> <Down> j:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> <Left> h:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
-	nmap <silent> s :call tsv_edl#ipc_seek()<CR>
-	nmap <silent> <cr> n:call tsv_edl#ipc_seek()<CR>
+	nmap <silent> s n:call tsv_edl#ipc_seek()<CR>
+	nmap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
 
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
 		echon '[pgrep] existing mpvsocket found, reuse. '
