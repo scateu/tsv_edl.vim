@@ -108,11 +108,6 @@ nmap <silent> <S-Right> 02f:l<C-A>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-A>:.,/^
 "vnoremap <space> :'<,'>w !tsv2roughcut<CR>
 vnoremap <space> :w !tsv2roughcut<CR>
 
-"Folding Behavior {{{
-set fdm=marker
-"set foldopen=all
-set foldclose=all
-" }}}
 
 set nrformats=
 " only decimal
@@ -122,3 +117,64 @@ set guioptions=aiAe "for macVim
 
 set wrap linebreak "to avoid words broken into characters
 set so=10 "scrolloff , center
+
+
+
+" Indent
+
+function! Markdown_and_Org_Level()
+    if getline(v:lnum) =~ '^# .*$'
+        return ">1"
+    endif
+    if getline(v:lnum) =~ '^## .*$'
+        return ">2"
+    endif
+    if getline(v:lnum) =~ '^### .*$'
+        return ">3"
+    endif
+    if getline(v:lnum) =~ '^#### .*$'
+        return ">4"
+    endif
+    if getline(v:lnum) =~ '^##### .*$'
+        return ">5"
+    endif
+    if getline(v:lnum) =~ '^###### .*$'
+        return ">6"
+    endif
+    if getline(v:lnum) =~ '^\* .*$'
+        return ">1"
+    endif
+    if getline(v:lnum) =~ '^\*\* .*$'
+        return ">2"
+    endif
+    if getline(v:lnum) =~ '^\*\*\* .*$'
+        return ">3"
+    endif
+    if getline(v:lnum) =~ '^\*\*\*\* .*$'
+        return ">4"
+    endif
+    if getline(v:lnum) =~ '^\*\*\*\*\* .*$'
+        return ">5"
+    endif
+    if getline(v:lnum) =~ '^\*\*\*\*\*\* .*$'
+        return ">6"
+    endif
+    return "=" 
+endfunction
+
+"Folding Behavior {{{
+"set fdm=marker
+"set foldopen=all
+"set foldclose=all
+" }}}
+
+"setlocal foldtext=GetOrgFoldtext()
+setlocal fillchars-=fold:-
+"setlocal fillchars+=fold:\
+setlocal foldexpr=Markdown_and_Org_Level()  
+setlocal foldmethod=expr
+
+"setlocal indentexpr=GetOrgIndent()
+setlocal nolisp
+setlocal nosmartindent
+setlocal autoindent
