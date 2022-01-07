@@ -47,7 +47,7 @@
 | ⎵           | [mpv ipc] toggle play                                                          |
 | ⏎, s        | [mpv ipc] seek to cursor                                                       |
 | S           | [mpv ipc] search next (`n`), and seek                                          |
-| ⇥           | seek to cursor, [mpv ipc] alway play                                           |
+| ⇥           | seek to cursor, [mpv ipc] alway play. if in comment region, jump to next 'EDL' |
 | ⇧⇥          | seek to line head, then ⇥                                                      |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
