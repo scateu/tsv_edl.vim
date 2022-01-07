@@ -322,7 +322,7 @@ function! tsv_edl#ipc_play_current_range()
 	"Tab key
 	"for now: simply seek() and play()
 	
-	if ! (getline(".")  =~# "^EDL|^---|^xxx")
+	if ! (getline(".")  =~# "^EDL\\|^---\\|^xxx")
 		call cursor(search('^EDL', 'ncW'), 0)
 	endif
 
