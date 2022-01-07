@@ -1,31 +1,32 @@
 ## Keys
 
-| Key          | Function                                                             |
-|--------------|----------------------------------------------------------------------|
-|              | PREVIEW                                                              |
-| ⇥ (tab)      | mpv/ffplay this line (guessing start pos at cursor)                  |
-| ⇧⇥           | mpv/ffplay this line from start (no guessing pos)                    |
-| \ ⇥          | mpv/ffplay this line (from cursor) don't stop                        |
-| ⎵            | mpv/ffplay from this line till EOF                                   |
-|              | TIMECODE EDITING                                                     |
-| J            | Join (timecode) with the next line                                   |
-| \|           | Split this line into two, guessing a new timecode                    |
-| ⇧←/⇧→        | Roll timecode with the previous line for 1 sec                       |
-| g0           | go to the start of subtitle                                          |
-| g8           | go to `record_out` timecode in prev line                             |
-| g9           | go to `record_in` timecode                                           |
-| go           | append a gap for 5 secs below current line                           |
-|              | EDITORIAL DECISION                                                   |
-| ⏎ (enter)    | pick this line to Vim tab 1, then mark used `---`                    |
-| ⌫/⌦ (BS/DEL) | reject this line, then mark `xxx`                                    |
-| V (region) ⎵ | render those highlighted lines with `tsv2roughcut`                   |
-|              | MPV IPC Control                                                      |
-| \ \          | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4`   |
-| \ \ (again)  | send quit signal via ipc socket to mpc                               |
-| ← →          | move, then [mpv ipc] seek to location of subtitle                    |
-| ↑ ↓          | move, then [mpv ipc] seek; reload when clip changed                  |
-| \ ⎵          | mpv [ipc] play from this line till EOF                               |
-| ⎵            | mpv [ipc] toggle play                                                |
+| Key          | Function                                                           |
+|--------------|--------------------------------------------------------------------|
+|              | PREVIEW                                                            |
+| ⇥ (tab)      | mpv/ffplay this line (guessing start pos at cursor)                |
+| ⇧⇥           | mpv/ffplay this line from start (no guessing pos)                  |
+| \ ⇥          | mpv/ffplay this line (from cursor) don't stop                      |
+| ⎵            | mpv/ffplay from this line till EOF                                 |
+|              | TIMECODE EDITING                                                   |
+| J            | Join (timecode) with the next line                                 |
+| \|           | Split this line into two, guessing a new timecode                  |
+| ⇧←/⇧→        | Roll timecode with the previous line for 1 sec                     |
+| g0           | go to the start of subtitle                                        |
+| g8           | go to `record_out` timecode in prev line                           |
+| g9           | go to `record_in` timecode                                         |
+| go           | append a gap for 5 secs below current line                         |
+|              | EDITORIAL DECISION                                                 |
+| ⏎ (enter)    | pick this line to Vim tab 1, then mark used `---`                  |
+| ⌫ (BS)       | reject this line, then mark `xxx`                                  |
+| ⌦ (DEL)      | toggle between `EDL` and `xxx`; toggle `---` to `EDL`              |
+| V (region) ⎵ | render those highlighted lines with `tsv2roughcut`                 |
+|              | MPV IPC Control                                                    |
+| \ \          | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4` |
+| \ \ (again)  | send quit signal via ipc socket to mpc                             |
+| ← →          | move, then [mpv ipc] seek to location of subtitle                  |
+| ↑ ↓          | move, then [mpv ipc] seek; reload when clip changed                |
+| \ ⎵          | mpv [ipc] play from this line till EOF                             |
+| ⎵            | mpv [ipc] toggle play                                              |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 

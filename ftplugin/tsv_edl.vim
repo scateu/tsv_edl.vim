@@ -25,8 +25,8 @@ nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
 " split style :sp cherrypick.tsv
 "nmap <cr> yy<C-w><C-w>Gp<C-W><C-w>j
 
-nmap <silent> <delete> :s/^EDL/xxx/<cr>j
 nmap <silent> <backspace> :s/^EDL/xxx/<cr>j
+nmap <silent> <delete> :if getline('.') =~# '^EDL' \| s/^EDL/xxx/ \| else \| s/^xxx/EDL/e \| s/^---/EDL/e \| endif<cr>
 
 "======================
 " Play and Preview
