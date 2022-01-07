@@ -42,7 +42,8 @@
 | ↑, ↓        | move, then [mpv ipc] seek; reload when clip changed                            |
 | \ ⎵         | mpv [ipc] play from this line till EOF                                         |
 | ⎵           | mpv [ipc] toggle play                                                          |
-| s, ⏎        | mpv [ipc] seek to cursor                                                       |
+| s           | mpv [ipc] seek to cursor                                                       |
+| ⏎           | mpv [ipc] search next (`n`), and seek                                          |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 
