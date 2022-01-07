@@ -217,6 +217,7 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	nmap <silent> <Left> h:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> s :call tsv_edl#ipc_seek()<CR>
+	nmap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
 
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
 		echon '[pgrep] existing mpvsocket found, reuse. '
@@ -270,12 +271,15 @@ function! tsv_edl#ipc_quit()
 	let g:ipc_media_ready = v:false
 	let g:ipc_loaded_media_name = ""
 	echon "[mpv ipc] quit. "
+
+	"restore key mappings
 	nmap <silent> <space> 0:call tsv_edl#continous_play()<CR>
 	unmap <Up>
 	unmap <Down>
 	unmap <Left>
 	unmap <Right>
 	unmap s
+	nmap <silent> <cr> yy1gtGpg<tab>0cw---<ESC>0j
 endfunction
 
 function! tsv_edl#ipc_toggle_play()
