@@ -16,6 +16,15 @@ set shell=/bin/bash " macOS. zsh doesn't work
 " for the use of ffplay
 
 " MAP KEYBINDINGS
+"
+
+"======================
+" Toggle Conceal level
+"======================
+"https://github.com/tpope/vim-unimpaired/issues/105
+
+nmap \c :set <C-R>=&conceallevel ? 'conceallevel=0' : 'conceallevel=1'<CR><CR>
+
 "======================
 " Editorial Decision
 "======================

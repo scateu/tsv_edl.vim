@@ -19,6 +19,7 @@
 | g8           | go to `record_out` timecode in prev line                           |
 | g9           | go to `record_in` timecode                                         |
 | go           | append a gap for 5 secs below current line                         |
+| \ c          | toggle conceallevel=0, 1                                           |
 
 ### EDITORIAL DECISION
 
