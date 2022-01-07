@@ -65,13 +65,6 @@ nmap <silent> \\ 0:call tsv_edl#ipc_load_media()<CR>
 " One can press Ctrl-C very hard to stop.
 nmap <silent> \<space> 0:call tsv_edl#ipc_continous_play()<CR>
 
-" control mpv with mpvc, seek with mpvc
-" mpv --input-ipc-server=/tmp/mpvsocket
-" wget https://raw.githubusercontent.com/lwilletts/mpvc/master/mpvc
-map <silent> <Up> k:call tsv_edl#ipc_seek()<CR>
-map <silent> <Down> j:call tsv_edl#ipc_seek()<CR>
-map <silent> <Left> h:call tsv_edl#ipc_seek()<CR>
-map <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
 
 "==================== 
 " Timecode Editing

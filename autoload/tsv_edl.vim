@@ -209,6 +209,14 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 
 	nmap <silent> <space> :call tsv_edl#ipc_toggle_play()<CR>
 
+	" control mpv with mpvc, seek with mpvc
+	" mpv --input-ipc-server=/tmp/mpvsocket
+	" wget https://raw.githubusercontent.com/lwilletts/mpvc/master/mpvc
+	nmap <silent> <Up> k:call tsv_edl#ipc_seek()<CR>
+	nmap <silent> <Down> j:call tsv_edl#ipc_seek()<CR>
+	nmap <silent> <Left> h:call tsv_edl#ipc_seek()<CR>
+	nmap <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
+
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
 		echon '[pgrep] existing mpvsocket found, reuse. '
 		let result=trim(system('echo { \"command\": [\"get_property\", \"filename\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
@@ -262,6 +270,10 @@ function! tsv_edl#ipc_quit()
 	let g:ipc_loaded_media_name = ""
 	echon "[mpv ipc] quit. "
 	nmap <silent> <space> 0:call tsv_edl#continous_play()<CR>
+	unmap <Up>
+	unmap <Down>
+	unmap <Left>
+	unmap <Right>
 endfunction
 
 function! tsv_edl#ipc_toggle_play()
