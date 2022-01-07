@@ -293,7 +293,7 @@ function! tsv_edl#ipc_toggle_play()
 endfunction
 
 function! tsv_edl#ipc_seek()
-	if ! g:ipc_media_ready
+	if ! g:ipc_media_ready  " since arrow keys will be unbound. This condition will never be met
 		echon "[mpv ipc] not loaded. press \\\\ to init or connect."
 		return
 	endif
