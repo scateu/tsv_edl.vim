@@ -210,7 +210,7 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 		call tsv_edl#ipc_quit()
 		return
 	endif
-
+ 
 	nmap <silent> <space> :call tsv_edl#ipc_toggle_play()<CR>
 
 	" control mpv with mpvc, seek with mpvc
@@ -242,7 +242,8 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 		"echo clipname
 		let g:ipc_media_ready = v:true
 		let g:ipc_loaded_media_name = clipname
-		call tsv_edl#ipc_seek()
+		"call tsv_edl#ipc_seek()
+		call tsv_edl#ipc_sync_playhead()
 		return
 	endif
 
@@ -346,6 +347,11 @@ function! tsv_edl#ipc_seek()
 	if ! g:ipc_media_ready  " since arrow keys will be unbound. This condition will never be met
 		echon "[mpv ipc] not loaded. press \\\\ to init or connect."
 		return
+	endif
+
+	if (getline(".")  !~# g:edl_line_pattern)
+		call cursor(0,0) " current line, first column
+		call search(g:edl_line_pattern, 'cW')
 	endif
 
 	let line=getline('.')
