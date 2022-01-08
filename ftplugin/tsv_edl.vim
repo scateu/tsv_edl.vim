@@ -41,7 +41,7 @@ nmap <silent> <delete> :if getline('.') =~# '^EDL' \| s/^EDL/xxx/ \| else \| s/^
 
 "======================
 " Play and Preview
-"====================== 
+"======================
 
 " start from cursor, stop at the end
 
@@ -55,7 +55,7 @@ func! DoTab()
 		else
 			call tsv_edl#play_current_range()
 		endif
-	else 
+	else
 		try
 			exe "normal! za"
 		catch /E490:/
@@ -76,7 +76,7 @@ func! DoShiftTab()
 			normal! 02f\|2l
 			call tsv_edl#play_current_range()
 		endif
-	else 
+	else
 		if &foldlevel > 1
 			set foldlevel=0
 		else
@@ -94,7 +94,7 @@ func! DoSlashTab()
 		else
 			call tsv_edl#play_current_range(v:false)
 		endif
-	else 
+	else
 		"do nothing
 	endif
 endfunc
@@ -107,9 +107,9 @@ nmap <silent> <space> 0:call tsv_edl#continous_play()<CR>
 
 "======================
 " IPC Seeking & Preview
-"====================== 
+"======================
 
-" IPC Load media. mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause 
+" IPC Load media. mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause
 nmap <silent> \\ 0:call tsv_edl#ipc_load_media()<CR>
 
 " Play clips continously from current line if starts with 'EDL'.
@@ -117,9 +117,9 @@ nmap <silent> \\ 0:call tsv_edl#ipc_load_media()<CR>
 nmap <silent> \<space> 0:call tsv_edl#ipc_continous_play()<CR>
 
 
-"==================== 
+"====================
 " Timecode Editing
-"==================== 
+"====================
 " Go to record_in timecode
 nnoremap <silent> g9 0f,l
 
@@ -153,9 +153,9 @@ nmap <silent> <S-Right> 02f:l<C-A>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-A>:.,/^
 
 " }}}
 
-"==================== 
+"====================
 " Export & Render
-"==================== 
+"====================
 "vnoremap <space> :'<,'>w !tsv2roughcut<CR>
 vnoremap <space> :w !tsv2roughcut<CR>
 
@@ -174,45 +174,13 @@ set so=10 "scrolloff , center
 " Indent
 " borrowed from https://stackoverflow.com/questions/3828606/vim-markdown-folding
 " and vim-orgmode/indent/
-
-function! Markdown_and_Org_Level()
-    if getline(v:lnum) =~ '^# .*$'
-        return ">1"
-    endif
-    if getline(v:lnum) =~ '^## .*$'
-        return ">2"
-    endif
-    if getline(v:lnum) =~ '^### .*$'
-        return ">3"
-    endif
-    if getline(v:lnum) =~ '^#### .*$'
-        return ">4"
-    endif
-    if getline(v:lnum) =~ '^##### .*$'
-        return ">5"
-    endif
-    if getline(v:lnum) =~ '^###### .*$'
-        return ">6"
-    endif
-    if getline(v:lnum) =~ '^\* .*$'
-        return ">1"
-    endif
-    if getline(v:lnum) =~ '^\*\* .*$'
-        return ">2"
-    endif
-    if getline(v:lnum) =~ '^\*\*\* .*$'
-        return ">3"
-    endif
-    if getline(v:lnum) =~ '^\*\*\*\* .*$'
-        return ">4"
-    endif
-    if getline(v:lnum) =~ '^\*\*\*\*\* .*$'
-        return ">5"
-    endif
-    if getline(v:lnum) =~ '^\*\*\*\*\*\* .*$'
-        return ">6"
-    endif
-    return "=" 
+function Markdown_and_Org_Level()
+	let h = matchstr(getline(v:lnum), '^[\*|#]\+')
+	if empty(h)
+		return "="
+	else
+		return ">" . len(h)
+	endif
 endfunction
 
 "Folding Behavior {{{
@@ -226,7 +194,7 @@ setlocal fillchars-=fold:-
 setlocal fillchars+=fold:.
 
 " https://github.com/chrisbra/vim_dotfiles/blob/master/plugin/CustomFoldText.vim
-" Customized version of folded text, idea by 
+" Customized version of folded text, idea by
 " http://www.gregsexton.org/2011/03/improving-the-text-displayed-in-a-fold/
 fu! CustomFoldText(string) "{{{1
     "get first non-blank line
@@ -272,7 +240,7 @@ endf
 set foldtext=CustomFoldText('.')
 
 
-setlocal foldexpr=Markdown_and_Org_Level()  
+setlocal foldexpr=Markdown_and_Org_Level()
 setlocal foldmethod=expr
 
 "setlocal indentexpr=GetOrgIndent()
@@ -281,7 +249,7 @@ setlocal nosmartindent
 setlocal autoindent
 
 "-----------------------------
-"following code are borrowed from 
+"following code are borrowed from
 "https://github.com/arp242/jumpy.vim/
 "-----------------------------
 
