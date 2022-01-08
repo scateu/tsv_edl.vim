@@ -143,6 +143,12 @@ Press `g9` will:
 ```
 
 ![screenshot](screenshots/a.png)
+![screenshot](screenshots/b.jpg)
+![screenshot](screenshots/c.jpg)
+![screenshot](screenshots/d.jpg)
+![screenshot](screenshots/e.jpg)
+![screenshot](screenshots/f.jpg)
+![screenshot](screenshots/g.jpg)
 
 ## Install
 
