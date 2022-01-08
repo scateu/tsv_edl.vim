@@ -529,23 +529,23 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 
 	call cursor(0,0) " current line, first column
 
-	" first search for \tHH:SS:MM,
+	" first search for \tHH:MM:SS,
 	let _target = '\t' . playback_time_in_timecode[:7] .','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
-	" then search for \tHH:SS:MM-1,
+	" then search for \tHH:MM:SS-1,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 1)) . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
-	" then search for \tHH:SS:MM+1,
+	" then search for \tHH:MM:SS+1,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 1)) . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
-	" then search for \tHH:SS:MM-2,
+	" then search for \tHH:MM:SS-2,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 2)) . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
-	" then search for \tHH:SS:MM+2,
+	" then search for \tHH:MM:SS+2,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 2)) . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
