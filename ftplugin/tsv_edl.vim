@@ -66,7 +66,6 @@ nmap <silent> \\ 0:call tsv_edl#ipc_load_media()<CR>
 " Play clips continously from current line if starts with 'EDL'.
 " One can press Ctrl-C very hard to stop.
 nmap <silent> \<space> 0:call tsv_edl#ipc_continous_play()<CR>
-nmap <silent> \s :call tsv_edl#ipc_sync_playhead()<CR>
 
 
 "==================== 

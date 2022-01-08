@@ -534,22 +534,46 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
 	" then search for \tHH:MM:SS-1,
-	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 1)) . ','
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 1))[:7] . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
 	" then search for \tHH:MM:SS+1,
-	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 1)) . ','
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 1))[:7] . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
 	" then search for \tHH:MM:SS-2,
-	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 2)) . ','
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 2))[:7] . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
 	" then search for \tHH:MM:SS+2,
-	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 2)) . ','
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 2))[:7] . ','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
-	" if not found, then search for \tHH:SS:
+	" then search for \tHH:MM:SS-5,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 5))[:7] . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:MM:SS+5,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 5))[:7] . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:MM:SS-10,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 10))[:7] . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:MM:SS+10,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 10))[:7] . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:MM:SS-30,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 30))[:7] . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:MM:SS+30,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 30))[:7] . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" if not found, then search for \tHH:MM:
 	let _target = '\t' . playback_time_in_timecode[:5]
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
