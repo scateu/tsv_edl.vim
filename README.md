@@ -47,7 +47,7 @@
 | ⎵           | [mpv ipc] toggle play                                                          |
 | ⏎, s        | [mpv ipc] seek to cursor                                                       |
 | S           | [mpv ipc] search next (`n`), and seek                                          |
-| \ s         | [mpv ipc] reverse seek: go to the line of mpv timecode. sync playhead          |
+| \ s         | [mpv ipc] sync playhead: seek vim cursor to nearest of mpv timecode, wrap end  |
 | \ S         | backwards of \ s                                                               |
 | ⇥           | seek to cursor, [mpv ipc] alway play. if in comment region, jump to next 'EDL' |
 | ⇧⇥          | seek to line head, then ⇥                                                      |

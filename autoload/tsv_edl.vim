@@ -7,6 +7,9 @@ function! tsv_edl#timecode_to_secs(timecode)
 endfunction
 
 function! tsv_edl#sec_to_timecode(sec)
+	if a:sec < 0
+		return ("00:00:00.000")
+	endif
 	let HH = float2nr(a:sec/3600.0)
 	let MM = float2nr((a:sec - HH*3600.0)/60.0)
 	let SS = float2nr((a:sec - HH*3600.0 - MM*60.0))
@@ -530,6 +533,22 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 	let _target = '\t' . playback_time_in_timecode[:7] .','
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
 
+	" then search for \tHH:SS:MM-1,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 1)) . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:SS:MM+1,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 1)) . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:SS:MM-2,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 2)) . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" then search for \tHH:SS:MM+2,
+	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 2)) . ','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
 	" if not found, then search for \tHH:SS:
 	let _target = '\t' . playback_time_in_timecode[:5]
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
@@ -559,9 +578,9 @@ endfunction
 
 function! s:search_target_and_go_to_that_line(_target, backwards=v:false)
 	if a:backwards
-		let _s = search(a:_target,'bncW')
+		let _s = search(a:_target,'bncw')
 	else
-		let _s = search(a:_target,'ncW')
+		let _s = search(a:_target,'ncw')
 	endif
 	if _s > 0
 		if s:line_clipname_match_mpc_filename(_s)
