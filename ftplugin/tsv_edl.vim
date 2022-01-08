@@ -45,25 +45,57 @@ nmap <silent> <delete> :if getline('.') =~# '^EDL' \| s/^EDL/xxx/ \| else \| s/^
 
 " start from cursor, stop at the end
 
+
+let g:edl_line_pattern = "^EDL\\t\\d\\|^---\\|^xxx"
+
 func! DoTab()
-	if (getline(".")  =~# "^EDL\\|^---\\|^xxx")
+	if (getline(".")  =~# g:edl_line_pattern)
 		if g:ipc_media_ready
 			call tsv_edl#ipc_play_current_range()
 		else
 			call tsv_edl#play_current_range()
 		endif
 	else 
-		normal! za
+		exe "normal! za"
 	endif
 endfunc
-
 nnoremap <silent> <tab> :call DoTab()<CR>
 
+func! DoShiftTab()
+	if (getline(".")  =~# g:edl_line_pattern)
+		if g:ipc_media_ready
+			"go to head of subtitle
+			normal! 02f\|2l
+			call tsv_edl#ipc_play_current_range()
+		else
+			"go to head of subtitle
+			normal! 02f\|2l
+			call tsv_edl#play_current_range()
+		endif
+	else 
+		if &foldlevel > 1
+			set foldlevel=0
+		else
+			set foldlevel+=1
+		endif
+	endif
+endfunc
 " start from head of line, stop at the end
-nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
+nnoremap <silent> <S-tab> :call DoShiftTab()<CR>
 
+func! DoSlashTab()
+	if (getline(".")  =~# g:edl_line_pattern)
+		if g:ipc_media_ready
+			"do nothing
+		else
+			call tsv_edl#play_current_range(v:false)
+		endif
+	else 
+		"do nothing
+	endif
+endfunc
 " start from cursor, play all along passing the end of this line
-nnoremap <silent> \<tab> :call tsv_edl#play_current_range(v:false)<CR>
+nnoremap <silent> \<tab> :call DoSlashTab()<CR>
 
 " Play clips continously from current line if starts with 'EDL'.
 " One can press Ctrl-C very hard to stop.
