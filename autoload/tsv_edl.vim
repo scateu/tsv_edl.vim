@@ -205,6 +205,39 @@ let g:ipc_media_ready = v:false
 let g:ipc_loaded_media_name = ""
 let g:ipc_timecode = ""
 
+function! tsv_edl#ipc_load_media(filename)
+
+	"calculate deduced timecode
+	let line=getline('.')
+	if len(line) == 0 | return | endif
+	let line_list = split(line, '\t')
+	if len(line_list) == 0 | return | endif
+	if ! (line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx') | return | endif
+	if line_list[1] !~# '\d\d:\d\d:\d\d,\d\d\d' | return | endif
+	let record_in = substitute(line_list[1], ',' , '.', 'g') 
+	let record_out = substitute(line_list[2], ',' , '.', 'g') 
+	let cursor_pos_percentage = tsv_edl#infer_time_pos(line)
+	let _rec_in_secs = tsv_edl#timecode_to_secs(record_in)
+	let _rec_out_secs = tsv_edl#timecode_to_secs(record_out)
+	let line_duration =  _rec_out_secs - _rec_in_secs
+	let deduced_line_duration = line_duration * ( 1 - cursor_pos_percentage)
+	let deduced_start_pos_secs = line_duration * cursor_pos_percentage + _rec_in_secs
+	let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
+	let g:ipc_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
+
+	let filename_with_ext = trim(system('ls *"' . a:filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1"))
+	echon "[ipc_load_media] loading " . filename_with_ext
+
+	call system('echo "{ \"command\": [\"loadfile\", \"' . filename_with_ext . '\", \"replace\", \"start=' . string(deduced_start_pos_secs) . '\" ] }" | socat - /tmp/mpvsocket 2>/dev/null')
+	let g:ipc_loaded_media_name = a:filename
+	" seek again
+	"let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | socat - /tmp/mpvsocket > /dev/null'
+	"let prompt = "[mpv ipc] load new clip, then seek to " . string(deduced_start_pos_secs) . "  "
+	"sleep 400m
+	"echon prompt
+	"call system(command)
+endfunction
+
 function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 	if g:ipc_media_ready
 		call tsv_edl#ipc_quit()
@@ -246,7 +279,7 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 
 	if system("pgrep -f input-ipc-server=/tmp/mpvsocket")
 		echon '[pgrep] existing mpvsocket found, reuse. '
-		let result=trim(system('echo { \"command\": [\"get_property\", \"filename\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+		let result=trim(system('echo "{ \"command\": [\"get_property\", \"filename\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 		"echo result
 		let clipname = fnamemodify(result, ":r")
 		"echo clipname
@@ -276,7 +309,9 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 	let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc 
 	if a:pause
 		let command = command . ' --pause' 
+		let g:ipc_pause = v:true
 	endif
+	let g:ipc_pause = v:false
 	let command = command . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
 	"echo command
 	echon "[mpv] load media: " . filename
@@ -295,9 +330,9 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 endfunction
 
 function! tsv_edl#ipc_quit()
-	"let command = 'echo { \"command\": [\"quit\"] } | socat - /tmp/mpvsocket > /dev/null &'
-	let command = "pkill -f input-ipc-server=/tmp/mpvsocket"
-	call system(command)
+	let command_ipc_quit = 'echo "{ \"command\": [\"quit\"] }" | socat - /tmp/mpvsocket > /dev/null &'
+	let command_pkill = "pkill -f input-ipc-server=/tmp/mpvsocket"
+	call system(command_ipc_quit)
 	let g:ipc_media_ready = v:false
 	let g:ipc_loaded_media_name = ""
 	echon "[mpv ipc] quit. "
@@ -321,25 +356,28 @@ function! tsv_edl#ipc_quit()
 	let g:cherry_pick_mode_entered = v:false "for now, it stands for enter key remapped to 'pick'
 endfunction
 
-function! tsv_edl#ipc_toggle_play(always_play=v:false)
-	"let command = 'echo { \"command\": [\"quit\"] } | socat - /tmp/mpvsocket > /dev/null &'
-	let result=trim(system('echo { \"command\": [\"get_property\", \"pause\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
-	if a:always_play
-		let result = "true"
-	endif
-	
+function! tsv_edl#ipc_toggle_play()
+	let result=trim(system('echo "{ \"command\": [\"get_property\", \"pause\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+
 	if result ==? "true"
-		call system('echo { \"command\": [\"set_property\", \"pause\", false ] } | socat - /tmp/mpvsocket > /dev/null &')
-		echo '[mpv ipc] PLAY'
+		call tsv_edl#ipc_always_play()
 	elseif result ==? "false"
-		call system('echo { \"command\": [\"set_property\", \"pause\", true ] } | socat - /tmp/mpvsocket > /dev/null &')
-
-		let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
-		let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
-		let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
-		echo "[mpv ipc] paused at: " .. playback_time_in_timecode
+		call tsv_edl#ipc_always_pause()
 	endif
+endfunction
 
+function! tsv_edl#ipc_always_pause()
+	call system('echo "{ \"command\": [\"set_property\", \"pause\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	let playback_time=tsv_edl#ipc_get_playback_time()
+	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
+	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
+	echo "[mpv ipc] paused at: " .. playback_time_in_timecode
+	let g:ipc_pause = v:true
+endfunction
+function! tsv_edl#ipc_always_play()
+	call system('echo "{ \"command\": [\"set_property\", \"pause\", false ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	echo "[mpv ipc] PLAY"
+	let g:ipc_pause = v:false
 endfunction
 
 function! tsv_edl#ipc_play_current_range()
@@ -351,7 +389,7 @@ function! tsv_edl#ipc_play_current_range()
 	endif
 
 	call tsv_edl#ipc_seek()
-	call tsv_edl#ipc_toggle_play(v:true)
+	call tsv_edl#ipc_always_play()
 endfunction
 
 function! tsv_edl#ipc_seek()
@@ -382,8 +420,7 @@ function! tsv_edl#ipc_seek()
 
 	if filename !=# g:ipc_loaded_media_name
 		echon "[mpv ipc] different media, load new. "
-		call tsv_edl#ipc_quit()
-		call tsv_edl#ipc_init_and_load_media()
+		call tsv_edl#ipc_load_media(filename)
 	endif
 
 	let record_in = substitute(line_list[1], ',' , '.', 'g') 
@@ -405,9 +442,9 @@ function! tsv_edl#ipc_seek()
 	"echo "[deduced_timecode]: ". deduced_timecode
 
 	"let command = 'mpvc -T '. string(deduced_start_pos_secs)  . ' &'
-	let command = 'echo { \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . " ] } | socat - /tmp/mpvsocket > /dev/null &"
+	let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | socat - /tmp/mpvsocket > /dev/null &'
 	" socat can be replaced by: nc -U -N $SOCKET
-	let prompt = "[mpv ipc] seek to " . string(deduced_start_pos_secs) . "  "
+	let prompt = "[mpv ipc] seek to " . string(deduced_timecode) . "  "
 
 	echon prompt
 	call system(command)
@@ -425,7 +462,7 @@ function! tsv_edl#ipc_continous_play()
 	call cursor(0,0) " current line, first column
 	let next_line_number = search('^EDL', 'ncW')
 
-	call system('echo { \"command\": [\"set_property\", \"pause\", false ] } | socat - /tmp/mpvsocket > /dev/null &')
+	call tsv_edl#ipc_always_play()
 
 	while next_line_number > 0
 		call cursor(next_line_number, 0) " next line, first column
@@ -439,8 +476,8 @@ function! tsv_edl#ipc_continous_play()
 
 				if filename !=# g:ipc_loaded_media_name
 					echon "[mpv ipc] different media, load new. "
-					call tsv_edl#ipc_quit()
-					call tsv_edl#ipc_init_and_load_media(v:false)
+					call tsv_edl#ipc_load_media(filename)
+					call tsv_edl#ipc_always_play()
 				endif
 
 				let record_in = substitute(line_list[1], ',' , '.', 'g') 
@@ -461,7 +498,7 @@ function! tsv_edl#ipc_continous_play()
 				"echo "[deduced_timecode]: ". deduced_timecode
 				let g:ipc_timecode = deduced_timecode
 
-				let command = 'echo { \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . " ] } | socat - /tmp/mpvsocket > /dev/null &"
+				let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | socat - /tmp/mpvsocket > /dev/null &'
 				let prompt = "[mpv ipc] seek to " .  string(deduced_start_pos_secs)
 
 				echo prompt
@@ -477,16 +514,24 @@ function! tsv_edl#ipc_continous_play()
 		let next_line_number = search('^EDL', 'nW')
 	endwhile
 
-	call system('echo { \"command\": [\"set_property\", \"pause\", true ] } | socat - /tmp/mpvsocket > /dev/null &')
+	"pause
+	call system('echo "{ \"command\": [\"set_property\", \"pause\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	let g:ipc_pause = v:true
 endfunction
 
+let g:ipc_pause = v:true
 "--------------------
 "status line for vim-airline
 "or raw status line
 "--------------------
 function! tsv_edl#status_line()
+	if g:ipc_pause == v:true
+		let pause_status = "■"
+	else
+		let pause_status = "▶"
+	endif
 	if g:ipc_media_ready
-		let _status_line =  printf("> " . g:ipc_timecode .  " | " . g:ipc_loaded_media_name . " | /tmp/mpvsocket". ' ' )
+		let _status_line =  printf(pause_status .' '.  g:ipc_timecode .  " | " . g:ipc_loaded_media_name . " | /tmp/mpvsocket". ' ' )
 	else
 		"let g:airline_section_y='%{airline#util#wrap(airline#parts#ffenc(),0)}'
 		let _status_line =  printf("< ")
@@ -553,7 +598,7 @@ function! tsv_edl#enter_cherry_pick_mode_horizontally()
 endfunction
 
 function! tsv_edl#ipc_sync_playhead(backwards=v:false)
-	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	let playback_time=tsv_edl#ipc_get_playback_time()
 	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
 	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
 	echon "[mpv ipc] sync playhead to nearest " . g:ipc_timecode . ' '
@@ -661,7 +706,7 @@ function! tsv_edl#write_record_in()
 		normal! o
 	endif
 	call setline(".", "EDL\t" )
-	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_in = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
 	call setline('.', getline('.') . rec_in . "\t")
 	call cursor(0,col('$'))
@@ -669,7 +714,7 @@ endfunction
 
 function! tsv_edl#write_record_out()
 	set conceallevel=0
-	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_out = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
 	call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 	"startinsert!
@@ -680,4 +725,8 @@ function! tsv_edl#write_record_out()
 		
 		call setline('.', getline('.') . line_duration . 'sec')
 	endif
+endfunction
+
+function! tsv_edl#ipc_get_playback_time()
+	return trim(system('echo "{ \"command\": [\"get_property\", \"playback-time\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 endfunction
