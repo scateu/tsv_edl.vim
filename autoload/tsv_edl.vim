@@ -210,6 +210,12 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 		call tsv_edl#ipc_quit()
 		return
 	endif
+
+	" go to a valid line
+	if (getline(".")  !~# g:edl_line_pattern)
+		call cursor(0,0) " current line, first column
+		call search(g:edl_line_pattern, 'cW')
+	endif
  
 	nmap <silent> <space> :call tsv_edl#ipc_toggle_play()<CR>
 
@@ -244,6 +250,7 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 		let g:ipc_loaded_media_name = clipname
 		"call tsv_edl#ipc_seek()
 		call tsv_edl#ipc_sync_playhead()
+		call tsv_edl#try_open_fold()
 		return
 	endif
 
@@ -328,9 +335,6 @@ function! tsv_edl#ipc_toggle_play(always_play=v:false)
 
 endfunction
 
-function! tsv_edl#test()
-endfunction
-
 function! tsv_edl#ipc_play_current_range()
 	"mapped to tab key
 	"for now: simply seek() and play()
@@ -349,9 +353,14 @@ function! tsv_edl#ipc_seek()
 		return
 	endif
 
+	let _go_back_line_number = 0
 	if (getline(".")  !~# g:edl_line_pattern)
+		let _go_back_line_number = line('.')
 		call cursor(0,0) " current line, first column
 		call search(g:edl_line_pattern, 'cW')
+		" imagine, on folded 'Chapter' tree
+		" press [Enter]
+		" cursor is moved to the first EDL line without being noticed.
 	endif
 
 	let line=getline('.')
@@ -398,6 +407,11 @@ function! tsv_edl#ipc_seek()
 
 	"silent execute "!".command
 	redraw!
+	if _go_back_line_number != 0
+		"cursor being move to next valid line without being noticed. 
+		"go back now.
+		call cursor(_go_back_line_number,0)
+	endif
 endfunction
 
 function! tsv_edl#ipc_continous_play()
@@ -535,6 +549,7 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
 	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
+	echon "[mpv ipc] sync playhead to nearest " . g:ipc_timecode
 
 	call cursor(0,0) " current line, first column
 
@@ -622,4 +637,13 @@ function! s:search_target_and_go_to_that_line(_target, backwards=v:false)
 		endif
 	endif
 	return v:false
+endfunction
+
+function! tsv_edl#try_open_fold()
+	try
+		normal! zO
+	catch /E490:/
+		"no fold here
+		"do nothing
+	endtry
 endfunction

@@ -56,7 +56,11 @@ func! DoTab()
 			call tsv_edl#play_current_range()
 		endif
 	else 
-		exe "normal! za"
+		try
+			exe "normal! za"
+		catch /E490:/
+			"no fold, do nothing
+		endtry
 	endif
 endfunc
 nnoremap <silent> <tab> :call DoTab()<CR>
