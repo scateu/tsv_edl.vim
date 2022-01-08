@@ -276,12 +276,12 @@ geometry=100%
 ## TODOs
 
  - [X] Gap: EDLSPACE?  `go`
- - [ ] When there's only one tab, `Enter` should cease to work. 
+ - [X] When there's only one tab, `Enter` should cease to work. 
  - [X] Tab/Space key on a visual region. render the region into a media file
  - [X] tsv2srt -reflow: reassign the timestamp of each srt block. generate a srt for the rendered region
- - [ ] mpv --input-ipc-server 
-
+ - [X] mpv --input-ipc-server 
  - [X] bug: macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
+ - [ ] `set fdm=expr` is very slow. need to switch to `manual` or add a cache
 
 
 ## DEMO
