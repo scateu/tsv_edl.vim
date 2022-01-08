@@ -133,7 +133,16 @@ nnoremap <silent> g0 02f\|2l
 nnoremap <silent> gO oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
 
 nmap <silent> \| :call tsv_edl#break_line()<CR>
-nmap <silent> J :call tsv_edl#join_with_next_line()<CR>
+
+
+func! DoJoin()
+	if (getline(".")  =~# g:edl_line_pattern)
+		call tsv_edl#join_with_next_line()
+	else
+		normal! J
+	endif
+endfunc
+nmap <silent> J :call DoJoin()<CR>
 
 " shift the record_in timecode by 1 sec  {{{
 nmap <silent> <S-Left> 02f:l<C-X>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-X>:.,/^EDL\\|---\\|xxx/s/[:\t]\zs\ze\d[,:]/0/ge<CR>/^EDL\\|xxx\\|---/<CR>02f:l
