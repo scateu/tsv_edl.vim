@@ -221,6 +221,8 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	nmap <silent> S n:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> <tab> :call tsv_edl#ipc_play_current_range()<CR>
 	nmap <silent> <S-tab> g0:call tsv_edl#ipc_play_current_range()<CR>
+	nmap <silent> \s :call tsv_edl#ipc_sync_playhead()<CR>
+	nmap <silent> \S :call tsv_edl#ipc_sync_playhead(v:true)<CR>
 	if g:cherry_pick_mode_entered
 		echon "already in cherry_pick_mode, do not map Enter to seek"
 	else
@@ -292,6 +294,7 @@ function! tsv_edl#ipc_quit()
 	unmap <Left>
 	unmap <Right>
 	unmap s
+	unmap \s
 	nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
 	nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
 
@@ -322,7 +325,7 @@ function! tsv_edl#ipc_toggle_play(always_play=v:false)
 endfunction
 
 function! tsv_edl#ipc_play_current_range()
-	"Tab key
+	"mapped to tab key
 	"for now: simply seek() and play()
 	
 	if ! (getline(".")  =~# "^EDL\\|^---\\|^xxx")
@@ -514,4 +517,57 @@ function! tsv_edl#enter_cherry_pick_mode_horizontally()
 		endif
 		let g:cherry_pick_mode_entered = v:false
 	endif
+endfunction
+
+function! tsv_edl#ipc_sync_playhead(backwards=v:false)
+	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
+	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
+
+	call cursor(0,0) " current line, first column
+
+	" first search for \tHH:SS:MM,
+	let _target = '\t' . playback_time_in_timecode[:7] .','
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" if not found, then search for \tHH:SS:
+	let _target = '\t' . playback_time_in_timecode[:5]
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+
+	" FIXME use a while loop
+	" then search for \tHH:
+	let _target = '\t' . playback_time_in_timecode[:2]
+	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	echo "ipc_sync_playhead not found"
+
+endfunction
+
+function! s:line_clipname_match_mpc_filename(line_number)
+	let line=getline(a:line_number)
+	if len(line) > 0
+		let line_list = split(line, '\t')
+		if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
+			let filename = trim(trim(line_list[3],'|'))
+			if filename ==# g:ipc_loaded_media_name
+				"call cursor(_s, 0) " matched timecode line, first column
+				return v:true
+			endif
+		endif
+	endif
+	return v:false
+endfunction
+
+function! s:search_target_and_go_to_that_line(_target, backwards=v:false)
+	if a:backwards
+		let _s = search(a:_target,'bncW')
+	else
+		let _s = search(a:_target,'ncW')
+	endif
+	if _s > 0
+		if s:line_clipname_match_mpc_filename(_s)
+			call cursor(_s, 0) " matched timecode line, first column
+			return v:true
+		endif
+	endif
+	return v:false
 endfunction
