@@ -215,6 +215,7 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	if (getline(".")  !~# g:edl_line_pattern)
 		call cursor(0,0) " current line, first column
 		call search(g:edl_line_pattern, 'cW')
+		call tsv_edl#try_open_fold()
 	endif
  
 	nmap <silent> <space> :call tsv_edl#ipc_toggle_play()<CR>
