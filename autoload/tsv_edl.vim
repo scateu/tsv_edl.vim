@@ -311,8 +311,9 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 	if a:pause
 		let command = command . ' --pause' 
 		let g:ipc_pause = v:true
+	else
+		let g:ipc_pause = v:false
 	endif
-	let g:ipc_pause = v:false
 	let command = command . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
 	"echo command
 	echon "[mpv] load media: " . filename
