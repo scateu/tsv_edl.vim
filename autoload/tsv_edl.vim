@@ -223,7 +223,7 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	nmap <silent> s :call tsv_edl#ipc_seek()<CR>
 	nmap <silent> S n:call tsv_edl#ipc_seek()<CR>
 	"nmap <silent> <tab> :call tsv_edl#ipc_play_current_range()<CR>
-	nmap <silent> <S-tab> g0:call tsv_edl#ipc_play_current_range()<CR>
+	"nmap <silent> <S-tab> g0:call tsv_edl#ipc_play_current_range()<CR>
 	nmap <silent> \s :call tsv_edl#ipc_sync_playhead()<CR>
 	nmap <silent> \S :call tsv_edl#ipc_sync_playhead(v:true)<CR>
 	if g:cherry_pick_mode_entered
@@ -299,7 +299,7 @@ function! tsv_edl#ipc_quit()
 	unmap s
 	unmap \s
 	"nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
-	nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
+	"nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
 
 	unmap <cr>
 	let g:cr_map_status = "[⏎ = ⏎]"

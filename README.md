@@ -101,6 +101,13 @@ Press `g9` will:
 
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
+### Orgmode/Markdown Folding
+
+| Key | Function                                                               |
+|-----|------------------------------------------------------------------------|
+| ⇥   | When not on a EDL/---/xxx line. do `za` on `## Header` or `* Org head` |
+| ⇧⇥  | cycle foldlevel=0,1,2                                                  |
+
 ## Overview
 
 ```
