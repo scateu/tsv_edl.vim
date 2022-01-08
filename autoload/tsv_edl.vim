@@ -550,7 +550,7 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
 	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
-	echon "[mpv ipc] sync playhead to nearest " . g:ipc_timecode
+	echon "[mpv ipc] sync playhead to nearest " . g:ipc_timecode . ' '
 
 	call cursor(0,0) " current line, first column
 
