@@ -7,7 +7,7 @@
 | ⇥ (tab) | [mpv] play this line (guessing start pos at cursor), stop at end |
 | ⇧⇥      | [mpv] play this line from start (no guessing pos), stop at end   |
 | \ ⇥     | [mpv] play this line (from cursor), don't stop                   |
-| ⎵       | [mpv] play line by line from this one till EOF                   |
+| \ ⎵     | [mpv] play line by line from this one till EOF                   |
 
 ### TIMECODE EDITING
 
@@ -41,10 +41,10 @@
 | \ \         | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4`             |
 |             | and enter IPC Control mode. `s ← → ↑ ↓ ⎵ ⏎` is redefined, and restored at quit |
 | \ \ (again) | send quit signal via ipc socket to mpc                                         |
+| ⎵           | [mpv ipc] toggle play                                                          |
 | ←, →        | move, then [mpv ipc] seek to cursor                                            |
 | ↑, ↓        | move, then [mpv ipc] seek; reload when clip changed                            |
 | \ ⎵         | [mpv ipc] play from this line till EOF                                         |
-| ⎵           | [mpv ipc] toggle play                                                          |
 | ⏎, s        | [mpv ipc] seek to cursor                                                       |
 | ns          | [mpv ipc] search next (`n`), and seek                                          |
 | S           | [mpv ipc] sync playhead: seek vim cursor to nearest of mpv timecode, wrap end  |

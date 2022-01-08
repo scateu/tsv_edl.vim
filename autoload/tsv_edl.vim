@@ -252,6 +252,7 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 	endif
  
 	nmap <silent> <space> :call tsv_edl#ipc_toggle_play()<CR>
+	nmap <silent> \<space> 0:call tsv_edl#ipc_continous_play()<CR>
 
 	" control mpv with mpvc, seek with mpvc
 	" mpv --input-ipc-server=/tmp/mpvsocket
@@ -338,7 +339,7 @@ function! tsv_edl#ipc_quit()
 	echon "[mpv ipc] quit. "
 
 	"restore key mappings
-	nmap <silent> <space> 0:call tsv_edl#continous_play()<CR>
+	nmap <silent> \<space> 0:call tsv_edl#continous_play()<CR>
 	unmap <Up>
 	unmap <Down>
 	unmap <Left>
@@ -467,11 +468,10 @@ function! tsv_edl#ipc_continous_play()
 	while next_line_number > 0
 		call cursor(next_line_number, 0) " next line, first column
 		redraw!
-
 		let line=getline('.')
 		if len(line) > 0
 			let line_list = split(line, '\t')
-			if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
+			if line_list[0] == 'EDL' || line_list[0] == '---' "|| line_list[0] == 'xxx'
 				let filename = trim(trim(line_list[3],'|'))
 
 				if filename !=# g:ipc_loaded_media_name
@@ -510,13 +510,10 @@ function! tsv_edl#ipc_continous_play()
 				redraw!
 			endif
 		endif
-
 		let next_line_number = search('^EDL', 'nW')
 	endwhile
 
-	"pause
-	call system('echo "{ \"command\": [\"set_property\", \"pause\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
-	let g:ipc_pause = v:true
+	call tsv_edl#ipc_always_pause()
 endfunction
 
 let g:ipc_pause = v:true
