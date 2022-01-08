@@ -110,7 +110,7 @@ nmap <silent> <space> 0:call tsv_edl#continous_play()<CR>
 "======================
 
 " IPC Load media. mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause
-nmap <silent> \\ 0:call tsv_edl#ipc_load_media()<CR>
+nmap <silent> \\ 0:call tsv_edl#ipc_init_and_load_media()<CR>
 
 " Play clips continously from current line if starts with 'EDL'.
 " One can press Ctrl-C very hard to stop.

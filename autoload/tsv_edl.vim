@@ -205,7 +205,7 @@ let g:ipc_media_ready = v:false
 let g:ipc_loaded_media_name = ""
 let g:ipc_timecode = ""
 
-function! tsv_edl#ipc_load_media(pause = v:true)
+function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 	if g:ipc_media_ready
 		call tsv_edl#ipc_quit()
 		return
@@ -383,7 +383,7 @@ function! tsv_edl#ipc_seek()
 	if filename !=# g:ipc_loaded_media_name
 		echon "[mpv ipc] different media, load new. "
 		call tsv_edl#ipc_quit()
-		call tsv_edl#ipc_load_media()
+		call tsv_edl#ipc_init_and_load_media()
 	endif
 
 	let record_in = substitute(line_list[1], ',' , '.', 'g') 
@@ -440,7 +440,7 @@ function! tsv_edl#ipc_continous_play()
 				if filename !=# g:ipc_loaded_media_name
 					echon "[mpv ipc] different media, load new. "
 					call tsv_edl#ipc_quit()
-					call tsv_edl#ipc_load_media(v:false)
+					call tsv_edl#ipc_init_and_load_media(v:false)
 				endif
 
 				let record_in = substitute(line_list[1], ',' , '.', 'g') 
