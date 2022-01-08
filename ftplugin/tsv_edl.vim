@@ -44,7 +44,20 @@ nmap <silent> <delete> :if getline('.') =~# '^EDL' \| s/^EDL/xxx/ \| else \| s/^
 "====================== 
 
 " start from cursor, stop at the end
-nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
+
+func! DoTab()
+	if (getline(".")  =~# "^EDL\\|^---\\|^xxx")
+		if g:ipc_media_ready
+			call tsv_edl#ipc_play_current_range()
+		else
+			call tsv_edl#play_current_range()
+		endif
+	else 
+		normal! za
+	endif
+endfunc
+
+nnoremap <silent> <tab> :call DoTab()<CR>
 
 " start from head of line, stop at the end
 nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>

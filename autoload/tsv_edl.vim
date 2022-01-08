@@ -222,7 +222,7 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	nmap <silent> <Right> l:call tsv_edl#ipc_seek()<CR>
 	nmap <silent> s :call tsv_edl#ipc_seek()<CR>
 	nmap <silent> S n:call tsv_edl#ipc_seek()<CR>
-	nmap <silent> <tab> :call tsv_edl#ipc_play_current_range()<CR>
+	"nmap <silent> <tab> :call tsv_edl#ipc_play_current_range()<CR>
 	nmap <silent> <S-tab> g0:call tsv_edl#ipc_play_current_range()<CR>
 	nmap <silent> \s :call tsv_edl#ipc_sync_playhead()<CR>
 	nmap <silent> \S :call tsv_edl#ipc_sync_playhead(v:true)<CR>
@@ -298,7 +298,7 @@ function! tsv_edl#ipc_quit()
 	unmap <Right>
 	unmap s
 	unmap \s
-	nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
+	"nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
 	nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
 
 	unmap <cr>
@@ -327,12 +327,15 @@ function! tsv_edl#ipc_toggle_play(always_play=v:false)
 
 endfunction
 
+function! tsv_edl#test()
+endfunction
+
 function! tsv_edl#ipc_play_current_range()
 	"mapped to tab key
 	"for now: simply seek() and play()
 	
 	if ! (getline(".")  =~# "^EDL\\|^---\\|^xxx")
-		call cursor(search('^EDL', 'ncW'), 0)
+		call search("^EDL\\|^---\\|^xxx")
 	endif
 
 	call tsv_edl#ipc_seek()
