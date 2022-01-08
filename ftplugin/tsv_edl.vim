@@ -130,7 +130,7 @@ nnoremap <silent> g8 0k2f,l
 nnoremap <silent> g0 02f\|2l
 
 " append a gap for 5 secs below current line.
-nnoremap <silent> go oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
+nnoremap <silent> gO oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
 
 nmap <silent> \| :call tsv_edl#break_line()<CR>
 nmap <silent> J :call tsv_edl#join_with_next_line()<CR>

@@ -233,6 +233,9 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 	"nmap <silent> <S-tab> g0:call tsv_edl#ipc_play_current_range()<CR>
 	nmap <silent> S :call tsv_edl#ipc_sync_playhead()<CR>
 	nmap <silent> \S :call tsv_edl#ipc_sync_playhead(v:true)<CR>
+	nmap <silent> gi :call tsv_edl#write_record_in()<CR>
+	nmap <silent> go :call tsv_edl#write_record_out()<CR>
+
 	if g:cherry_pick_mode_entered
 		echon "already in cherry_pick_mode, do not map Enter to seek"
 	else
@@ -308,6 +311,8 @@ function! tsv_edl#ipc_quit()
 	unmap s
 	unmap S
 	unmap \S
+	unmap gi
+	unmap go
 	"nnoremap <silent> <tab> :call tsv_edl#play_current_range()<CR>
 	"nnoremap <silent> <S-tab> 02f\|2l:call tsv_edl#play_current_range()<CR>
 
@@ -648,4 +653,24 @@ function! tsv_edl#try_open_fold()
 		"no fold here
 		"do nothing
 	endtry
+endfunction
+
+function! tsv_edl#write_record_in()
+	set conceallevel=0
+	if len(getline(".")) != 0
+		normal! o
+	endif
+	call setline(".", "EDL\t" )
+	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	let rec_in = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
+	call setline('.', getline('.') . rec_in . "\t")
+	call cursor(0,col('$'))
+endfunction
+
+function! tsv_edl#write_record_out()
+	set conceallevel=0
+	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	let rec_out = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
+	call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
+	startinsert!
 endfunction

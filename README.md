@@ -19,7 +19,7 @@
 | g0           | go to the start of subtitle                                        |
 | g8           | go to `record_out` timecode in prev line                           |
 | g9           | go to `record_in` timecode                                         |
-| go           | append a gap for 5 secs below current line                         |
+| gO           | append a gap for 5 secs below current line                         |
 | \ c          | toggle conceallevel=0, 1                                           |
 
 ### EDITORIAL DECISION
@@ -51,6 +51,8 @@
 | \ S         | backwards of sync playhead                                                     |
 | ⇥           | seek to cursor, [mpv ipc] alway play. if in comment region, jump to next 'EDL' |
 | ⇧⇥          | seek to line head, then ⇥                                                      |
+| gi          | [mpv ipc] get current timecode, write as record_in                             |
+| go          | [mpv ipc] get current timecode, write as record_out, and write clipname        |
 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
 
@@ -183,6 +185,17 @@ tips: you may `s/，/, /g`, to make Chinese lines wrap. Otherwise ,`mpv` treat t
 vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
 ```
 
+
+## mark in/out style
+
+```
+EDL     00:24:00,000    00:30:00,000    | clipname |   .......
+```
+
+For example, use ←/→ on the dots, to seek by 1 minute. 
+You can draw a progress bar on the fly. Isn't that cool, huh?
+
+Then `gi`, `go`.
 
 ## Conceal: Hide the first 4 columns
 
