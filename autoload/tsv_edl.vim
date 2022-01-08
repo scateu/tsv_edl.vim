@@ -672,5 +672,12 @@ function! tsv_edl#write_record_out()
 	let playback_time=trim(system('echo { \"command\": [\"get_property\", \"playback-time\" ] } | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 	let rec_out = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
 	call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
-	startinsert!
+	"startinsert!
+	let _pattern = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t"
+	if (getline(".")  =~# _pattern) " has a record_in
+		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
+		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
+		
+		call setline('.', getline('.') . line_duration . 'sec')
+	endif
 endfunction
