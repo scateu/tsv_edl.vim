@@ -251,8 +251,11 @@ function! tsv_edl#ipc_load_media(pause = v:true)
 
 	let filename = trim(trim(line_list[3],'|'))
 
-	let start_tc = string(tsv_edl#timecode_to_secs( substitute(line_list[1], ',' , '.', 'g')))
+	let start_tc_in_HHMMSSMS = substitute(line_list[1], ',' , '.', 'g')
+	let start_tc = string(tsv_edl#timecode_to_secs(start_tc_in_HHMMSSMS))
 
+	let g:ipc_timecode = start_tc_in_HHMMSSMS 
+	
 	let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc 
 	if a:pause
 		let command = command . ' --pause' 
