@@ -606,7 +606,7 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 	" then search for \tHH:
 	let _target = '\t' . playback_time_in_timecode[:2]
 	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
-	echo "ipc_sync_playhead not found"
+	echon "ipc_sync_playhead not found"
 
 endfunction
 
