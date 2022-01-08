@@ -54,7 +54,15 @@
 | gi          | [mpv ipc] get current timecode, write as record_in                             |
 | go          | [mpv ipc] get current timecode, write as record_out, and write clipname        |
 
+### Orgmode/Markdown Folding
+
+| Key | Function                                                               |
+|-----|------------------------------------------------------------------------|
+| ⇥   | When not on a EDL/---/xxx line. do `za` on `## Header` or `* Org head` |
+| ⇧⇥  | cycle foldlevel=0,1,2                                                  |
+
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
+### Details 
 
 On media files tab, 
 
@@ -102,13 +110,6 @@ Press `g9` will:
 </details>
 
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
-
-### Orgmode/Markdown Folding
-
-| Key | Function                                                               |
-|-----|------------------------------------------------------------------------|
-| ⇥   | When not on a EDL/---/xxx line. do `za` on `## Header` or `* Org head` |
-| ⇧⇥  | cycle foldlevel=0,1,2                                                  |
 
 ## Overview
 
