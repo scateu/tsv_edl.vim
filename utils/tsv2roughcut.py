@@ -196,4 +196,4 @@ if __name__ == "__main__":
                 with open(srt_filename, "w") as output_file:
                     output_file.write('\n'.join(srt_queue))
 
-            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c:v copy %s"%(tempdirname, roughcut_filename), shell=True)
