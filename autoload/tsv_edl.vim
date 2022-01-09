@@ -83,10 +83,10 @@ function! tsv_edl#play_current_range(stop_at_end = v:true)
 endfunction
 
 function! tsv_edl#continous_play()
-	call cursor(0,0) " current line, first column
+	call cursor(0,1) " current line, first column
 	let next_line_number = search('^EDL', 'ncW')
 	while next_line_number > 0
-		call cursor(next_line_number, 0) " next line, first column
+		call cursor(next_line_number, 1) " next line, first column
 		redraw!
 		call tsv_edl#play_current_range() 
 		let next_line_number = search('^EDL', 'nW')
@@ -246,7 +246,7 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 
 	" go to a valid line
 	if (getline(".")  !~# g:edl_line_pattern)
-		call cursor(0,0) " current line, first column
+		call cursor(0,1) " current line, first column
 		call search(g:edl_line_pattern, 'cW')
 		call tsv_edl#try_open_fold()
 	endif
@@ -403,7 +403,7 @@ function! tsv_edl#ipc_seek()
 	let _go_back_line_number = 0
 	if (getline(".")  !~# g:edl_line_pattern)
 		let _go_back_line_number = line('.')
-		call cursor(0,0) " current line, first column
+		call cursor(0,1) " current line, first column
 		call search(g:edl_line_pattern, 'cW')
 		" imagine, on folded 'Chapter' tree
 		" press [Enter]
@@ -456,18 +456,18 @@ function! tsv_edl#ipc_seek()
 	if _go_back_line_number != 0
 		"cursor being move to next valid line without being noticed. 
 		"go back now.
-		call cursor(_go_back_line_number,0)
+		call cursor(_go_back_line_number,1)
 	endif
 endfunction
 
 function! tsv_edl#ipc_continous_play()
-	call cursor(0,0) " current line, first column
+	call cursor(0,1) " current line, first column
 	let next_line_number = search('^EDL', 'ncW')
 
 	call tsv_edl#ipc_always_play()
 
 	while next_line_number > 0
-		call cursor(next_line_number, 0) " next line, first column
+		call cursor(next_line_number, 1) " next line, first column
 		redraw!
 		let line=getline('.')
 		if len(line) > 0
@@ -601,7 +601,7 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
 	echon "[mpv ipc] sync playhead to nearest " . g:ipc_timecode . ' '
 
-	call cursor(0,0) " current line, first column
+	call cursor(0,1) " current line, first column
 
 	" first search for \tHH:MM:SS,
 	let _target = '\t' . playback_time_in_timecode[:7] .','
@@ -666,7 +666,7 @@ function! s:line_clipname_match_mpc_filename(line_number)
 		if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
 			let filename = trim(trim(line_list[3],'|'))
 			if filename ==# g:ipc_loaded_media_name
-				"call cursor(_s, 0) " matched timecode line, first column
+				"call cursor(_s, 1) " matched timecode line, first column
 				return v:true
 			endif
 		endif
@@ -682,7 +682,7 @@ function! s:search_target_and_go_to_that_line(_target, backwards=v:false)
 	endif
 	if _s > 0
 		if s:line_clipname_match_mpc_filename(_s)
-			call cursor(_s, 0) " matched timecode line, first column
+			call cursor(_s, 1) " matched timecode line, first column
 			return v:true
 		endif
 	endif
@@ -700,28 +700,44 @@ endfunction
 
 function! tsv_edl#write_record_in()
 	set conceallevel=0
-	if len(getline(".")) != 0
-		normal! o
-	endif
-	call setline(".", "EDL\t" )
 	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_in = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
-	call setline('.', getline('.') . rec_in . "\t")
-	call cursor(0,col('$'))
+	if (getline(".")  !~# g:edl_line_pattern) "not a valid edl/---/xxx line
+		"if len(getline(".")) != 0
+		"	normal! o
+		"endif
+		call cursor(0,1)
+		call setline(".", "EDL\t" . rec_in . "\t" . getline('.'))  "insert at head
+		call cursor(0,col('$'))
+	else  "overwrite
+		call cursor(0,1) "this line head
+		exec "normal! wcW" . rec_in
+		echon "Overwrite record_in ... "
+	endif
+
 endfunction
 
 function! tsv_edl#write_record_out()
 	set conceallevel=0
 	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_out = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
-	call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
+
 	"startinsert!
-	let _pattern = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t"
-	if (getline(".")  =~# _pattern) " has a record_in
+	let pattern_1 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t$"
+	let pattern_2 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
+	if (getline(".")  =~# pattern_1) " has a record_in
+		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
-		
 		call setline('.', getline('.') . line_duration . 'sec')
+	elseif (getline(".") =~# pattern_2) "full line overwrite
+		echon "Overwrite record_out ... "
+		exec "normal! 0WWcW" . rec_out
+		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
+		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
+		call setline('.', getline('.') . ';' . line_duration . 'sec')
+	else
+		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 	endif
 endfunction
 

@@ -38,23 +38,23 @@
 
 ### MPV IPC CONTROL MODE
 
-| Key         | Function                                                                       |
-|-------------|--------------------------------------------------------------------------------|
-| \ \         | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4`             |
-|             | and enter IPC Control mode. `s ← → ↑ ↓ ⎵ ⏎` is redefined, and restored at quit |
-| \ \ (again) | send quit signal via ipc socket to mpc                                         |
-| ⎵           | [mpv ipc] toggle play                                                          |
-| ←, →        | move, then [mpv ipc] seek to cursor                                            |
-| ↑, ↓        | move, then [mpv ipc] seek; reload when clip changed                            |
-| \ ⎵         | [mpv ipc] play from this line till EOF                                         |
-| ⏎, s        | [mpv ipc] seek to cursor                                                       |
-| ns          | [mpv ipc] search next (`n`), and seek                                          |
-| S           | [mpv ipc] sync playhead: seek vim cursor to nearest of mpv timecode, wrap end  |
-| \ S         | backwards of sync playhead                                                     |
-| ⇥           | seek to cursor, [mpv ipc] alway play. if in comment region, jump to next 'EDL' |
-| ⇧⇥          | seek to line head, then ⇥                                                      |
-| gi          | [mpv ipc] get current timecode, write as record_in                             |
-| go          | [mpv ipc] get current timecode, write as record_out, and write clipname        |
+| Key         | Function                                                                             |
+|-------------|--------------------------------------------------------------------------------------|
+| \ \         | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4`                   |
+|             | and enter IPC Control mode. `s ← → ↑ ↓ ⎵ ⏎` is redefined, and restored at quit       |
+| \ \ (again) | send quit signal via ipc socket to mpc                                               |
+| ⎵           | [mpv ipc] toggle play                                                                |
+| ←, →        | move, then [mpv ipc] seek to cursor                                                  |
+| ↑, ↓        | move, then [mpv ipc] seek; reload when clip changed                                  |
+| \ ⎵         | [mpv ipc] play from this line till EOF                                               |
+| ⏎, s        | [mpv ipc] seek to cursor                                                             |
+| ns          | [mpv ipc] search next (`n`), and seek                                                |
+| S           | [mpv ipc] sync playhead: seek vim cursor to nearest of mpv timecode, wrap end        |
+| \ S         | backwards of sync playhead                                                           |
+| ⇥           | seek to cursor, [mpv ipc] alway play. if in comment region, jump to next 'EDL'       |
+| ⇧⇥          | seek to line head, then ⇥                                                            |
+| gi          | [mpv ipc] get current timecode, write record_in. overwrite existing.                 |
+| go          | [mpv ipc] get current timecode, write record_outr write clipname. overwrite existing |
 
 ### Orgmode/Markdown Folding
 
