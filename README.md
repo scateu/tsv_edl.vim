@@ -177,6 +177,8 @@ cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME
 sed -i "" 's/_CLIPNAME_/some/' some.tsv
 ```
 
+*TIPS* for European subtitles: `for i in *.srt; do iconv -f CP1251 -t UTF-8 "$i" > converted/"$i";done`
+
 ## tsv to srt
 
 `tsv2srt` `tsv2srt_all`
