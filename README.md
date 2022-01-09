@@ -179,6 +179,8 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 
 *TIPS* for European subtitles: `for i in *.srt; do iconv -f CP1251 -t UTF-8 "$i" > converted/"$i";done`
 
+*TIPS* to count lines: `cat *.srt | dos2unix |grep .  |sed  -r '/^[0-9]+$/{N;d;}' | grep -v Downloaded |wc -l`
+
 ## tsv to srt
 
 `tsv2srt` `tsv2srt_all`
@@ -192,6 +194,12 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 ```
 
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
+
+## preview / IPC control
+
+*TIPS* tsv file can be place separatedly from media file. 1) You can do `ln -s` soft link. 2) You may change working directory inside `vim` by `:cd /Volumes/usbshare2-2/nas/TVSeries/Yes.Prime.Minister`
+
+Press `\\` twice to init mpv ipc control and bring up mpv. Will try best to reuse existing mpv ipc control channel `/tmp/mpvsocket`
 
 ## mark in/out style
 
