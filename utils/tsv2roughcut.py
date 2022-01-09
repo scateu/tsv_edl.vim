@@ -63,6 +63,7 @@ if __name__ == "__main__":
                     srt_queue.append("%d"%srt_counter)
                     srt_queue.append("%s --> %s"%(sec_to_srttime(srt_last_position), sec_to_srttime( round(srt_last_position + srt_duration,3) ) ) )
                     # FIXME: accumulatived error. may have something to do with varied FPS
+                    # FIXME: may utilize ffmpeg, treat srt as a stream as well.
                     srt_queue.append(line.strip().split('\t')[4].replace("\\N",'\n'))
                     srt_counter += 1
                 srt_last_position += srt_duration
