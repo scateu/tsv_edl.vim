@@ -64,6 +64,8 @@ if __name__ == "__main__":
                     srt_queue.append("%s --> %s"%(sec_to_srttime(srt_last_position), sec_to_srttime( round(srt_last_position + srt_duration,3) ) ) )
                     # FIXME: accumulatived error. may have something to do with varied FPS
                     # FIXME: may utilize ffmpeg, treat srt as a stream as well.
+                    # FIXME: ffmpeg -i input.mp4 -sub_charenc ISO-8859-1 -i input.srt -map 0:v -map 0:a -c copy -map 1 -c:s:0 mov_text output.mp4
+                    # FIXME: https://superuser.com/questions/1433644/ffmpeg-unable-to-recode-subtitle-event
                     srt_queue.append(line.strip().split('\t')[4].replace("\\N",'\n'))
                     srt_counter += 1
                 srt_last_position += srt_duration
