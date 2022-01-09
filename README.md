@@ -108,7 +108,6 @@ Press `g9` will:
 
 </details>
 
-*NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
 ## Overview
 
@@ -190,6 +189,7 @@ tips: you may `s/，/, /g`, to make Chinese lines wrap. Otherwise ,`mpv` treat t
 vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
 ```
 
+*NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
 ## mark in/out style
 
