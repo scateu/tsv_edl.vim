@@ -29,6 +29,9 @@ def testit(a,b):
         print(result)
 
 
+raw_queue = [['a','b','c'],['d','e','f']]
+answer = [['a','b','c'],['d','e','f']]
+testit(raw_queue,answer)
 
 raw_queue = [['a.mp4',"00:00:01.123", "00:01:03.345"], ['a.mp4', "00:01:03.345", "00:09:03.345"], ]
 answer = [['a.mp4', '00:00:01.123', '00:09:03.345']]
