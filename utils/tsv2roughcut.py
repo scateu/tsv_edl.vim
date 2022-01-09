@@ -28,6 +28,27 @@ def sec_to_srttime(sec):
     MS = (sec - int(sec))*1000.0
     return "%02d:%02d:%02d,%03d"%(HH,MM,SS,MS)
 
+def stitch_edl_queue(raw_queue):
+    stitched_output = [] 
+    i = 0
+    while i < len(raw_queue):
+        if (i == len(raw_queue) - 1): #last line
+            stitched_output.append(raw_queue[i])
+            i += 1
+        else:
+            clip, t1, t2 = raw_queue[i]
+            j = i + 1
+            clip_next, t1_next, t2_next = raw_queue[j]
+            _item = [clip, t1, t2]
+            while (clip == clip_next and t2 == t1_next and j < len(raw_queue) - 1):
+                _item = [clip, t1, t2_next]
+                clip, t1, t2 = _item
+                j += 1
+                clip_next, t1_next, t2_next = raw_queue[j]
+            stitched_output.append(_item)
+            i = j
+    return stitched_output
+
 output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
 
 srt_queue = []
@@ -97,6 +118,10 @@ if __name__ == "__main__":
     if len(output_queue) > 99999:
         eprint("Too much. That's too much.")
         sys.exit(-1)
+    # stitch adjecent clips in output_queue
+    eprint(output_queue)
+    output_queue = stitch_edl_queue(output_queue)
+    eprint(output_queue)
 
     if is_pure_audio_project: #Audio only
         with tempfile.TemporaryDirectory() as tempdirname:
