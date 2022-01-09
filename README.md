@@ -62,6 +62,7 @@
 |-----|------------------------------------------------------------------------|
 | ⇥   | When not on a EDL/---/xxx line. do `za` on `## Header` or `* Org head` |
 | ⇧⇥  | cycle foldlevel=0,1,2                                                  |
+|     | if on a EDL line, you have to use `za` `zm` `zr` `zo` `zO` `zM` `zR`   |
 
 ### Details 
 <details markdown="1"><summary>Click here to see full description of those keys</summary>
