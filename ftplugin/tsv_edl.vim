@@ -176,8 +176,7 @@ set guioptions=aiAe "for macVim
 
 set wrap linebreak "to avoid words broken into characters
 set so=10 "scrolloff , center
-
-
+set noexpandtab
 
 " Indent
 " borrowed from https://stackoverflow.com/questions/3828606/vim-markdown-folding
