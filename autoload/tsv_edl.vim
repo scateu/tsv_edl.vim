@@ -735,7 +735,7 @@ function! tsv_edl#write_record_out()
 		exec "normal! 0WWcW" . rec_out
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
-		call setline('.', getline('.') . ';' . line_duration . 'sec')
+		call setline('.', getline('.') . ';' . line_duration . 's')
 	else
 		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 	endif
