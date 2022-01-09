@@ -307,7 +307,7 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 
 	let g:ipc_timecode = start_tc_in_HHMMSSMS 
 	
-	let command = 'mpv --no-terminal --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc 
+	let command = 'mpv --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc 
 	if a:pause
 		let command = command . ' --pause' 
 		let g:ipc_pause = v:true
