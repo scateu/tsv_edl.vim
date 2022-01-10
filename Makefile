@@ -50,7 +50,7 @@ install-jq-mac: jq_macOS.bin
 
 install-socat-mac: socat_macOS.bin
 	chmod +x socat_macOS.bin
-	sudo cp socat_macOS.bin /usr/local/socat
+	sudo cp socat_macOS.bin /usr/local/bin/socat
 
 jq_macOS.bin:
 	curl -JL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64 -o jq_macOS.bin
