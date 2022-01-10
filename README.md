@@ -352,6 +352,7 @@ geometry=100%
  - [X] mpv --input-ipc-server 
  - [X] bug: macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
  - [X] `set fdm=expr` is very slow. need to switch to `manual` or add a cache
+ - [ ] media path support. or a very fancy `ln -s` helper?
 
 
 ## DEMO
