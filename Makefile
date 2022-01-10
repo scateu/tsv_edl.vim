@@ -56,7 +56,7 @@ jq_macOS.bin:
 	curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64 -o jq_macOS.bin
 
 ffmpeg-mac.zip:
-	curl https://evermeet.cx/ffmpeg/getrelease/zip -o $@
+	curl -JL https://evermeet.cx/ffmpeg/getrelease/zip -o $@
 
 
 mpv-latest.tar.gz:
