@@ -153,28 +153,41 @@ Press `g9` will:
 ![screenshot](screenshots/f.jpg)
 ![screenshot](screenshots/g.jpg)
 
+
 ## Install
 
 ```bash
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
-
-#sudo apt install mpv ffmpeg jq socat
-brew install mpv ffmpeg  
+make install-utils 
+brew install mpv ffmpeg  #sudo apt install mpv ffmpeg jq socat
 brew install jq socat   #for mpv IPC support
-
-(sudo -E) make install-utils 
 ```
 
 put the following lines to `~/.vimrc`
 
 ```vim
 set fencs=utf-8,gbk
-filetype plugin indent on
+filetype plugin indent on "especially this line.
 syntax on
 set laststatus=2 
 set number
 set anti "macOS anti alias
+```
+
+### Install on macOS without homebrew
+
+```bash
+sudo mkdir /usr/local/bin
+echo 'PATH=$PATH:/usr/local/bin' >> .zshrc
+echo 'PATH=$PATH:/usr/local/bin' >> .bashrc
+make install-mac-no-homebrew
+mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
+git clone https://github.com/scateu/tsv_edl.vim
+git clone https://github.com/vim-airline/vim-airline
+cd tsv_edl.vim; make install-utils
+echo 'filetype plugin indent on' >> ~/.vimrc
+echo 'set laststatus=2' >> ~/.vimrc
 ```
 
 ## .srt to .tsv
