@@ -351,7 +351,7 @@ geometry=100%
  - [X] tsv2srt -reflow: reassign the timestamp of each srt block. generate a srt for the rendered region
  - [X] mpv --input-ipc-server 
  - [X] bug: macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
- - [ ] `set fdm=expr` is very slow. need to switch to `manual` or add a cache
+ - [X] `set fdm=expr` is very slow. need to switch to `manual` or add a cache
 
 
 ## DEMO
