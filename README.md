@@ -181,9 +181,9 @@ colorscheme molokai-dark
 ### Install on macOS without homebrew
 
 ```bash
-sudo mkdir /usr/local/bin
-echo 'PATH=$PATH:/usr/local/bin' >> .zshrc
-echo 'PATH=$PATH:/usr/local/bin' >> .bashrc
+#sudo mkdir /usr/local/bin
+#echo 'PATH=$PATH:/usr/local/bin' >> .zshrc
+#echo 'PATH=$PATH:/usr/local/bin' >> .bashrc
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
 git clone https://github.com/vim-airline/vim-airline
