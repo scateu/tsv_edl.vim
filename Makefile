@@ -34,6 +34,8 @@ uninstall-utils:
 install-depends-on-mac-no-homebrew: install-ffmpeg-mac install-jq-mac install-mpv-mac install-socat-mac
 	rm -i ffmpeg-mac.zip mpv-latest.tar.gz socat_macOS.bin jq_macOS.bin
 
+fetch-mac: ffmpeg-mac.zip mpv-latest.tar.gz jq_macOS.bin socat_macOS.bin
+
 install-ffmpeg-mac: ffmpeg-mac.zip
 	unzip ffmpeg-mac.zip
 	chmod +x ffmpeg

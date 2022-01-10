@@ -199,6 +199,8 @@ make install-depends-on-mac-no-homebrew
 #test
 srt2tsv_all
 vim -p example.tsv example_never.tsv
+
+# you may want macvim for GUI https://github.com/macvim-dev/macvim/releases/tag/snapshot-172
 ```
 
 ## .srt to .tsv
