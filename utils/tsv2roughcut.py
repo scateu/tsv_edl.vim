@@ -29,26 +29,28 @@ def sec_to_srttime(sec):
     return "%02d:%02d:%02d,%03d"%(HH,MM,SS,MS)
 
 def stitch_edl_queue(raw_queue):
-    raw_queue.append(['','','']) # padding
+    length = len(raw_queue)
     stitched_output = [] 
     i = 0
-    while i < len(raw_queue):
-        if (i == len(raw_queue) - 1): #last line
+    while i < length:
+        clip, t1, t2 = raw_queue[i]
+        j = i + 1
+        if (i == length - 1): #last line
             stitched_output.append(raw_queue[i])
-            i += 1
-        else:
-            clip, t1, t2 = raw_queue[i]
-            j = i + 1
+            break
+        if (j == length): break
+        clip_next, t1_next, t2_next = raw_queue[j]
+        _item = [clip, t1, t2]
+        while (clip == clip_next and t2 == t1_next):
+            _item = [clip, t1, t2_next] #update pending output
+            clip, t1, t2 = _item #update item on the left to be examined
+            j += 1
+            if (j == length): #out of index
+                break
             clip_next, t1_next, t2_next = raw_queue[j]
-            _item = [clip, t1, t2]
-            while (clip == clip_next and t2 == t1_next and j < len(raw_queue) - 1):
-                _item = [clip, t1, t2_next]
-                clip, t1, t2 = _item
-                j += 1
-                clip_next, t1_next, t2_next = raw_queue[j]
-            stitched_output.append(_item)
-            i = j
-    return stitched_output[:-1]
+        stitched_output.append(_item)
+        i = j
+    return stitched_output
 
 output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
 
