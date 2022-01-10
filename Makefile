@@ -31,7 +31,7 @@ install-utils:
 uninstall-utils:
 	cd /usr/local/bin; sudo rm -i audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow
 
-install-mac-no-homebrew: install-ffmpeg-mac install-jq-mac install-mpv-mac install-socat-mac
+install-depends-on-mac-no-homebrew: install-ffmpeg-mac install-jq-mac install-mpv-mac install-socat-mac
 	rm -i ffmpeg-mac.zip mpv-latest.tar.gz socat_macOS.bin jq_macOS.bin
 
 install-ffmpeg-mac: ffmpeg-mac.zip
@@ -53,14 +53,14 @@ install-socat-mac: socat_macOS.bin
 	sudo cp socat_macOS.bin /usr/local/socat
 
 jq_macOS.bin:
-	wget https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64 -O jq_macOS.bin
+	curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64 -o jq_macOS.bin
 
 ffmpeg-mac.zip:
-	wget https://evermeet.cx/ffmpeg/getrelease/zip -O $@
+	curl https://evermeet.cx/ffmpeg/getrelease/zip -o $@
 
 
 mpv-latest.tar.gz:
-	wget https://laboratory.stolendata.net/~djinn/mpv_osx/mpv-latest.tar.gz
+	curl https://laboratory.stolendata.net/~djinn/mpv_osx/mpv-latest.tar.gz
 
 socat_macOS.bin:
-	wget https://github.com/3ndG4me/socat/releases/download/v1.7.3.3/socat_macOS.bin
+	curl https://github.com/3ndG4me/socat/releases/download/v1.7.3.3/socat_macOS.bin

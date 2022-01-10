@@ -181,13 +181,13 @@ set anti "macOS anti alias
 sudo mkdir /usr/local/bin
 echo 'PATH=$PATH:/usr/local/bin' >> .zshrc
 echo 'PATH=$PATH:/usr/local/bin' >> .bashrc
-make install-mac-no-homebrew
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
 git clone https://github.com/vim-airline/vim-airline
 cd tsv_edl.vim; make install-utils
 echo 'filetype plugin indent on' >> ~/.vimrc
 echo 'set laststatus=2' >> ~/.vimrc
+make install-depends-on-mac-no-homebrew
 ```
 
 ## .srt to .tsv
