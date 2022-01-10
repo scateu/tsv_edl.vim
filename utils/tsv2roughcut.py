@@ -38,7 +38,6 @@ def stitch_edl_queue(raw_queue):
         if (i == length - 1): #last line
             stitched_output.append(raw_queue[i])
             break
-        if (j == length): break
         clip_next, t1_next, t2_next = raw_queue[j]
         _item = [clip, t1, t2]
         while (clip == clip_next and t2 == t1_next):
