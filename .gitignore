@@ -5,3 +5,7 @@ tags
 .DS_Store
 ffmpeg*
 ffplay*
+jq_macOS.bin
+ffmpeg-mac.zip
+mpv-latest.tar.gz
+socat_macOS.bin
