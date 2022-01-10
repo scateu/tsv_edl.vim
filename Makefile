@@ -53,14 +53,14 @@ install-socat-mac: socat_macOS.bin
 	sudo cp socat_macOS.bin /usr/local/socat
 
 jq_macOS.bin:
-	curl https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64 -o jq_macOS.bin
+	curl -JL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-osx-amd64 -o jq_macOS.bin
 
 ffmpeg-mac.zip:
 	curl -JL https://evermeet.cx/ffmpeg/getrelease/zip -o $@
 
 
 mpv-latest.tar.gz:
-	curl https://laboratory.stolendata.net/~djinn/mpv_osx/mpv-latest.tar.gz
+	curl -JL https://laboratory.stolendata.net/~djinn/mpv_osx/mpv-latest.tar.gz -o $@
 
 socat_macOS.bin:
-	curl https://github.com/3ndG4me/socat/releases/download/v1.7.3.3/socat_macOS.bin
+	curl -JL https://github.com/3ndG4me/socat/releases/download/v1.7.3.3/socat_macOS.bin -o $@
