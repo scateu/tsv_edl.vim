@@ -159,6 +159,7 @@ Press `g9` will:
 ```bash
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
+#git clone https://github.com/vim-airline/vim-airline
 make install-utils 
 brew install mpv ffmpeg  #sudo apt install mpv ffmpeg jq socat
 brew install jq socat   #for mpv IPC support
@@ -173,6 +174,7 @@ syntax on
 set laststatus=2 
 set number
 set anti "macOS anti alias
+let g:airline#extensions#tabline#enabled = 1
 ```
 
 ### Install on macOS without homebrew
@@ -186,7 +188,9 @@ git clone https://github.com/scateu/tsv_edl.vim
 git clone https://github.com/vim-airline/vim-airline
 cd tsv_edl.vim; make install-utils
 echo 'filetype plugin indent on' >> ~/.vimrc
+echo 'syntax on' >> ~/.vimrc
 echo 'set laststatus=2' >> ~/.vimrc
+echo 'let g:airline#extensions#tabline#enabled = 1' >> ~/.vimrc
 make install-depends-on-mac-no-homebrew
 ```
 
