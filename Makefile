@@ -44,6 +44,7 @@ install-ffmpeg-mac: ffmpeg-mac.zip
 install-mpv-mac: mpv-latest.tar.gz
 	tar zxvf mpv-latest.tar.gz
 	mv mpv.app /Applications/
+	rm -r documentation/
 	sudo ln -s /Applications/mpv.app/Contents/MacOS/mpv /usr/local/bin/mpv
 
 install-jq-mac: jq_macOS.bin
