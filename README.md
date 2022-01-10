@@ -166,6 +166,17 @@ brew install jq socat   #for mpv IPC support
 (sudo -E) make install-utils 
 ```
 
+put the following lines to `~/.vimrc`
+
+```vim
+set fencs=utf-8,gbk
+filetype plugin indent on
+syntax on
+set laststatus=2 
+set number
+set anti "macOS anti alias
+```
+
 ## .srt to .tsv
 
 ```bash
