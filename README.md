@@ -168,13 +168,14 @@ brew install jq socat   #for mpv IPC support
 put the following lines to `~/.vimrc`
 
 ```vim
-set fencs=utf-8,gbk
+"set fencs=utf-8,gbk
 filetype plugin indent on "especially this line.
 syntax on
 set laststatus=2 
 set number
 set anti "macOS anti alias
 let g:airline#extensions#tabline#enabled = 1
+colorscheme molokai-dark
 ```
 
 ### Install on macOS without homebrew
@@ -186,12 +187,18 @@ echo 'PATH=$PATH:/usr/local/bin' >> .bashrc
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
 git clone https://github.com/vim-airline/vim-airline
+git clone https://github.com/pR0Ps/molokai-dark
 cd tsv_edl.vim; make install-utils
 echo 'filetype plugin indent on' >> ~/.vimrc
 echo 'syntax on' >> ~/.vimrc
 echo 'set laststatus=2' >> ~/.vimrc
 echo 'let g:airline#extensions#tabline#enabled = 1' >> ~/.vimrc
+echo 'colorscheme molokai-dark' >> ~/.vimrc
 make install-depends-on-mac-no-homebrew
+
+#test
+srt2tsv_all
+vim -p example.tsv example_never.tsv
 ```
 
 ## .srt to .tsv
