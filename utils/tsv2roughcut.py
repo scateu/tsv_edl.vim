@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import glob
-import os.path
+import os
 import subprocess
 import tempfile
 
@@ -58,9 +58,10 @@ srt_queue = []
 if __name__ == "__main__":
     srt_counter = 0
     srt_last_position = 0.0 #in sec
-    while True:
+    while True: # read EDL lines
         line = sys.stdin.readline()
         if not line:
+            sys.stdin.close()
             break
 
         if line.startswith('EDL'):
@@ -120,6 +121,7 @@ if __name__ == "__main__":
     if len(output_queue) > 99999:
         eprint("Too much. That's too much.")
         sys.exit(-1)
+
     # stitch adjecent clips in output_queue
     before_stitch_lines = len(output_queue)
     output_queue = stitch_edl_queue(output_queue)
@@ -139,15 +141,16 @@ if __name__ == "__main__":
                 for i in range(len(output_queue)):
                     output_file.write("file '%s/%05d.mp3'\n"%(tempdirname,i))
 
-            roughcut_filename = "roughcut.mp3"
+            roughcut_ext_name = ".mp3" # or ".mkv"
+            roughcut_filename = "roughcut" + roughcut_ext_name
             srt_filename = "roughcut.srt"
-            if os.path.exists("roughcut.mp3"):
+            if os.path.exists(roughcut_filename):
                 rename_counter = 1
-                roughcut_filename = "roughcut_1.mp3"
+                roughcut_filename = "roughcut_1" + roughcut_ext_name
                 srt_filename = "roughcut_1.srt"
                 while os.path.exists(roughcut_filename):
                     rename_counter += 1
-                    roughcut_filename = "roughcut_%d.mp3"%rename_counter
+                    roughcut_filename = "roughcut_%d"%rename_counter + roughcut_ext_name
                     srt_filename = "roughcut_%d.srt"%rename_counter
             eprint("[ffmpeg concat] writing ",roughcut_filename)
 
@@ -206,16 +209,16 @@ if __name__ == "__main__":
                 for i in range(len(output_queue)):
                     output_file.write("file '%s/%05d.ts'\n"%(tempdirname,i))
 
-            roughcut_output_type = ".mp4" # or ".mkv"
-            roughcut_filename = "roughcut" + roughcut_output_type
+            roughcut_ext_name = ".mp4" # or ".mkv"
+            roughcut_filename = "roughcut" + roughcut_ext_name
             srt_filename = "roughcut.srt"
-            if os.path.exists("roughcut"+roughcut_output_type):
+            if os.path.exists("roughcut"+roughcut_ext_name):
                 rename_counter = 1
-                roughcut_filename = "roughcut_1"+roughcut_output_type
+                roughcut_filename = "roughcut_1"+roughcut_ext_name
                 srt_filename = "roughcut_1.srt"
                 while os.path.exists(roughcut_filename):
                     rename_counter += 1
-                    roughcut_filename = "roughcut_%d"%rename_counter + roughcut_output_type
+                    roughcut_filename = "roughcut_%d"%rename_counter + roughcut_ext_name
                     srt_filename = "roughcut_%d.srt"%rename_counter
             eprint("[ffmpeg concat] writing",roughcut_filename)
 
@@ -225,3 +228,18 @@ if __name__ == "__main__":
                     output_file.write('\n'.join(srt_queue))
 
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c:v copy %s"%(tempdirname, roughcut_filename), shell=True)
+
+    if len(sys.argv) > 1: #wait for user input then rename
+        eprint(sys.argv)
+        if "--user-input-newname" in sys.argv:
+            sys.stdin = os.fdopen(1)
+            newname = input("[Input clipname to rename. Enter to ignore] ")
+            newname = newname.strip()
+            if len(newname) == 0:
+                sys.exit(0)
+        else:
+            newname = sys.argv[1]
+        eprint("Rename ", roughcut_filename, ' to ', newname + roughcut_ext_name)
+        os.rename(roughcut_filename, newname + roughcut_ext_name)
+        eprint("Rename ", srt_filename, ' to ', newname + '.srt')
+        os.rename(srt_filename, newname + '.srt')
