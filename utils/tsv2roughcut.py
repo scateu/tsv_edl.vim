@@ -58,6 +58,13 @@ srt_queue = []
 if __name__ == "__main__":
     srt_counter = 0
     srt_last_position = 0.0 #in sec
+
+    #$ printf("\e[?1004l") 
+    # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+    # otherwise, annoying ^[[O ^[[I will appear when terminal focus lost or get again.
+    print("\033[?1004l", end="")
+    sys.stdout.flush()
+
     while True: # read EDL lines
         line = sys.stdin.readline()
         if not line:
@@ -238,11 +245,6 @@ if __name__ == "__main__":
     if len(sys.argv) > 1: #wait for user input then rename
         if "--user-input-newname" in sys.argv:
             sys.stdin = os.fdopen(1)
-
-            #$ printf("\e[?1004l") 
-            # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
-            # otherwise, annoying ^[[O ^[[I will appear when terminal focus lost or get again.
-            print("\033[?1004l", end="")
 
             newname = input("Input CLIPNAME to rename. ENTER to ignore > ")
             newname = newname.strip()
