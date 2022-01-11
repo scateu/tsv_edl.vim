@@ -126,16 +126,19 @@ if __name__ == "__main__":
     before_stitch_lines = len(output_queue)
     output_queue = stitch_edl_queue(output_queue)
     after_stitch_lines = len(output_queue)
-    eprint("Stitch: %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
+    eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
 
     if is_pure_audio_project: #Audio only
         with tempfile.TemporaryDirectory() as tempdirname:
-            eprint("Open tempdir: ", tempdirname)
+            eprint("[tempdir] ", tempdirname)
             counter = 0
+            eprint("[ffmpeg] writing ", end="") 
             for f,r_in,r_out in output_queue:
-                eprint("[ffmpeg] writing %05d.mp3"%counter)
+                eprint("%05d.mp3 "%counter, end="")
+                sys.stderr.flush()
                 subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:a copy %s/%05d.mp3"%(f,r_in.replace(',','.'),r_out.replace(',','.'),tempdirname,counter), shell=True)
                 counter += 1
+            eprint("")
 
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for i in range(len(output_queue)):
@@ -164,8 +167,10 @@ if __name__ == "__main__":
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("Open tempdir: ", tempdirname)
             counter = 0
+            eprint("[ffmpeg] writing ", end="") 
             for f,r_in,r_out in output_queue:
-                eprint("[ffmpeg] writing %05d.ts"%counter)
+                eprint(" %05d.ts"%counter, end="")
+                sys.stderr.flush()
                 if 0: # it worked.
                     #FIXME detect if it's macOS. otherwise libx264
                     subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), tempdirname,counter), shell=True)
@@ -204,6 +209,7 @@ if __name__ == "__main__":
                 # NOTE -ss -to placed before -i, cannot be used with -c copy
                 # See https://trac.ffmpeg.org/wiki/Seeking
                 counter += 1
+            eprint("") # .ts segments written
 
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for i in range(len(output_queue)):
@@ -230,9 +236,14 @@ if __name__ == "__main__":
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c:v copy %s"%(tempdirname, roughcut_filename), shell=True)
 
     if len(sys.argv) > 1: #wait for user input then rename
-        eprint(sys.argv)
         if "--user-input-newname" in sys.argv:
             sys.stdin = os.fdopen(1)
+
+            #$ printf("\e[?1004l") 
+            # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
+            # otherwise, annoying ^[[O ^[[I will appear when terminal focus lost or get again.
+            print("\033[?1004l")
+
             newname = input("[Input clipname to rename. Enter to ignore] ")
             newname = newname.strip()
             if len(newname) == 0:
