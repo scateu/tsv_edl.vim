@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
     if is_pure_audio_project: #Audio only
         with tempfile.TemporaryDirectory() as tempdirname:
-            eprint("[tempdir] ", tempdirname)
+            eprint("[tempdir]", tempdirname)
             counter = 0
             eprint("[ffmpeg] writing ", end="") 
             for f,r_in,r_out in output_queue:
@@ -155,17 +155,17 @@ if __name__ == "__main__":
                     rename_counter += 1
                     roughcut_filename = "roughcut_%d"%rename_counter + roughcut_ext_name
                     srt_filename = "roughcut_%d.srt"%rename_counter
-            eprint("[ffmpeg concat] writing ",roughcut_filename)
+            eprint("[ffmpeg concat] writing",roughcut_filename)
 
             if GENERATE_SRT:
-                eprint("[srt] writing ",srt_filename)
+                eprint("[srt] writing",srt_filename)
                 with open(srt_filename, "w") as output_file:
                     output_file.write('\n'.join(srt_queue))
 
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
     else: # VIDEEEEO
         with tempfile.TemporaryDirectory() as tempdirname:
-            eprint("Open tempdir: ", tempdirname)
+            eprint("[tempdir]", tempdirname)
             counter = 0
             eprint("[ffmpeg] writing ", end="") 
             for f,r_in,r_out in output_queue:
@@ -242,15 +242,16 @@ if __name__ == "__main__":
             #$ printf("\e[?1004l") 
             # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
             # otherwise, annoying ^[[O ^[[I will appear when terminal focus lost or get again.
-            print("\033[?1004l")
+            print("\033[?1004l", end="")
 
-            newname = input("[Input clipname to rename. Enter to ignore] ")
+            newname = input("Input CLIPNAME to rename. ENTER to ignore > ")
             newname = newname.strip()
             if len(newname) == 0:
+                eprint("ignored. keeping name [%s] [%s]"%(roughcut_filename, srt_filename))
                 sys.exit(0)
         else:
             newname = sys.argv[1]
-        eprint("Rename ", roughcut_filename, ' to ', newname + roughcut_ext_name)
+        eprint("[Rename] ", roughcut_filename, 'to', '[' + newname + roughcut_ext_name + ']')
         os.rename(roughcut_filename, newname + roughcut_ext_name)
-        eprint("Rename ", srt_filename, ' to ', newname + '.srt')
+        eprint("[Rename] ", srt_filename, 'to', '[' + newname + '.srt' + ']')
         os.rename(srt_filename, newname + '.srt')
