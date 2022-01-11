@@ -223,13 +223,13 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 
 *TIPS* to count lines: `cat *.srt | dos2unix |grep .  |sed  -r '/^[0-9]+$/{N;d;}' | grep -v Downloaded |wc -l`
 
-## tsv to srt
+## tsv2srt
 
 `tsv2srt` `tsv2srt_all`
 
 tips: you may `s/，/, /g`, to make Chinese lines wrap. Otherwise ,`mpv` treat those as a bloody long line.
 
-## tsv2roughcut
+## tsv2roughcut: Assemble a rough cut
 
 ```bash
 cat selection.tsv | tsv2roughcut  #will generate roughtcut.mp3/mp4, srt. auto increase filename
@@ -240,8 +240,15 @@ cat selection.tsv | tsv2roughcut --user-input-newname
 cat selection.tsv | head -n 30 | tsv2roughcut test/"good one"
 cat selection.tsv | tail -n 30 | tsv2roughcut test/good\ two
 cat selection.tsv | grep good | tsv2roughcut "test/good three"
+cat *.tsv | grep -C3 -i beep | tsv2roughcut #context 3 lines, ignore case
 ```
-## Cherry-pick
+## tsv2edl
+
+```bash
+cat selection.tsv | tsv2edl > sel.edl #then import in DaVinci Resolve
+```
+
+## Cherrypick
 
 ```bash
 vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
@@ -266,7 +273,7 @@ You can draw a progress bar on the fly. Isn't that cool, huh?
 
 Then `gi`, `go`.
 
-## Conceal: Hide the first 4 columns
+## Vim Conceal: Hide the first 4 columns
 
 ... to stay more focused when listening to tape.
 
@@ -276,19 +283,9 @@ Then `gi`, `go`.
 
 ![screenshot: conceal](screenshots/b.png)
 
-## Assemble a rough cut
+It's mapped to `\ c` for your convenience.
 
-for example:
-
-```bash
-grep -C3 beep | tsv2rough
-```
-
-`-C` for context.
-
-A file with the increasing number `roughtcut.mp4`, `roughtcut_1.mp4` ... will be generated.
-
-## Assemble a EDL timeline
+## tsv2edl: Assemble a EDL timeline
 
 (You may want to change the `FPS` value in `utils/tsv2edl.py`)
 
@@ -319,7 +316,7 @@ Or find your way to convert it to .fcpxml
 
 Or ...
 
-## Convert MP3/Audio to a dummy video from .srt
+## auto2srtvideo: Convert MP3/Audio to a dummy video from .srt
 
 Due to the limitation of Davinci Resolve that EDL file cannot be reconstructed into a timeline refering to pure audio file, 
 a helper bash script is prepared in `utils/audio2srtvideo.sh`
