@@ -229,6 +229,18 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 
 tips: you may `s/，/, /g`, to make Chinese lines wrap. Otherwise ,`mpv` treat those as a bloody long line.
 
+## tsv2roughcut
+
+```bash
+cat selection.tsv | tsv2roughcut  #will generate roughtcut.mp3/mp4, srt. auto increase filename
+cat selection.tsv | tsv2roughcut --user-input-newname 
+# will ask in the end. do not input ext name. dirname/clipname is supported
+# e.g.  clips/a good one
+
+cat selection.tsv | head -n 30 | tsv2roughcut test/"good one"
+cat selection.tsv | tail -n 30 | tsv2roughcut test/good\ two
+cat selection.tsv | grep good | tsv2roughcut "test/good three"
+```
 ## Cherry-pick
 
 ```bash
