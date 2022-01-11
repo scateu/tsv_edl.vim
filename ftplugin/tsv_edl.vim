@@ -69,11 +69,11 @@ func! DoShiftTab()
 	if (getline(".")  =~# g:edl_line_pattern)
 		if g:ipc_media_ready
 			"go to head of subtitle
-			normal! 02f\|2l
+			execute "normal! 02f|2l"
 			call tsv_edl#ipc_play_current_range()
 		else
 			"go to head of subtitle
-			normal! 02f\|2l
+			execute "normal! 02f|2l"
 			call tsv_edl#play_current_range()
 		endif
 	else
