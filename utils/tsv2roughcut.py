@@ -4,6 +4,7 @@ import glob
 import os
 import subprocess
 import tempfile
+import platform
 
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
 audio_formats = ['wav', 'mp3', 'm4a']
@@ -64,6 +65,13 @@ if __name__ == "__main__":
     # otherwise, annoying ^[[O ^[[I will appear when terminal focus lost or get again.
     print("\033[?1004l", end="")
     sys.stdout.flush()
+
+    if platform.system() == "Darwin":
+        codec_v = "h264_videotoolbox"
+    elif platform.system() == "Linux":
+        codec_v = "libx264"
+    else:
+        codec_v = "libx264"
 
     while True: # read EDL lines
         line = sys.stdin.readline()
@@ -180,7 +188,7 @@ if __name__ == "__main__":
                 sys.stderr.flush()
                 if 0: # it worked.
                     #FIXME detect if it's macOS. otherwise libx264
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v h264_videotoolbox -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), tempdirname,counter), shell=True)
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v %s -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), codec_v ,tempdirname,counter), shell=True)
 
                 if 1: # but this works faster in seeking
                     a = r_in.replace(',',':').split(':')
@@ -199,20 +207,20 @@ if __name__ == "__main__":
                         #eprint("fps=24, scale=1920:1080")
                         # use -to to get more accuracy
                         to = round(srttime_to_sec(r_out) - t2, 3)
-                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, to, tempdirname,counter), shell=True)
+                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
                         # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
                         # a FPS filter is very good.
                         # -r? no good.
                     else:
                         duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
-                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v h264_videotoolbox -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, tempdirname,counter), shell=True)
+                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, codec_v,tempdirname,counter), shell=True)
 
                 if 0:
                     a = r_in.replace(',',':').split(':')
                     t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
                     b = r_out.replace(',',':').split(':')
                     t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -vf \"trim=start=%s:end=%s,setpts=PTS-STARTPTS\" -af \"atrim=start=%s:end=%s,asetpts=PTS-STARTPTS\" -c:v h264_videotoolbox  %s/%05d.ts"%(f, t1, t2, t1, t2, tempdirname,counter), shell=True)
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -vf \"trim=start=%s:end=%s,setpts=PTS-STARTPTS\" -af \"atrim=start=%s:end=%s,asetpts=PTS-STARTPTS\" -c:v %s  %s/%05d.ts"%(f, t1, t2, t1, t2, codec_v, tempdirname,counter), shell=True)
                 # NOTE -ss -to placed before -i, cannot be used with -c copy
                 # See https://trac.ffmpeg.org/wiki/Seeking
                 counter += 1
