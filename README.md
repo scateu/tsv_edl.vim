@@ -203,6 +203,31 @@ vim -p example.tsv example_never.tsv
 # you may want macvim for GUI https://github.com/macvim-dev/macvim/releases/tag/snapshot-172
 ```
 
+
+### macOS: Finder Integration
+
+ - open Automator.app, choose 'Application' type.
+ - drag 'Run AppleScript' into flow
+ - paste the following line in
+ 
+```applescript
+tell application "Finder" to set currentDir to (target of front Finder window) as text
+do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & "; pbpaste | /usr/local/bin/tsv2roughcut"
+# https://stackoverflow.com/questions/12129989/getting-finders-current-directory-in-applescript-stored-as-application
+```
+
+ - save it in /Application/tsv_edl/ folder. name it as 'tsv2roughcut_automator'
+ - Drag it to Finder toolbar, with 'Cmd' key pressed
+
+Then, make a new 'srt2tsv_automator' using the following line:
+
+```applescript
+tell application "Finder" to set currentDir to (target of front Finder window) as text
+do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/srt2tsv_all"
+```
+
+(You may steal an icon with `Cmd-i`, `Cmd-i` on another application, `Cmd-C` `Cmd-V` on icons.)
+
 ## .srt to .tsv
 
 ```bash
