@@ -21,8 +21,13 @@ endfunction
 function! tsv_edl#infer_time_pos(line)
 	"""""" infer current timecode
 	let cursor_pos = getpos(".")[2] 
-	let words_start_pos = matchstrpos(a:line, '|\t', 32, 1)[-1]  + 1.0
-	let _p = (cursor_pos - words_start_pos) / (len(a:line) - words_start_pos)
+	let words_start_pos = matchstrpos(a:line, '\t', 42, 1)[-1]  + 1.0
+	let b = len(a:line) - words_start_pos
+	if b <= 0 
+		return 0
+	endif
+	let a = cursor_pos - words_start_pos
+	let _p = a / b
 	" FIXME wide chars
 	let _p = _p > 0 ? _p : 0
 	return _p
