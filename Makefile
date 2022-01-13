@@ -17,6 +17,7 @@ install-utils:
 	chmod +x ${CURDIR}/utils/mkgap_10_mp4
 	chmod +x ${CURDIR}/utils/tsv2srt_reflow.py
 	chmod +x ${CURDIR}/utils/srt2tsv.sh
+	chmod +x ${CURDIR}/utils/scenecut_preview.sh
 	sudo ln -s ${CURDIR}/utils/tsv2edl.py /usr/local/bin/tsv2edl
 	sudo ln -s ${CURDIR}/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
 	sudo ln -s ${CURDIR}/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
@@ -27,6 +28,7 @@ install-utils:
 	sudo ln -s ${CURDIR}/utils/mkgap_10_mp3 /usr/local/bin/mkgap_10_mp3
 	sudo ln -s ${CURDIR}/utils/tsv2srt_reflow.py /usr/local/bin/tsv2srt_reflow
 	sudo ln -s ${CURDIR}/utils/srt2tsv.sh /usr/local/bin/srt2tsv
+	sudo ln -s ${CURDIR}/utils/scenecut_preview.sh /usr/local/bin/scenecut_preview
 
 uninstall-utils:
 	cd /usr/local/bin; sudo rm -i audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow
