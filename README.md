@@ -216,10 +216,10 @@ do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/b
 # https://stackoverflow.com/questions/12129989/getting-finders-current-directory-in-applescript-stored-as-application
 ```
 
- - save it in /Application/tsv_edl/ folder. name it as 'tsv2roughcut_automator'
+ - save it in /Application/tsv_edl/ folder. name it as 'tsv2roughcut'
  - Drag it to Finder toolbar, with 'Cmd' key pressed
 
-Then, make a new 'srt2tsv_automator' using the following line:
+Then, make a new 'srt2tsv_all' using the following line:
 
 ```applescript
 tell application "Finder" to set currentDir to (target of front Finder window) as text
