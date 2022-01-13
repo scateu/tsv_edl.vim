@@ -226,7 +226,7 @@ tell application "Finder" to set currentDir to (target of front Finder window) a
 do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/srt2tsv_all"
 ```
 
-(You may steal an icon with `Cmd-i`, `Cmd-i` on another application, `Cmd-C` `Cmd-V` on icons.)
+(You may steal an icon with `Cmd-i`, `Cmd-i` on another application, `Cmd-C` `Cmd-V` on icons.) [[Ref]](https://developer.apple.com/library/archive/technotes/tn2065/_index.html)
 
 ## .srt to .tsv
 
