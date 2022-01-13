@@ -33,7 +33,7 @@
 | \ P          | Enter cherry-pick mode (split horizontally), map ⏎    |
 | ⏎            | pick this line to next window, then mark used `---`   |
 | ⌫ (BS)       | reject this line, mark `xxx`, then go to next line    |
-| ⌦ (DEL, ⌥⌫)  | toggle between `EDL` and `xxx`; toggle `---` to `EDL` |
+| ⌦ (DEL, fn⌫) | toggle between `EDL` and `xxx`; toggle `---` to `EDL` |
 | V (region) ⎵ | render those highlighted lines with `tsv2roughcut`    |
 
 ### MPV IPC CONTROL MODE
