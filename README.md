@@ -212,10 +212,10 @@ vim -p example.tsv example_never.tsv
  
 ```applescript
 tell application "Finder" to set currentDir to (target of front Finder window) as text
-do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & "; pbpaste | /usr/local/bin/tsv2roughcut"
-say "Hooray, rendering done." using "Samantha"
-say "完了" using "Ting-Ting"
+do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & "; pbpaste | /usr/local/bin/tsv2roughcut && echo '完了' | say -v Ting-Ting"
 # https://stackoverflow.com/questions/12129989/getting-finders-current-directory-in-applescript-stored-as-application
+#say "Hooray, rendering done." using "Samantha"
+#say "完了" using "Ting-Ting"
 ```
 
  - save it in /Application/tsv_edl/ folder. name it as 'tsv2roughcut'
