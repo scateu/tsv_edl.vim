@@ -1,0 +1,19 @@
+Workflow receives current "movie files" in "Finder"
+Image: screenshot
+Color: 
+
+
+Shell: /bin/bash   Pass input: as arguments
+
+
+```
+export LANG=en_US.UTF-8
+export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+if [[ -d "$@" ]]; then
+	echo "Nein."
+elif [[ -f "$@" ]]; then
+    cd "$(dirname "$@")"
+	/usr/local/bin/scenecut_preview "$(basename "$@")" 
+fi
+
+```
