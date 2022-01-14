@@ -22,7 +22,7 @@ function! tsv_edl#infer_time_pos(line)
 	"""""" infer current timecode
 	let cursor_pos = getpos(".")[2]  "41
 	let words_start_pos = matchstrpos(a:line, '|\t', 32, 1)[-1]  + 1.0
-	let b = len(a:line) - words_start_pos  " 50 - 33 = 7
+	let b = len(a:line) - words_start_pos
 	if b <= 0 
 		return 0
 	endif

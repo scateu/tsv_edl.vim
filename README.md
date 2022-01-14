@@ -287,6 +287,7 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
+
 ## preview / IPC control
 
 *TIPS* tsv file can be place separatedly from media file. 1) You can do `ln -s` soft link. 2) You may change working directory inside `vim` by `:cd /Volumes/usbshare2-2/nas/TVSeries/Yes.Prime.Minister`
@@ -296,7 +297,13 @@ Press `\\` twice to init mpv ipc control and bring up mpv. Will try best to reus
 ## mark in/out style
 
 ```
-EDL     00:24:00,000    00:30:00,000    | clipname |   .......
+EDL     00:24:00,000    00:30:00,000    | clipname |   ......;
+```
+
+**Tips:** 神笔马良(Magic Pen). for 60 minutes, 6 + 1 chars are needed.
+
+```
+EDL	00:00:00,000	01:00:00,000	| clipname |	......;
 ```
 
 For example, use ←/→ on the dots, to seek by 1 minute. 
