@@ -16,15 +16,15 @@ secs2timecode() {
 
 echo "Writing to ${media%.*}_scenecut.tsv"
 
-#ffmpeg -y -i "./${media}" -vf "select=gt(scene\,0.4),showinfo,scale=160:-1,tile=6x80" -frames:v 1 -qscale:v 3 "${preview}" 2>&1 |  sed -n -r -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/\t/;p;x;D;' | sed -l 's/^/EDL\t/' | sed -l "s/$/\t| ${media%.*} |\t/" | tee "${media%.*}_scenecut.tsv"
-#ffmpeg -y -i "./${media}" -vf "select=gt(scene\,0.1),showinfo" -f null - 2>&1 |  sed -n -r -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/\t/;p;x;D;' | sed -l 's/^/EDL\t/' | sed -l "s/$/\t| ${media%.*} |\t/" | tee "${media%.*}_scenecut.tsv"
+#ffmpeg -y -i "./${media}" -vf "select=gt(scene\,0.4),showinfo,scale=160:-1,tile=6x80" -frames:v 1 -qscale:v 3 "${preview}" 2>&1 |  sed -n -E -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/\t/;p;x;D;' | sed -l 's/^/EDL\t/' | sed -l "s/$/\t| ${media%.*} |\t/" | tee "${media%.*}_scenecut.tsv"
+#ffmpeg -y -i "./${media}" -vf "select=gt(scene\,0.1),showinfo" -f null - 2>&1 |  sed -n -E -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/\t/;p;x;D;' | sed -l 's/^/EDL\t/' | sed -l "s/$/\t| ${media%.*} |\t/" | tee "${media%.*}_scenecut.tsv"
 
 dirname="${media%.*}_scenecut_images"
 mkdir "${dirname}"
 echo "Will extract key frames into dir: ${dirname}/"
 echo "You may convert * slides.pdf afterwards"
 
-ffmpeg -y -i "./${media}" -vf "select=gt(scene\,0.1),showinfo"  -vsync vfr "${dirname}/${media%.*}-%05d.png" 2>&1 |  sed -n -r -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/\t/;p;x;D;' | sed -l 's/^/EDL\t/' | sed -l "s/$/\t| ${media%.*} |\t/" | tee "${media%.*}_scenecut.tsv"
+ffmpeg -y -i "./${media}" -vf "select=gt(scene\,0.1),showinfo"  -vsync vfr "${dirname}/${media%.*}-%05d.png" 2>&1 |  sed -n -E -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/	/;p;x;D;' | sed -l 's/^/EDL	/' | sed -l "s/$/	| ${media%.*} |	/" | tee "${media%.*}_scenecut.tsv"
 #threshold = 0.1 for webcast
 #threshold = 0.4 for movie
 #threshold is (0, 1)   the smaller the finer chopped
