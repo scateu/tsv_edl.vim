@@ -117,6 +117,9 @@ Press `g9` will:
 ## Overview
 
 ```
+media -- [scenecut_preview] detect scene cut and slice into
+                       |
+		       V
 .srt --- [srt2tsv] --> .tsv file
                        |
 		       V
