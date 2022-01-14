@@ -209,7 +209,7 @@ vim -p example.tsv example_never.tsv
 
 ### macOS: Finder Integration
 
-see [utils/apple_automator/README.md]
+see [utils/apple_automator/README.md](utils/apple_automator/README.md)
 
 ## .srt to .tsv
 
