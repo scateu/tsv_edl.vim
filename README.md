@@ -56,6 +56,8 @@
 | gi          | [mpv ipc] get current timecode, write record_in. overwrite existing.                 |
 | go          | [mpv ipc] get current timecode, write record_outr write clipname. overwrite existing |
 
+ - You may find this [MPV keyboard cheatsheet](https://cheatography.com/someone/cheat-sheets/mpv-media-player/) very useful.
+
 ### Orgmode/Markdown Folding
 
 | Key | Function                                                               |
