@@ -230,7 +230,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 
  - *TIPS* for European subtitles: `for i in *.srt; do iconv -f CP1251 -t UTF-8 "$i" > converted/"$i";done`
  - *TIPS* to count lines: `cat *.srt | dos2unix |grep .  |sed  -r '/^[0-9]+$/{N;d;}' | grep -v Downloaded |wc -l`
- - See also: [VideoSubFinder](https://sourceforge.net/projects/videosubfinder/), [roybaer/burnt-in-subtitle-extractor: Set of basic extraction tools for burnt-in subtitles, i.e. subtitles that are part of the picture itself](https://github.com/roybaer/burnt-in-subtitle-extractor)
+ - See also: [VideoSubFinder](https://sourceforge.net/projects/videosubfinder/), [roybaer/burnt-in-subtitle-extractor: Set of basic extraction tools for burnt-in subtitles, i.e. subtitles that are part of the picture itself](https://github.com/roybaer/burnt-in-subtitle-extractor), [SubRip](http://zuggy.wz.cz/), [ocr 1](https://github.com/shenbo/video-subtitles-ocr), [ocr 2](https://github.com/broija/subdetection)
 
 ## tsv2srt
 
