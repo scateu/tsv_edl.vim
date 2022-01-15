@@ -161,6 +161,8 @@ function!  tsv_edl#join_with_next_line()
 	if len(cur_line) > 0 && len(next_line) > 0
 		let cur_line_list = split(cur_line, '\t')
 		let next_line_list = split(next_line, '\t')
+		if len(cur_line_list) == 4 | let cur_line_list += [""] | endif  "empty subtitle
+		if len(next_line_list) == 4 | let next_line_list += [""] | endif 
 
 		if (cur_line_list[0] == 'EDL' || cur_line_list[0] == '---' || cur_line_list[0] == 'xxx') 
 					\ && (next_line_list[0] == 'EDL' || next_line_list[0] == '---' || next_line_list[0] == 'xxx')
@@ -191,7 +193,7 @@ function!  tsv_edl#join_with_next_line()
 			endif
 
 			let d = cur_line_list[3]
-			if (next_line_list[4] =~# "^[ SPACE ")
+			if (next_line_list[4] =~# "^[ SPACE " || next_line_list[4] == "")
 				let e = cur_line_list[4]
 			else
 				let e = cur_line_list[4] .' '. next_line_list[4]
