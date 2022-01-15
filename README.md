@@ -42,7 +42,7 @@
 |-------------|--------------------------------------------------------------------------------------|
 | \ \         | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4`                   |
 |             | and enter IPC Control mode. `s ← → ↑ ↓ ⎵ ⏎` is redefined, and restored at quit       |
-| \ \ (again) | send quit signal via ipc socket to mpc                                               |
+| \ \ (again) | send quit signal via ipc socket to mpv                                               |
 | ⎵           | [mpv ipc] toggle play                                                                |
 | ←, →        | move, then [mpv ipc] seek to cursor                                                  |
 | ↑, ↓        | move, then [mpv ipc] seek; reload when clip changed                                  |
