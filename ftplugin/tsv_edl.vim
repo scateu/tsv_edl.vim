@@ -23,7 +23,7 @@ set shell=/bin/bash " macOS. zsh doesn't work
 "======================
 "https://github.com/tpope/vim-unimpaired/issues/105
 
-nmap \c :set <C-R>=&conceallevel ? 'conceallevel=0' : 'conceallevel=1'<CR><CR>
+nmap \c :set <C-R>=&conceallevel ? 'conceallevel=0 wrap' : 'conceallevel=1 nowrap'<CR><CR>
 
 "======================
 " Editorial Decision
@@ -175,7 +175,8 @@ set guioptions=aiAe "for macVim
 " https://stackoverflow.com/questions/12177686/how-do-i-get-macvim-tabs-to-display-graphically/30108155
 
 set wrap linebreak "to avoid words broken into characters
-set nowrap "bite me
+if &conceallevel == 0 | set wrap | else | set nowrap | endif
+
 "set so=10 "scrolloff , center
 set noexpandtab
 
