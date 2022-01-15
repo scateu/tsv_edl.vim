@@ -39,7 +39,7 @@ function! tsv_edl#play_current_range(...) "stop_at_end = v:true)
 	if a:0 > 0
 		let stop_at_end = a:1
 	else
-		let stop_at_end = v:false
+		let stop_at_end = v:true
 	endif
 	let line=getline('.')
 	if len(line) > 0
@@ -257,7 +257,7 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 	if a:0 > 0
 		let pause = a:1
 	else
-		let pause = v:false
+		let pause = v:true
 	endif
 	if g:ipc_media_ready
 		call tsv_edl#ipc_quit()
@@ -703,7 +703,7 @@ function! s:line_clipname_match_mpc_filename(line_number)
 endfunction
 
 function! s:search_target_and_go_to_that_line(_target, ... ) "backwards=v:false)
-	if a:0 > 0 " optional-function-argument
+	if a:0 > 1 " optional-function-argument
 		let backwards = a:2
 	else
 		let backwards = v:false
