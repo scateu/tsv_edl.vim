@@ -33,7 +33,14 @@ function! tsv_edl#infer_time_pos(line)
 	return _p
 endfunction
 
-function! tsv_edl#play_current_range(stop_at_end = v:true)
+function! tsv_edl#play_current_range(...) "stop_at_end = v:true)
+	" some version (debian on chrombook) of vim still doesn't support
+	" help optional-function-argument
+	if a:0 > 0
+		let stop_at_end = a:1
+	else
+		let stop_at_end = v:false
+	endif
 	let line=getline('.')
 	if len(line) > 0
 		let line_list = split(line, '\t')
@@ -63,7 +70,7 @@ function! tsv_edl#play_current_range(stop_at_end = v:true)
 			"let command_play_from_cursor = printf('ffplay -autoexit -hide_banner -noborder -seek_interval 1 -ss %s -t %.3f ./*"%s"*.!(tsv|srt|txt)', deduced_start_pos_secs, deduced_line_duration, filename)
 			"let command_mpv_from_cursor = 'mpv --profile=low-latency --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)'
 
-			if a:stop_at_end == v:true
+			if stop_at_end == v:true
 				let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
 				" on the nested quote inside brackets
 				" > Once one is inside $(...), quoting starts all over from scratch.
@@ -79,6 +86,7 @@ function! tsv_edl#play_current_range(stop_at_end = v:true)
 
 			let command = command_mpv_from_cursor
 			echo prompt
+			"call system('echo -e "\033[?1004l"')
 			call system(command)
 
 			"silent execute "!".command
@@ -243,7 +251,14 @@ function! tsv_edl#ipc_load_media(filename)
 	"call system(command)
 endfunction
 
-function! tsv_edl#ipc_init_and_load_media(pause = v:true)
+function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
+	" some version (debian on chrombook) of vim still doesn't support
+	" help optional-function-argument
+	if a:0 > 0
+		let pause = a:1
+	else
+		let pause = v:false
+	endif
 	if g:ipc_media_ready
 		call tsv_edl#ipc_quit()
 		return
@@ -313,7 +328,7 @@ function! tsv_edl#ipc_init_and_load_media(pause = v:true)
 	let g:ipc_timecode = start_tc_in_HHMMSSMS 
 	
 	let command = 'mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --start=' . start_tc 
-	if a:pause
+	if pause
 		let command = command . ' --pause' 
 		let g:ipc_pause = v:true
 	else
@@ -600,7 +615,15 @@ function! tsv_edl#enter_cherry_pick_mode_horizontally()
 	endif
 endfunction
 
-function! tsv_edl#ipc_sync_playhead(backwards=v:false)
+function! tsv_edl#ipc_sync_playhead(...) "backwards=v:false)
+	" some version (debian on chrombook) of vim still doesn't support
+	" help optional-function-argument
+	if a:0 > 0
+		let backwards = a:1
+	else
+		let backwards = v:false
+	endif
+
 	let playback_time=tsv_edl#ipc_get_playback_time()
 	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
 	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
@@ -610,56 +633,56 @@ function! tsv_edl#ipc_sync_playhead(backwards=v:false)
 
 	" first search for \tHH:MM:SS,
 	let _target = '\t' . playback_time_in_timecode[:7] .','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS-1,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 1))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS+1,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 1))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS-2,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 2))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS+2,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 2))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS-5,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 5))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS+5,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 5))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS-10,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 10))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS+10,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 10))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS-30,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time - 30))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" then search for \tHH:MM:SS+30,
 	let _target = '\t' . tsv_edl#sec_to_timecode(str2float(playback_time + 30))[:7] . ','
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" if not found, then search for \tHH:MM:
 	let _target = '\t' . playback_time_in_timecode[:5]
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 
 	" FIXME use a while loop
 	" then search for \tHH:
 	let _target = '\t' . playback_time_in_timecode[:2]
-	if s:search_target_and_go_to_that_line(_target, a:backwards) | return | endif
+	if s:search_target_and_go_to_that_line(_target, backwards) | return | endif
 	echon "ipc_sync_playhead not found"
 
 endfunction
@@ -679,8 +702,14 @@ function! s:line_clipname_match_mpc_filename(line_number)
 	return v:false
 endfunction
 
-function! s:search_target_and_go_to_that_line(_target, backwards=v:false)
-	if a:backwards
+function! s:search_target_and_go_to_that_line(_target, ... ) "backwards=v:false)
+	if a:0 > 0 " optional-function-argument
+		let backwards = a:2
+	else
+		let backwards = v:false
+	endif
+
+	if backwards
 		let _s = search(a:_target,'bncw')
 	else
 		let _s = search(a:_target,'ncw')
