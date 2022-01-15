@@ -22,7 +22,7 @@
 | g8           | go to `record_out` timecode in prev line                           |
 | g9           | go to `record_in` timecode                                         |
 | gO           | append a gap for 5 secs below current line                         |
-| \ c          | toggle conceallevel=0, 1                                           |
+| \ c          | toggle conceallevel=0, 1 ; `:set nowrap` may help you.             |
 
 ### EDITORIAL DECISION
 
