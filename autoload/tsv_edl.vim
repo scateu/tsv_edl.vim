@@ -735,7 +735,7 @@ function! tsv_edl#try_open_fold()
 endfunction
 
 function! tsv_edl#write_record_in()
-	set conceallevel=0
+	set conceallevel=0 wrap
 	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_in = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
 	if (getline(".")  !~# g:edl_line_pattern) "not a valid edl/---/xxx line
@@ -754,7 +754,7 @@ function! tsv_edl#write_record_in()
 endfunction
 
 function! tsv_edl#write_record_out()
-	set conceallevel=0
+	set conceallevel=0 wrap
 	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_out = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
 
