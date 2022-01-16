@@ -18,6 +18,8 @@ install-utils:
 	chmod +x ${CURDIR}/utils/tsv2srt_reflow.py
 	chmod +x ${CURDIR}/utils/srt2tsv.sh
 	chmod +x ${CURDIR}/utils/scenecut_preview.sh
+	chmod +x ${CURDIR}/utils/srt2txt.sh
+	chmod +x ${CURDIR}/utils/tsv2zh_cn.sh
 	sudo ln -s ${CURDIR}/utils/tsv2edl.py /usr/local/bin/tsv2edl
 	sudo ln -s ${CURDIR}/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
 	sudo ln -s ${CURDIR}/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
@@ -29,9 +31,11 @@ install-utils:
 	sudo ln -s ${CURDIR}/utils/tsv2srt_reflow.py /usr/local/bin/tsv2srt_reflow
 	sudo ln -s ${CURDIR}/utils/srt2tsv.sh /usr/local/bin/srt2tsv
 	sudo ln -s ${CURDIR}/utils/scenecut_preview.sh /usr/local/bin/scenecut_preview
+	sudo ln -s ${CURDIR}/utils/srt2txt.sh /usr/local/bin/srt2txt
+	sudo ln -s ${CURDIR}/utils/tsv2zh_cn.sh /usr/local/bin/tsv2zh_cn
 
 uninstall-utils:
-	cd /usr/local/bin; sudo rm -i audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow
+	cd /usr/local/bin; sudo rm -i audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow scenecut_preview srt2txt tsv2zh_cn
 
 install-depends-on-mac-no-homebrew: install-ffmpeg-mac install-jq-mac install-mpv-mac install-socat-mac
 	rm -i ffmpeg-mac.zip mpv-latest.tar.gz socat_macOS.bin jq_macOS.bin
