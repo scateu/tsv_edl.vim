@@ -57,6 +57,7 @@
 | go          | [mpv ipc] get current timecode, write record_outr write clipname. overwrite existing |
 
  - You may find this [MPV keyboard cheatsheet](https://cheatography.com/someone/cheat-sheets/mpv-media-player/) very useful.
+ - `ssh -R/tmp/mpvsocket:/tmp/mpvsocket remoteserver` may also be useful
 
 ### Orgmode/Markdown Folding
 
