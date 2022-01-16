@@ -90,6 +90,9 @@ hi Conceal ctermfg=LightBlue guifg=#83a598 ctermbg=NONE guibg=NONE
 " ['Title', 'Constant', 'Identifier', 'Statement', 'PreProc', 'Type', 'Special']
 
 set cursorline
+"hi CursorLine guibg=#1C1C1C gui=NONE ctermbg=234 cterm=NONE
+hi CursorLine guibg=Grey40 gui=NONE ctermbg=237 cterm=NONE
+"https://vi.stackexchange.com/questions/23066/change-cursorline-style
 
 syn sync fromstart
 
