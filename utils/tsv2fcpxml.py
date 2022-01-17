@@ -23,7 +23,8 @@ xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
         <format id="r1" frameDuration="3750/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>"""
 
 xmlheader2 = """
-        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="6240s" hasVideo="{hasVideo}" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />"""
+        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="36000s" hasVideo="{hasVideo}" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />"""
+#FIXME 36000s for 10hour max. Davinci Resolve will ignore source tape after 10hour; FCPX doesn't care        
 
 
 xmlheader3 = """
