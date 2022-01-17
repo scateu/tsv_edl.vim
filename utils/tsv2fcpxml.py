@@ -74,7 +74,7 @@ if __name__ == "__main__":
     offset = 0
     eprint("NOTE: 24FPS, 48000Hz. Bite me.")
     srt_queue = []
-    srt_counter = 0
+    srt_counter = 1
     while True:
         line = sys.stdin.readline()
         if not line:
