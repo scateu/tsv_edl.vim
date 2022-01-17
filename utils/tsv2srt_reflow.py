@@ -19,7 +19,7 @@ def sec_to_srttime(sec):
     return "%02d:%02d:%02d,%03d"%(HH,MM,SS,MS)
 
 if __name__ == "__main__":
-    counter = 0
+    counter = 1
     last_position = 0.0 #in sec
     while True:
         line = sys.stdin.readline()

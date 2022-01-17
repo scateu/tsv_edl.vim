@@ -13,7 +13,7 @@ for file_name in glob.glob('*.tsv'):
         except:
             with open(file_name, encoding='gbk') as f:
                 str_in = f.read()
-        counter = 0
+        counter = 1
         lines = str_in.split('\n')
         str_out = []
 
