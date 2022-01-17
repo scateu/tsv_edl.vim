@@ -55,7 +55,7 @@ def timecode_to_fcpx_time(timecode, fcp_scale=FCPX_SCALE, FPS=FPS):
     timecode = timecode.strip().replace(",", ":")
     h,m,s,ms = [int(d) for d in timecode.split(":")]
     # round to frames
-    ms_scaled = int(ms/1000.0 * FPS) * (fcp_scale / FPS)  #frames * 3750/FCPX_SCALE * FCPX_SCALE
+    ms_scaled = round(ms/1000.0 * FPS) * (fcp_scale / FPS)  #frames * 3750/FCPX_SCALE * FCPX_SCALE
     return h*3600*fcp_scale + m*60*fcp_scale + s*fcp_scale + ms_scaled
 
 def sec_to_srttime(sec):
