@@ -57,7 +57,7 @@ output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
 srt_queue = []
 
 if __name__ == "__main__":
-    srt_counter = 0
+    srt_counter = 1
     srt_last_position = 0.0 #in sec
 
     #$ printf("\e[?1004l") 
