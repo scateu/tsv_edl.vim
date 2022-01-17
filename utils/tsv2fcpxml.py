@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #-*- coding:utf-8
 from __future__ import absolute_import
 from __future__ import division
@@ -44,11 +45,12 @@ xmltail = """                    </spine>
 <asset-clip name="MyMovie3" ref="r2" offset="5s" start="15s" duration="5s" audioRole="SpeakerA" /> 
 """
 
-def timecode_to_fcpx_time(timecode, fcp_scale=90000):
-    m_fcp_scale = int(fcp_scale / 1000)
+def timecode_to_fcpx_time(timecode, fcp_scale=90000, FPS=24):
     timecode = timecode.strip().replace(",", ":")
     h,m,s,ms = [int(d) for d in timecode.split(":")]
-    return h*3600*fcp_scale + m*60*fcp_scale + s*fcp_scale + ms * m_fcp_scale
+    # round to frames
+    ms_scaled = int(ms/1000.0 * FPS) * (fcp_scale / FPS)  #frames * 3750/90000 * 90000
+    return h*3600*fcp_scale + m*60*fcp_scale + s*fcp_scale + ms_scaled
 
 
 def eprint(*args, **kwargs):
@@ -89,7 +91,7 @@ if __name__ == "__main__":
             duration = record_out - record_in
             xmlbody += "<asset-clip name=\"%s\" ref=\"%s\" offset=\"%d/90000s\" start=\"%d/90000s\" duration=\"%d/90000s\" audioRole=\"SpeakerA\" />\n"%(clipname, ref_id, offset, record_in, duration)
             #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, record_in, duration) #DEBUG
-            offset += duration
+            offset += duration 
     for k in media_assets:
         xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = media_assets[k][0])
     xmlhead += xmlheader3
