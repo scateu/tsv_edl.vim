@@ -10,7 +10,11 @@ import sys
 
 GENERATE_SRT = True
 FCPX_SCALE = 90000
+FPS = 24
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
+audio_formats = ['wav', 'mp3', 'm4a']
+
+is_pure_audio_project = True
 
 xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
@@ -20,7 +24,7 @@ xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
         <format id="r1" frameDuration="3750/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>
 """
 xmlheader2 = """
-        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="6240s" hasVideo="1" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />
+        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="6240s" hasVideo="{hasVideo}" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />
 """
 xmlheader3 = """
     </resources>
@@ -48,7 +52,7 @@ xmltail = """                    </spine>
 <asset-clip name="MyMovie3" ref="r2" offset="5s" start="15s" duration="5s" audioRole="dialogue" /> 
 """
 
-def timecode_to_fcpx_time(timecode, fcp_scale=FCPX_SCALE, FPS=24):
+def timecode_to_fcpx_time(timecode, fcp_scale=FCPX_SCALE, FPS=FPS):
     timecode = timecode.strip().replace(",", ":")
     h,m,s,ms = [int(d) for d in timecode.split(":")]
     # round to frames
@@ -85,10 +89,33 @@ if __name__ == "__main__":
                 _items = _l.split('|')
                 clipname = _items[1].strip()
                 filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
-                if len(filenames_v) > 0:
-                    abspath = os.path.abspath(filenames_v[0])
-                else:
-                    abspath = clipname
+                filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
+                if len(filenames_v) > 1:
+                    eprint("WARNING: filename similar to clip %s has more than one"%clipname)
+                    eprint("Choosing the %s"%filenames_v[0])
+                    filename = filenames_v[0]
+                    is_pure_audio_project = False
+                    abspath = os.path.abspath(filename)
+                elif len(filenames_v) == 1:
+                    filename = filenames_v[0]
+                    is_pure_audio_project = False
+                    abspath = os.path.abspath(filename)
+                elif len(filenames_v) == 0:
+                    if len(filenames_a) > 1:
+                        eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+                        eprint("Choosing the %s"%filenames_v[0])
+                        filename = filenames_a[0]
+                        is_pure_audio_project = True
+                        abspath = os.path.abspath(filename)
+                    elif len(filenames_a) == 1:
+                        filename = filenames_a[0] 
+                        is_pure_audio_project = True
+                        abspath = os.path.abspath(filename)
+                    elif len(filenames_a) == 0:
+                        eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
+                        abspath = clipname
+                        #continue
+
                 if not clipname in media_assets:
                     ref_id = "r%d"%(len(media_assets) + 2) #id start from r2
                     media_assets[clipname] = [abspath, ref_id ] 
@@ -98,6 +125,8 @@ if __name__ == "__main__":
                 _r = _items[0].split() #['EDL', '01:26:16.12', '01:27:22.10']
                 fcpx_record_in = timecode_to_fcpx_time(_r[1])
                 fcpx_record_out  = timecode_to_fcpx_time(_r[2])
+                if fcpx_record_out == fcpx_record_in:
+                    fcpx_record_out += FCPX_SCALE / FPS
                 duration = fcpx_record_out - fcpx_record_in
 
                 if GENERATE_SRT:
@@ -107,6 +136,8 @@ if __name__ == "__main__":
                     else:
                         srt_in = sec_to_srttime(offset / FCPX_SCALE)
                         srt_out = sec_to_srttime((duration + offset) / FCPX_SCALE)
+                        if srt_in == srt_out:
+                            eprint("WARNING: zero length srt. angry FCPX", offset, duration, fcpx_record_in, fcpx_record_out, srt_in, srt_out)
                         srt_queue.append("%d"%srt_counter)
                         srt_queue.append("%s --> %s"%(srt_in, srt_out))
                         srt_queue.append("%s"%subtitle.replace("\\N", "\n"))
@@ -118,7 +149,7 @@ if __name__ == "__main__":
             #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
             offset += duration 
     for k in media_assets:
-        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]))
+        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=[0 if is_pure_audio_project else 1][0])
     xmlhead += xmlheader3
     print(xmlhead)
     print(xmlbody)
