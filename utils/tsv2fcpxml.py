@@ -17,7 +17,7 @@ xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
 
 <fcpxml version="1.8">
     <resources>
-        <format id="r1" frameDuration="3750/FCPX_SCALEs" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>
+        <format id="r1" frameDuration="3750/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>
 """
 xmlheader2 = """
         <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="6240s" hasVideo="1" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />
