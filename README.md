@@ -143,7 +143,8 @@ media -- [scenecut_preview] detect scene cut and slice into
 		       |
 		       \----> selected .tsv file 
 		                |       \
-				|	 \
+				|	 \----[tsv2fcpxml] -> .fcpxml --> FCPX/DaVinci 
+				|	  \
 			        |     [tsv2edl] --> .edl file
 				|                         \
 				v  	                   \--> DaVinci Resolve: fine tuning
@@ -254,10 +255,11 @@ cat selection.tsv | tail -n 30 | tsv2roughcut test/good\ two
 cat selection.tsv | grep good | tsv2roughcut "test/good three"
 cat *.tsv | grep -C3 -i beep | tsv2roughcut #context 3 lines, ignore case
 ```
-## tsv2edl
+## tsv2edl, tsv2fcpxml
 
 ```bash
 cat selection.tsv | tsv2edl > sel.edl #then import in DaVinci Resolve
+cat selection.tsv | tsv2fcpxml > sel.fcpxml  #24FPS, 48000Hz, change it accordingly
 ```
 
 ## Cherrypick
