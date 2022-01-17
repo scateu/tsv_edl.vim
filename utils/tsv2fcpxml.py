@@ -14,7 +14,7 @@ FPS = 24
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
 audio_formats = ['wav', 'mp3', 'm4a']
 
-is_pure_audio_project = True
+is_pure_audio = True
 
 xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
@@ -94,22 +94,22 @@ if __name__ == "__main__":
                     eprint("WARNING: filename similar to clip %s has more than one"%clipname)
                     eprint("Choosing the %s"%filenames_v[0])
                     filename = filenames_v[0]
-                    is_pure_audio_project = False
+                    is_pure_audio = False
                     abspath = os.path.abspath(filename)
                 elif len(filenames_v) == 1:
                     filename = filenames_v[0]
-                    is_pure_audio_project = False
+                    is_pure_audio = False
                     abspath = os.path.abspath(filename)
                 elif len(filenames_v) == 0:
                     if len(filenames_a) > 1:
                         eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
                         eprint("Choosing the %s"%filenames_v[0])
                         filename = filenames_a[0]
-                        is_pure_audio_project = True
+                        is_pure_audio = True
                         abspath = os.path.abspath(filename)
                     elif len(filenames_a) == 1:
                         filename = filenames_a[0] 
-                        is_pure_audio_project = True
+                        is_pure_audio = True
                         abspath = os.path.abspath(filename)
                     elif len(filenames_a) == 0:
                         eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
@@ -149,7 +149,7 @@ if __name__ == "__main__":
             #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
             offset += duration 
     for k in media_assets:
-        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=[0 if is_pure_audio_project else 1][0])
+        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=[0 if is_pure_audio else 1][0])
     xmlhead += xmlheader3
     print(xmlhead)
     print(xmlbody)
