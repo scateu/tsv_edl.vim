@@ -110,7 +110,7 @@ if __name__ == "__main__":
                         srt_queue.append("%d"%srt_counter)
                         srt_queue.append("%s --> %s"%(srt_in, srt_out))
                         srt_queue.append("%s"%subtitle.replace("\\N", "\n"))
-                        srt_queue.append("\n")
+                        srt_queue.append("")
                         srt_counter += 1
             else:
                 continue
