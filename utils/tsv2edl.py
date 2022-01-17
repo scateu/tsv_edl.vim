@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 import sys
+import os
+import glob
 
 #TODO: 把RECORD_START_FROM_HOUR和FPS作为argparse暴露出来
 
 FPS = 24
 DEFAULT_CLIPNAME = "multicam" #以英文为好，Davinci里中文有可能识别不出来
 RECORD_START_FROM_HOUR = 0  # or 1
+
+video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
+audio_formats = ['wav', 'mp3', 'm4a']
 
 '''
 Usage:
@@ -117,6 +122,8 @@ def EDL_time_minus(t2, t1):
    f = frames - h*60*60*FPS - m*60*FPS - s*FPS
    return "%02d:%02d:%02d:%02d"%(h,m,s,f)
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 if __name__ == "__main__":
     last_edl_position = "01:00:00:00"
@@ -142,7 +149,11 @@ if __name__ == "__main__":
         if line.startswith('EDL'):
             _l = line.strip()
             if _l.count('|'):
-                clipname = _l.split('|')[1]
+                clipname = _l.split('|')[1].strip()
+                filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
+                if len(filenames_v) > 0:
+                    clipname = filenames_v[0]
+
                 _l = _l.split('|')[0]
             else:
                 continue
