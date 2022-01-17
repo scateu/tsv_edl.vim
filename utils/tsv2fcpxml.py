@@ -27,7 +27,7 @@ xmlheader3 = """
     <library>
         <event name="DEFAULT">
             <project name="DEFAULT">
-                <sequence duration="15720000/FCPX_SCALEs" format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k">
+                <sequence duration="15720000/90000s" format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k">
                     <spine>
 """
 
