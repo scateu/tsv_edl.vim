@@ -6,7 +6,7 @@ EDL	00:03:34,875	00:03:38,208	| VfD E04 The Terahertzian |	tell us what 1 terahe
 """
 
 if __name__ == "__main__":
-    counter = 0
+    counter = 1
     while True:
         line = sys.stdin.readline()
         if not line:
