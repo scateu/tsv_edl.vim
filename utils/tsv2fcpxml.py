@@ -18,22 +18,21 @@ is_pure_audio = True
 
 xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
-
 <fcpxml version="1.8">
     <resources>
-        <format id="r1" frameDuration="3750/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>
-"""
+        <format id="r1" frameDuration="3750/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>"""
+
 xmlheader2 = """
-        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="6240s" hasVideo="{hasVideo}" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />
-"""
+        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="6240s" hasVideo="{hasVideo}" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />"""
+
+
 xmlheader3 = """
     </resources>
     <library>
         <event name="DEFAULT">
             <project name="DEFAULT">
                 <sequence duration="15720000/90000s" format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k">
-                    <spine>
-"""
+                    <spine>"""
 
 #TODO: 用模板语言?
 
@@ -42,8 +41,7 @@ xmltail = """                    </spine>
             </project>
         </event>
     </library>
-</fcpxml>
-"""
+</fcpxml>"""
 
 """
          |     s     |  gap    | s_next    |
