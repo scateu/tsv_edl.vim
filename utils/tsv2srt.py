@@ -11,7 +11,8 @@ if __name__ == "__main__":
         line = sys.stdin.readline()
         if not line:
             break
-        if (line.startswith('EDL') or line.startswith('---') or line.startswith("xxx")) and not ('[ SPACE' in line):
+        #if (line.startswith('EDL') or line.startswith('---') or line.startswith("xxx")) and not ('[ SPACE' in line):
+        if (line.startswith('EDL') or line.startswith('---') ) and not ('[ SPACE' in line):
             _l = line.strip()
             fields = _l.split('\t')
             if fields[1].count(":") == 2 and fields[2].count(":") == 2:
@@ -20,4 +21,4 @@ if __name__ == "__main__":
                 print(counter)
                 print("%s --> %s"%(fields[1], fields[2]))
                 print(fields[4].replace("\\N",'\n'))
-            counter += 1
+                counter += 1
