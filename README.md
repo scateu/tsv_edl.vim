@@ -17,7 +17,7 @@
 |-------|--------------------------------------------------------------------------------------------------------------|
 | J     | Join (timecode) with the next line                                                                           |
 | \|    | [split] this line into two, guessing a new timecode                                                          |
-| mm    | mark/unmark word break point. [split] will use this and cursor together. useful when audio/words dosn't sync |
+| mm    | mark/unmark word break point. [split] will use this and cursor together. useful when audio/words not   sync  |
 | ⇧←/⇧→ | Roll timecode with the previous line for 1 sec                                                               |
 | g0    | go to the start of subtitle                                                                                  |
 | g8    | go to `record_out` timecode in prev line                                                                     |
