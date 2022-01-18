@@ -132,6 +132,26 @@ nnoremap <silent> g0 02f\|2l
 nnoremap <silent> gO oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
 
 nmap <silent> \| :call tsv_edl#break_line()<CR>
+nmap <silent> mm :call DoSetColorColumn()<CR>
+
+func! DoSetColorColumn()
+	" https://vim.fandom.com/wiki/Highlight_long_lines
+	if g:word_break_position != 0
+		let g:word_break_position = 0
+		call matchdelete(g:word_break_position_match)
+		let g:word_break_position_match = 0
+	else
+		let pos_percent = tsv_edl#infer_time_pos(getline('.'))
+		if pos_percent <= 0
+			let g:word_break_position = 0
+			call matchdelete(g:word_break_position_match)
+			let g:word_break_position_match = 0
+		else
+			let g:word_break_position = getpos(".")[2]
+			let g:word_break_position_match = matchaddpos("ErrorMsg", [[getpos(".")[1], col(".")]])
+		endif
+	endif
+endfunc
 
 
 func! DoJoin()
