@@ -13,16 +13,17 @@
 
 ### TIMECODE EDITING
 
-| Key          | Function                                                           |
-|--------------|--------------------------------------------------------------------|
-| J            | Join (timecode) with the next line                                 |
-| \|           | Split this line into two, guessing a new timecode                  |
-| ⇧←/⇧→        | Roll timecode with the previous line for 1 sec                     |
-| g0           | go to the start of subtitle                                        |
-| g8           | go to `record_out` timecode in prev line                           |
-| g9           | go to `record_in` timecode                                         |
-| gO           | append a gap for 5 secs below current line                         |
-| \ c          | toggle conceallevel=0, 1 ; `:set nowrap` may help you.             |
+| Key   | Function                                                                                                     |
+|-------|--------------------------------------------------------------------------------------------------------------|
+| J     | Join (timecode) with the next line                                                                           |
+| \|    | [split] this line into two, guessing a new timecode                                                          |
+| mm    | mark/unmark word break point. [split] will use this and cursor together. useful when audio/words dosn't sync |
+| ⇧←/⇧→ | Roll timecode with the previous line for 1 sec                                                               |
+| g0    | go to the start of subtitle                                                                                  |
+| g8    | go to `record_out` timecode in prev line                                                                     |
+| g9    | go to `record_in` timecode                                                                                   |
+| gO    | append a gap for 5 secs below current line                                                                   |
+| \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
 
 ### EDITORIAL DECISION
 

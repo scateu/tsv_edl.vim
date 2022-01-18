@@ -113,6 +113,8 @@ function! tsv_edl#continous_play()
 	" }}}
 endfunction
 
+let g:word_break_position = 0
+let g:word_break_position_match = 0
 function! tsv_edl#break_line()
 	let line=getline('.')
 	if len(line) > 0
@@ -130,7 +132,15 @@ function! tsv_edl#break_line()
 
 			let words_start_pos = matchstrpos(line, '|\t', 32, 1)[-1] + 1
 			"echo words_start_pos
-			let break_pos = getpos(".")[2]
+			if g:word_break_position == 0
+				let break_pos = getpos(".")[2]
+			else
+				echo "using colorcolumn as words break point"
+				let break_pos = g:word_break_position
+				let g:word_break_position = 0
+				call matchdelete(g:word_break_position_match)
+				let g:word_break_position_match = 0
+			endif
 
 			let break_pos_relative  = break_pos - words_start_pos
 			if break_pos_relative < 0
