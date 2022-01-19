@@ -376,7 +376,7 @@ geometry=100%
  - BBC Paper Edit: [Slides](https://docs.google.com/presentation/d/1vVe_hgTj6JhLhU2WuZBOWx41ajcKX-8m8Xa0NIVZT2M/edit#slide=id.g6b51b79a88_2_245) | [github](https://github.com/bbc/digital-paper-edit-client) | [bbcnewslab](https://bbcnewslabs.co.uk/projects/digital-paper-edit/)
  - [AVID Media Composer - PhraseFind Option](https://www.avid.com/zh/products/media-composer-phrasefind-option)
 
-### Chinese words tips
+### 中文相关 Chinese words tips
 
 ```
 :%s/，/, /g
@@ -389,6 +389,10 @@ geometry=100%
 ```
  - 略慢凑合用: Chinese words motion plugin for vim: <https://github.com/ZWindL/chword.vim>
  - https://github.com/deton/motion_ja.vim 没跑起来
+
+> 水木vim版上一些人说，不如改造我们的语言，让 每个 词 后面 都 跟 空格 太 激进 了
+> 也可以用jieba分词等，提前处理一下srt。
+> 反正就是规则，加工的时候用一下，后面直接反过来
 
 ## TODOs
 
