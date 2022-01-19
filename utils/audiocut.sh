@@ -13,24 +13,28 @@ handle_args() {
 	local stop
 	local duration
 	while read start stop duration; do
-		if [[ "$last_start" != "NA" ]]; then
-			printf "EDL\t${last_start}\t${last_stop}\t| ${media%.*} |\tSOMEONE SAID SOMETHING\n"
-		fi
-		printf "EDL\t"
 		line=$start
 		h=$(bc <<< "$line/3600")
 		m=$(bc <<< "($line%3600)/60")
 		s=$(bc <<< "$line%60")
-		last_start=$(printf "%02d:%02d:%06.3f" $h $m $s)
-		printf "$last_start\t"
+		this_start=$(printf "%02d:%02d:%06.3f" $h $m $s)
+
+		if [[ "$last_start" != "NA" ]]; then
+			printf "EDL\t${last_stop}\t${this_start}\t| ${media%.*} |\tSomeoneSaidSomething\n"
+		fi
+
+		printf "EDL\t"
+		printf "$this_start\t"
 		line=$stop
 		h=$(bc <<< "$line/3600")
 		m=$(bc <<< "($line%3600)/60")
 		s=$(bc <<< "$line%60")
-		last_stop=$(printf "%02d:%02d:%06.3f" $h $m $s)
-		printf "$last_stop\t"
+		this_stop=$(printf "%02d:%02d:%06.3f" $h $m $s)
+		printf "$this_stop\t"
 		printf "| ${media%.*} |\t"
 		printf "[ SPACE ${duration} secs ] \n"
+		last_start=this_start
+		last_stop=this_stop
 	done
 }
 
