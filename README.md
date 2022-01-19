@@ -375,6 +375,7 @@ geometry=100%
 	- Vimscript cheatsheet: https://devhints.io/vimscript
  - BBC Paper Edit: [Slides](https://docs.google.com/presentation/d/1vVe_hgTj6JhLhU2WuZBOWx41ajcKX-8m8Xa0NIVZT2M/edit#slide=id.g6b51b79a88_2_245) | [github](https://github.com/bbc/digital-paper-edit-client) | [bbcnewslab](https://bbcnewslabs.co.uk/projects/digital-paper-edit/)
  - [AVID Media Composer - PhraseFind Option](https://www.avid.com/zh/products/media-composer-phrasefind-option)
+ - Chinese words motion plugin for vim: <https://github.com/ZWindL/chword.vim>
 
 ## TODOs
 
