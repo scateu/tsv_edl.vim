@@ -39,7 +39,7 @@ echo "Writing to ${media%.*}_audiocut.tsv"
 echo "Silence detect threshold: ${threshold} dB"
 echo "Silence detect duration: ${duration} sec"
 
-ffmpeg -y -i "./${media}" -af "silencedetect=n=${threshold}dB:d=${duration}" -f null - 2>&1 | sed -n -E -l '/silence_start/p; /silence_end/p;' | sed -n -E -l '/silence_start/ {s/^.*silence_start: //; N; s/\n.*silence_end:/ /; s/\|.*silence_duration: //; p;}' | handle_args | tee "${media%.*}_audiocut.tsv"
+ffmpeg -y -i "./${media}" -af "silencedetect=n=${threshold}dB:d=${duration}" -f null - 2>&1 | sed -n -E -l '/silence_start/p; /silence_end/p;' | sed -n -E -l '/silence_start/ {s/^.*silence_start: //; N; s/\n.*silence_end:/ /; s/\|.*silence_duration: //; p;}' | handle_args | sed 's/,/./g' | tee "${media%.*}_audiocut.tsv"
 
 
 #|  sed -n -E -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/	/;p;x;D;' | sed -l 's/^/EDL	/' | sed -l "s/$/	| ${media%.*} |	/" | tee 
