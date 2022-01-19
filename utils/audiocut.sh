@@ -33,8 +33,8 @@ handle_args() {
 		printf "$this_stop\t"
 		printf "| ${media%.*} |\t"
 		printf "[ SPACE ${duration} secs ] \n"
-		last_start=this_start
-		last_stop=this_stop
+		last_start="$this_start"
+		last_stop="$this_stop"
 	done
 }
 
