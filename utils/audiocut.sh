@@ -1,11 +1,11 @@
 #!/bin/bash
 
 media="$1"
-threshold=-50 #dB
-duration=1  #sec
+threshold=-30 #dB
+duration=0.3  #sec
 
 last_start="NA"
-last_stop="NA"
+last_stop="00:00:00,000"
 
 handle_args() {
 #secs2timecode() {
@@ -19,9 +19,10 @@ handle_args() {
 		s=$(bc <<< "$line%60")
 		this_start=$(printf "%02d:%02d:%06.3f" $h $m $s | sed 's/\./,/')
 
-		if [[ "$last_start" != "NA" ]]; then
-			printf "EDL\t${last_stop}\t${this_start}\t| ${media%.*} |\tSomeoneSaidSomething\n"
+		if [[ "$last_stop" == "$this_start" ]]; then  # 00:00:00,000 --> 00:00:00,000
+			continue
 		fi
+		printf "EDL\t${last_stop}\t${this_start}\t| ${media%.*} |\tSomeoneSaidSomething\n"
 
 		printf "EDL\t"
 		printf "$this_start\t"
