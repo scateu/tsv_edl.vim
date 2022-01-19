@@ -2,7 +2,7 @@
 
 media="$1"
 threshold=-50 #dB
-duration=4  #sec
+duration=1  #sec
 
 last_start="NA"
 last_stop="NA"
