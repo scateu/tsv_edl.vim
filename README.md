@@ -406,6 +406,7 @@ geometry=100%
  - [X] `set fdm=expr` is very slow. need to switch to `manual` or add a cache
  - [ ] media path support. or a very fancy `ln -s` helper?
  - [ ] tesseract OCR on existing burn-in subtitle
+ - [ ] replace 'jq' 'socat' with python standard library
 
 
 ## DEMO
