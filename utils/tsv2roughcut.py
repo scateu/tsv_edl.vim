@@ -112,8 +112,10 @@ if __name__ == "__main__":
                 srt_last_position += srt_duration
                 srt_last_position = round(srt_last_position, 3)
 
-            filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
-            filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
+            filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ] 
+            #FIXME didn't test. *%s*.*
+            filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
+            # FIXME a.mp3 another.m4a
 
             if len(filenames_v) > 1:
                 eprint("WARNING: filename similar to clip %s has more than one"%clipname)
@@ -125,6 +127,7 @@ if __name__ == "__main__":
                 is_pure_audio_project = False
             elif len(filenames_v) == 0:
                 if len(filenames_a) > 1:
+                    print(filenames_a)
                     eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
                     eprint("Choosing the %s"%filenames_v[0])
                     filename = filenames_a[0]
@@ -146,22 +149,46 @@ if __name__ == "__main__":
     eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
 
     if is_pure_audio_project: #Audio only
+        # determine output audio file ext
+        exts = list(set([os.path.splitext(c[0])[1][1:].lower() for c in output_queue]))
+        if exts == ['wav']:
+            roughcut_ext_name = '.wav'
+            roughcut_audio_codec = '-c:a copy'
+            intermediate_ext_name = None
+        elif exts == ['mp3']:
+            roughcut_ext_name = '.mp3'
+            roughcut_audio_codec = '-c:a copy'
+            intermediate_ext_name = None
+        elif exts == ['m4a']:
+            roughcut_ext_name = '.m4a'
+            roughcut_audio_codec = '-c:a copy'
+            intermediate_ext_name = None
+        else:
+            intermediate_ext_name = ".wav"
+            roughcut_ext_name = ".mp3" # or ".mkv"
+            roughcut_audio_codec = '-c:a libmp3lame -b:a 320k'
+            #roughcut_audio_codec = ''
+
+
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("[tempdir]", tempdirname)
             counter = 0
             eprint("[ffmpeg] writing ", end="") 
-            for f,r_in,r_out in output_queue:
-                eprint("%05d.mp3 "%counter, end="")
-                sys.stderr.flush()
-                subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:a copy %s/%05d.mp3"%(f,r_in.replace(',','.'),r_out.replace(',','.'),tempdirname,counter), shell=True)
-                counter += 1
-            eprint("")
-
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
-                for i in range(len(output_queue)):
-                    output_file.write("file '%s/%05d.mp3'\n"%(tempdirname,i))
+                for f,r_in,r_out in output_queue:
+                    if intermediate_ext_name == None:
+                        audioclips_ext_name = os.path.splitext(f)[1].lower()
+                        intermediate_audio_codec = '-c:a copy'
+                    else:
+                        audioclips_ext_name = intermediate_ext_name
+                        intermediate_audio_codec = ''
+                    eprint("%05d%s "%(counter,audioclips_ext_name), end="")
+                    sys.stderr.flush()
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s %s %s/%05d%s"%(f,r_in.replace(',','.'),r_out.replace(',','.'), intermediate_audio_codec, tempdirname,counter, audioclips_ext_name), shell=True)
+                    output_file.write("file '%s/%05d%s'\n"%(tempdirname, counter, audioclips_ext_name))
+                    counter += 1
+                eprint("")
 
-            roughcut_ext_name = ".mp3" # or ".mkv"
             roughcut_filename = "roughcut" + roughcut_ext_name
             srt_filename = "roughcut.srt"
             if os.path.exists(roughcut_filename):
@@ -178,8 +205,8 @@ if __name__ == "__main__":
                 eprint("[srt] writing",srt_filename)
                 with open(srt_filename, "w") as output_file:
                     output_file.write('\n'.join(srt_queue))
-
-            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
+            #import time; time.sleep(100000)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt %s %s"%(tempdirname, roughcut_audio_codec, roughcut_filename), shell=True)
     else: # VIDEEEEO
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("[tempdir]", tempdirname)
