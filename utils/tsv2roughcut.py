@@ -127,7 +127,6 @@ if __name__ == "__main__":
                 is_pure_audio_project = False
             elif len(filenames_v) == 0:
                 if len(filenames_a) > 1:
-                    print(filenames_a)
                     eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
                     eprint("Choosing the %s"%filenames_v[0])
                     filename = filenames_a[0]
