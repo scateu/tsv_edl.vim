@@ -13,6 +13,7 @@ INPUT:
  - do `srt2tsv_all`
  - edit, paper edit.
  - do `cat roughcut.tsv | sed 's/audiofile/multicam' | tsv2fcpxml > multicam.fcpxml `
+   - **FPS**: Make sure your audio/video/tsv2fcpxml use the same FPS setting
 
 ## 2. Import to DaVinci Resolve
  - Import audiofile.m4a
@@ -24,16 +25,20 @@ INPUT:
  - Do the same to footage B
  - Click on audiofile, footage A and footage B. Right click - "New Multicam Clip"
    - Start Timecode: 00:00:00:00
+   - Frame Rate: 24 (as specified in `tsv2fcpxml.py`)
    - Angle Sync: In
    - Name: multicam
 
- - Import multicam.fcpxml. **Uncheck** "Automatically import source clips into media pool"
+ - Import multicam.fcpxml
+   - **Uncheck** "Automatically import source clips into media pool"
+   - **Check only** the bin that includes "multicam" clip. So that it's easier for DaVinci Resolve to select this one
  - Tada! DaVinci Resolve should be using your Multicam Clip named "multicam"
 
 ## 3. Edit!
  - On multicam pane, check 'audio only' button
  - Cmd-A on timeline
  - Option click on the good audio track. (Multicam Switch audio only)
+ - Lock Audio 1 Track. 
 
 
 # REFERENCES
