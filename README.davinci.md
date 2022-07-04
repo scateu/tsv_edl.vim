@@ -21,8 +21,8 @@ INPUT:
  - Import footage A from SD Card into DaVinci Resolve
  - Import footage B from SD Card 
 
- - ~~Search for slate position in footage A. ~~
-   - ~~Press `I` to set as "In Mark". ~~
+ - ~~Search for slate position in footage A.~~
+   - ~~Press `I` to set as "In Mark".~~
  - ~~Do the same to footage B~~
 
  - Click on audiofile, footage A and footage B. Right click - "New Multicam Clip"
@@ -42,7 +42,7 @@ INPUT:
  - ~~Right click, Link~~
  - ~~Right click, Unlink~~
  - ~~Select all Audio clips. Menu - Multicam Switch to Angel 1 (The good audio)~~
- - ~~Lock Audio Track. ~~
+ - ~~Lock Audio Track.~~
  - ~~Select all Video clips. Menu - Multicam Switch to Angel 2/3 (Select one default video)~~
 
  - '🔽' key to select next clip
