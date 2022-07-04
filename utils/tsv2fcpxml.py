@@ -9,6 +9,8 @@ import glob
 import sys
 
 GENERATE_SRT = True
+OFFSET_1HOUR = True
+
 FCPX_SCALE = 90000
 FPS = 24
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
@@ -75,7 +77,10 @@ if __name__ == "__main__":
     xmlbody = ""
     xmlhead += xmlheader1
     offset = 0
-    eprint("NOTE: 24FPS, 48000Hz. Bite me.")
+    eprint("Be advised: 24FPS, 48000Hz.")
+    if OFFSET_1HOUR:
+        eprint("OFFSET_1HOUR: TIMECODE shifted by 1 hour, making DaVinci Resolve happy.")
+        eprint("TIPS: to paste one whole timeline on top of another, you may need to uncheck auto-track-selector in DaVinci Resolve.")
     srt_queue = []
     srt_counter = 1
     while True:
@@ -122,8 +127,13 @@ if __name__ == "__main__":
                     ref_id = media_assets[clipname][1]
 
                 _r = _items[0].split() #['EDL', '01:26:16.12', '01:27:22.10']
-                fcpx_record_in = timecode_to_fcpx_time(_r[1])
+                fcpx_record_in = timecode_to_fcpx_time(_r[1]) 
                 fcpx_record_out  = timecode_to_fcpx_time(_r[2])
+
+                if OFFSET_1HOUR: #shift all timecode by 1hour, to make Davinci Resolve's default behavior happy
+                    fcpx_record_in += 3600 * FCPX_SCALE
+                    fcpx_record_out += 3600 * FCPX_SCALE
+
                 if fcpx_record_out == fcpx_record_in:
                     fcpx_record_out += FCPX_SCALE / FPS
                 duration = fcpx_record_out - fcpx_record_in
