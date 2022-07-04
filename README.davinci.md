@@ -12,7 +12,7 @@ INPUT:
  - Transcribe it.
  - do `srt2tsv_all`
  - edit, paper edit.
- - do `cat roughcut.tsv | sed 's/audiofile/multicam' | tsv2fcpxml > multicam.fcpxml `
+ - do `cat roughcut.tsv | sed 's/audiofile/multicam/' | tsv2fcpxml > multicam.fcpxml `
    - or: ` cat roughcut.tsv | tsv2fcpxml --fps=25 --nosrt --offsetonehour  > multicam.fcpxml`
    - **FPS**: Make sure your audio/video/tsv2fcpxml use the same FPS setting
 
@@ -21,9 +21,11 @@ INPUT:
  - Import footage A from SD Card into DaVinci Resolve
  - Import footage B from SD Card 
 
+   <del>
 	 - Search for slate position in footage A. 
 	   - Press `I` to set as "In Mark". 
 	 - Do the same to footage B
+   </del>
 
  - Click on audiofile, footage A and footage B. Right click - "New Multicam Clip"
    - Start Timecode: 01:00:00:00  (thanks to `--offsetonehour`)
@@ -38,12 +40,14 @@ INPUT:
 
 ## 3. Edit!
 
+   <del>
 	 - Cmd-A on timeline
 	 - Right click, Link
 	 - Right click, Unlink
 	 - Select all Audio clips. Menu - Multicam Switch to Angel 1 (The good audio)
 	 - Lock Audio Track. 
 	 - Select all Video clips. Menu - Multicam Switch to Angel 2/3 (Select one default video)
+   </del>
  - '🔽' key to select next clip
  - 'Option-2' to switch angel
 
