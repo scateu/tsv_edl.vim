@@ -1,6 +1,7 @@
-# Tutorial: Export to davinci, multicam editing
+# Tutorial: Export to DaVinci and Multicam Edit
 
-INPUT:
+## INPUT
+
  1. Camera A
  2. Camera B
  3. Audio Recording: audiofile.m4a
@@ -11,10 +12,10 @@ INPUT:
  - Export, so that the audio starts with a slate sound. 
  - Transcribe it.
  - do `srt2tsv_all`
- - edit, paper edit.
+ - paper edit
  - do `cat roughcut.tsv | sed 's/audiofile/multicam/' | tsv2fcpxml > multicam.fcpxml `
    - or: ` cat roughcut.tsv | tsv2fcpxml --fps=25 --nosrt --offsetonehour  > multicam.fcpxml`
-   - **FPS**: Make sure your audio/video/tsv2fcpxml use the same FPS setting
+	   - **FPS**: Make sure your audio/video/tsv2fcpxml use the same FPS setting
 
 ## 2. Import to DaVinci Resolve
  - Import audiofile.m4a
@@ -29,12 +30,12 @@ INPUT:
    - Start Timecode: 01:00:00:00  (thanks to `--offsetonehour`)
    - Frame Rate: 25 (as specified in `tsv2fcpxml.py`)
    - Angle Sync: Sound (Or with In Mark)
-   - Name: multicam
+   - Name: `multicam`
 
- - Import multicam.fcpxml
+ - Import `multicam.fcpxml`
    - **Uncheck** "Automatically import source clips into media pool"
-   - **Check only** the bin that includes "multicam" clip. So that it's easier for DaVinci Resolve to select this one
- - Tada! DaVinci Resolve should be using your Multicam Clip named "multicam"
+   - **Check only** the bin that includes `multicam` clip. So that it's easier for DaVinci Resolve to select this one
+ - Tada! DaVinci Resolve should be using your Multicam Clip named `multicam`
 
 ## 3. Edit!
 
