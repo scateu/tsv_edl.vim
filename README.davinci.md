@@ -35,10 +35,14 @@ INPUT:
  - Tada! DaVinci Resolve should be using your Multicam Clip named "multicam"
 
 ## 3. Edit!
- - On multicam pane, check 'audio only' button
  - Cmd-A on timeline
- - Option click on the good audio track. (Multicam Switch audio only)
- - Lock Audio 1 Track. 
+ - Right click, Link
+ - Right click, Unlink
+ - Select all Audio clips. Menu - Multicam Switch to Angel 1 (The good audio)
+ - Lock Audio Track. 
+ - Select all Video clips. Menu - Multicam Switch to Angel 2/3 (Select one default video)
+ - '🔽' key to select next clip
+ - 'Option-2' to switch angel
 
 
 # REFERENCES
