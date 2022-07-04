@@ -21,13 +21,14 @@ INPUT:
  - Import footage A from SD Card into DaVinci Resolve
  - Import footage B from SD Card 
 
- - Search for slate position in footage A. 
-   - Press `I` to set as "In Mark". 
- - Do the same to footage B
+	 - Search for slate position in footage A. 
+	   - Press `I` to set as "In Mark". 
+	 - Do the same to footage B
+
  - Click on audiofile, footage A and footage B. Right click - "New Multicam Clip"
-   - Start Timecode: 00:00:00:00
+   - Start Timecode: 01:00:00:00  (thanks to `--offsetonehour`)
    - Frame Rate: 25 (as specified in `tsv2fcpxml.py`)
-   - Angle Sync: In
+   - Angle Sync: Sound (Or with In Mark)
    - Name: multicam
 
  - Import multicam.fcpxml
@@ -36,12 +37,13 @@ INPUT:
  - Tada! DaVinci Resolve should be using your Multicam Clip named "multicam"
 
 ## 3. Edit!
- - Cmd-A on timeline
- - Right click, Link
- - Right click, Unlink
- - Select all Audio clips. Menu - Multicam Switch to Angel 1 (The good audio)
- - Lock Audio Track. 
- - Select all Video clips. Menu - Multicam Switch to Angel 2/3 (Select one default video)
+
+	 - Cmd-A on timeline
+	 - Right click, Link
+	 - Right click, Unlink
+	 - Select all Audio clips. Menu - Multicam Switch to Angel 1 (The good audio)
+	 - Lock Audio Track. 
+	 - Select all Video clips. Menu - Multicam Switch to Angel 2/3 (Select one default video)
  - '🔽' key to select next clip
  - 'Option-2' to switch angel
 
