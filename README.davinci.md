@@ -54,3 +54,13 @@ ffmpeg -i 220701-T001.WAV -ac 1 -c copy B.wav
 
 ffmpeg -i 220701-T001.WAV -ac 2 -c copy B.wav
 ```
+
+# Another style
+
+1. On footage A: find the slate position, trim off. Replace the audio with the good one.
+1. On footage B: same
+1. `cat roughcut.tsv | sed 's/audiofile/CamA' | tsv2fcpxml > CamA.xml`
+1. `cat roughcut.tsv | sed 's/audiofile/CamB' | tsv2fcpxml > CamB.xml`
+1. import each
+1. copy one whole timeline, and paste on top of another
+1. Press `D` to disable the view angle you don't like.
