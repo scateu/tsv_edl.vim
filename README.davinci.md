@@ -1,4 +1,4 @@
-# Tutorial Export to davinci. Multicam
+# Tutorial: Export to davinci, multicam editing
 
 INPUT:
  1. Camera A
@@ -13,6 +13,7 @@ INPUT:
  - do `srt2tsv_all`
  - edit, paper edit.
  - do `cat roughcut.tsv | sed 's/audiofile/multicam' | tsv2fcpxml > multicam.fcpxml `
+   - or: ` cat roughcut.tsv | tsv2fcpxml --fps=25 --nosrt --offsetonehour  > multicam.fcpxml`
    - **FPS**: Make sure your audio/video/tsv2fcpxml use the same FPS setting
 
 ## 2. Import to DaVinci Resolve
@@ -25,7 +26,7 @@ INPUT:
  - Do the same to footage B
  - Click on audiofile, footage A and footage B. Right click - "New Multicam Clip"
    - Start Timecode: 00:00:00:00
-   - Frame Rate: 24 (as specified in `tsv2fcpxml.py`)
+   - Frame Rate: 25 (as specified in `tsv2fcpxml.py`)
    - Angle Sync: In
    - Name: multicam
 
