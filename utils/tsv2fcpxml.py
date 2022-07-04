@@ -8,8 +8,9 @@ import os
 import glob
 import sys
 import argparse
+import math
 
-FCPX_SCALE = 90000
+FCPX_SCALE = 90000 * 4
 #FPS = 24
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
 audio_formats = ['wav', 'mp3', 'm4a']
@@ -20,13 +21,14 @@ xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
 <fcpxml version="1.8">
     <resources>
-        <format id="r1" frameDuration="{fps}/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>"""
+        <format id="r1" frameDuration="{fps}/{fcpx_scale}s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>"""
 # 24 FPS: 3750/90000
 # 25 FPS: 3600/90000
+# 23.976 FPS: 3753.75/90000 = 15015/360000
 
 xmlheader2 = """
         <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="36000s" hasVideo="{hasVideo}" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />"""
-#FIXME 36000s for 10hour max. Davinci Resolve will ignore source tape after 10hour; FCPX doesn't care        
+#FIXME 36000s for 10hour max. Davinci Resolve will ignore source tape after 10hour; FCPX doesn't care
 
 
 xmlheader3 = """
@@ -48,17 +50,21 @@ xmltail = """                    </spine>
 
 """
          |     s     |  gap    | s_next    |
-       start        end         
+       start        end
 
-<asset-clip name="MyMovie3" ref="r2" offset="5s" start="15s" duration="5s" audioRole="dialogue" /> 
+<asset-clip name="MyMovie3" ref="r2" offset="5s" start="15s" duration="5s" audioRole="dialogue" />
 """
 
-def timecode_to_fcpx_time(timecode, FPS, fcp_scale=FCPX_SCALE):
+def timecode_to_fcpx_time(timecode, FPS, fcpx_scale=FCPX_SCALE):
     timecode = timecode.strip().replace(",", ":")
     h,m,s,ms = [int(d) for d in timecode.split(":")]
-    # round to frames
-    ms_scaled = round(ms/1000.0 * FPS) * (fcp_scale / FPS)  #frames * 3750/FCPX_SCALE * FCPX_SCALE
-    return h*3600*fcp_scale + m*60*fcp_scale + s*fcp_scale + ms_scaled
+    ms_scaled = ms/1000.0 * fcpx_scale
+    return round(h*3600*fcpx_scale + m*60*fcpx_scale + s*fcpx_scale + ms_scaled)
+
+def timecode_to_frame_number(timecode, FPS):
+    timecode = timecode.strip().replace(",", ":")
+    h,m,s,ms = [int(d) for d in timecode.split(":")]
+    return round(h*3600*FPS + m*60*FPS + s*FPS + ms/1000.0 * FPS)
 
 def sec_to_srttime(sec):
     HH = int(sec/3600.0)
@@ -71,10 +77,36 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
+def stitch_fcpxml_queue(raw_queue):
+    #([clipname, ref_id, offset, fcpx_record_in, duration ])
+    length = len(raw_queue)
+    stitched_output = []
+    i = 0
+    while i < length:
+        clip, r, o, t1, d = raw_queue[i]
+        j = i + 1
+        if (i == length - 1): #last line
+            stitched_output.append(raw_queue[i])
+            break
+        clip_next, r_next, o_next, t1_next, d_next = raw_queue[j]
+        output_pending = [clip, r, o, t1, d]
+        while (clip == clip_next and r == r_next and t1 + d == t1_next):
+            output_pending = [clip, r, o, t1, d + d_next] #update pending output
+            #update item on the left to be examined
+            [clip, r, o, t1, d] = output_pending
+            j += 1
+            if (j == length): #out of index
+                break
+            clip_next, r_next, o_next, t1_next, d_next = raw_queue[j]
+        stitched_output.append(output_pending)
+        i = j
+    return stitched_output
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='convert tsv_edl to fcpxml')
     parser.add_argument('--offsetonehour', action="store_true", default=False)
-    parser.add_argument('--fps', action="store", default=24, type=int)
+    parser.add_argument('--fps', action="store", default=24, type=float)
     parser.add_argument('--nosrt', action="store_false", default=True)
     arguments = parser.parse_args()
 
@@ -85,9 +117,11 @@ if __name__ == "__main__":
     media_assets = {} # { "clipname": [ abspath, ref_id ] , ... }
     xmlhead = ""
     xmlbody = ""
-    xmlhead += xmlheader1.format(fps=int(90000/FPS))
+    output_queue = []
+    xmlhead += xmlheader1.format(fps=int(FCPX_SCALE/FPS), fcpx_scale = FCPX_SCALE)
+    #xmlhead += xmlheader1.format(fps=3753.75)
     offset = 0
-    eprint("Be advised: %dFPS, 48000Hz."%(FPS))
+    eprint("Be advised: %.3fFPS, 48000Hz."%(FPS))
     if OFFSET_1HOUR:
         eprint("OFFSET_1HOUR: TIMECODE shifted by 1 hour, making DaVinci Resolve happy.")
         eprint("TIPS: to paste one whole timeline on top of another, you may need to uncheck auto-track-selector in DaVinci Resolve.")
@@ -122,7 +156,7 @@ if __name__ == "__main__":
                         is_pure_audio = True
                         abspath = os.path.abspath(filename)
                     elif len(filenames_a) == 1:
-                        filename = filenames_a[0] 
+                        filename = filenames_a[0]
                         is_pure_audio = True
                         abspath = os.path.abspath(filename)
                     elif len(filenames_a) == 0:
@@ -132,21 +166,23 @@ if __name__ == "__main__":
 
                 if not clipname in media_assets:
                     ref_id = "r%d"%(len(media_assets) + 2) #id start from r2
-                    media_assets[clipname] = [abspath, ref_id ] 
+                    media_assets[clipname] = [abspath, ref_id ]
                 else:
                     ref_id = media_assets[clipname][1]
 
                 _r = _items[0].split() #['EDL', '01:26:16.12', '01:27:22.10']
-                fcpx_record_in = timecode_to_fcpx_time(_r[1], FPS) 
-                fcpx_record_out  = timecode_to_fcpx_time(_r[2], FPS)
+                #fcpx_record_in = timecode_to_fcpx_time(_r[1], FPS)
+                #fcpx_record_out  = timecode_to_fcpx_time(_r[2], FPS)
+                fcpx_record_in = round(timecode_to_frame_number(_r[1], FPS) * FCPX_SCALE / FPS)
+                fcpx_record_out  = round(timecode_to_frame_number(_r[2], FPS) * FCPX_SCALE / FPS)
+                duration = fcpx_record_out - fcpx_record_in
 
                 if OFFSET_1HOUR: #shift all timecode by 1hour, to make Davinci Resolve's default behavior happy
                     fcpx_record_in += 3600 * FCPX_SCALE
                     fcpx_record_out += 3600 * FCPX_SCALE
 
-                if fcpx_record_out == fcpx_record_in:
+                if fcpx_record_out == fcpx_record_in: #FIXME
                     fcpx_record_out += FCPX_SCALE / FPS
-                duration = fcpx_record_out - fcpx_record_in
 
                 if GENERATE_SRT:
                     subtitle = _items[2].strip()
@@ -164,13 +200,30 @@ if __name__ == "__main__":
                         srt_counter += 1
             else:
                 continue
-            xmlbody += "<asset-clip name=\"%s\" ref=\"%s\" offset=\"%d/90000s\" start=\"%d/90000s\" duration=\"%d/90000s\" audioRole=\"dialogue\" />\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #FIXME 90000 -> FCPX_SCALE
-            #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
-            offset += duration 
+
+
+            output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration ])
+            offset += duration
+
+    ####### Stitching #######
+    if len(output_queue) > 99999:
+        eprint("Too much. That's too much.")
+        sys.exit(-1)
+    # stitch adjecent clips in output_queue
+    before_stitch_lines = len(output_queue)
+    output_queue = stitch_fcpxml_queue(output_queue)
+    after_stitch_lines = len(output_queue)
+    eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
+
+
     for k in media_assets:
         xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=[0 if is_pure_audio else 1][0])
     xmlhead += xmlheader3
     print(xmlhead)
+
+    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration in output_queue:
+        xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" />\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)
+        #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
     print(xmlbody)
     print(xmltail)
 
