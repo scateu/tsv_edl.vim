@@ -9,7 +9,7 @@ import glob
 import sys
 
 GENERATE_SRT = True
-OFFSET_1HOUR = True
+OFFSET_1HOUR = False
 
 FCPX_SCALE = 90000
 FPS = 24
