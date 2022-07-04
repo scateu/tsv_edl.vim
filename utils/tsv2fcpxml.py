@@ -7,12 +7,10 @@ import urllib.parse
 import os
 import glob
 import sys
-
-GENERATE_SRT = True
-OFFSET_1HOUR = False
+import argparse
 
 FCPX_SCALE = 90000
-FPS = 24
+#FPS = 24
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
 audio_formats = ['wav', 'mp3', 'm4a']
 
@@ -22,7 +20,9 @@ xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE fcpxml>
 <fcpxml version="1.8">
     <resources>
-        <format id="r1" frameDuration="3750/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>"""
+        <format id="r1" frameDuration="{fps}/90000s" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>"""
+# 24 FPS: 3750/90000
+# 25 FPS: 3600/90000
 
 xmlheader2 = """
         <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="36000s" hasVideo="{hasVideo}" hasAudio="1" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />"""
@@ -53,7 +53,7 @@ xmltail = """                    </spine>
 <asset-clip name="MyMovie3" ref="r2" offset="5s" start="15s" duration="5s" audioRole="dialogue" /> 
 """
 
-def timecode_to_fcpx_time(timecode, fcp_scale=FCPX_SCALE, FPS=FPS):
+def timecode_to_fcpx_time(timecode, FPS, fcp_scale=FCPX_SCALE):
     timecode = timecode.strip().replace(",", ":")
     h,m,s,ms = [int(d) for d in timecode.split(":")]
     # round to frames
@@ -72,12 +72,22 @@ def eprint(*args, **kwargs):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='convert tsv_edl to fcpxml')
+    parser.add_argument('--offsetonehour', action="store_true", default=False)
+    parser.add_argument('--fps', action="store", default=24, type=int)
+    parser.add_argument('--nosrt', action="store_false", default=True)
+    arguments = parser.parse_args()
+
+    GENERATE_SRT = arguments.nosrt
+    OFFSET_1HOUR = arguments.offsetonehour
+    FPS = arguments.fps
+
     media_assets = {} # { "clipname": [ abspath, ref_id ] , ... }
     xmlhead = ""
     xmlbody = ""
-    xmlhead += xmlheader1
+    xmlhead += xmlheader1.format(fps=int(90000/FPS))
     offset = 0
-    eprint("Be advised: 24FPS, 48000Hz.")
+    eprint("Be advised: %dFPS, 48000Hz."%(FPS))
     if OFFSET_1HOUR:
         eprint("OFFSET_1HOUR: TIMECODE shifted by 1 hour, making DaVinci Resolve happy.")
         eprint("TIPS: to paste one whole timeline on top of another, you may need to uncheck auto-track-selector in DaVinci Resolve.")
@@ -127,8 +137,8 @@ if __name__ == "__main__":
                     ref_id = media_assets[clipname][1]
 
                 _r = _items[0].split() #['EDL', '01:26:16.12', '01:27:22.10']
-                fcpx_record_in = timecode_to_fcpx_time(_r[1]) 
-                fcpx_record_out  = timecode_to_fcpx_time(_r[2])
+                fcpx_record_in = timecode_to_fcpx_time(_r[1], FPS) 
+                fcpx_record_out  = timecode_to_fcpx_time(_r[2], FPS)
 
                 if OFFSET_1HOUR: #shift all timecode by 1hour, to make Davinci Resolve's default behavior happy
                     fcpx_record_in += 3600 * FCPX_SCALE
