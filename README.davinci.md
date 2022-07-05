@@ -49,6 +49,15 @@
  - '🔽' key to select next clip
  - 'Option-2' to switch angel
 
+### Edit along with Subtitles
+ - Import SRT
+ - Check off "Selection Follows Playhead"
+ - Mark In
+ - Mark Out
+     - Make sure no clip is selected and In/Out region is highlighted
+ - Ripple Delete
+ - Boom! Audio, Multicam and Subtitle will be removed all at once
+
 
 # REFERENCES
 
