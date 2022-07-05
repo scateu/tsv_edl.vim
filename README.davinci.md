@@ -60,8 +60,8 @@
 
 ### Edit along with Subtitles: Trim Items Start Style
  - Import SRT
- - If on the edge of a SRT block and in the middle of A/V clip, just do `Cmd-Shift-[`.
- - If not on the edge of a SRT block, first do a blade on SRT block to split it, then `Cmd-Shift-[`. (Probably a bug.)
+ - If the SRT blocks on the right will be covering the left ones (blocks on the right has no gap), just do `Cmd-Shift-[`.
+   - Otherwise, first delete all the SRT blocks you want to remove on the left
 
 
 # REFERENCES
