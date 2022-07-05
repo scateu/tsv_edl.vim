@@ -49,7 +49,7 @@
  - '🔽' key to select next clip
  - 'Option-2' to switch angel
 
-### Edit along with Subtitles
+### Edit along with Subtitles: I/O Style 
  - Import SRT
  - Check off "Selection Follows Playhead"
  - Mark In
@@ -57,6 +57,11 @@
      - Make sure no clip is selected and In/Out region is highlighted
  - Ripple Delete
  - Boom! Audio, Multicam and Subtitle will be removed all at once
+
+### Edit along with Subtitles: Trim Items Start Style
+ - Import SRT
+ - If on the edge of a SRT block and in the middle of A/V clip, just do `Cmd-Shift-[`.
+ - If not on the edge of a SRT block, first do a blade on SRT block to split it, then `Cmd-Shift-[`. (Probably a bug.)
 
 
 # REFERENCES
