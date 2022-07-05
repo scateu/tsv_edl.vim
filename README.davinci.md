@@ -60,7 +60,7 @@
 
 ### Edit along with Subtitles: Trim Items Start Style
  - Import SRT
- - If the SRT blocks on the right will be covering the left ones (blocks on the right has no gap), just do `Cmd-Shift-[`.
+ - If the SRT blocks on the right will be covering the left ones (blocks on the right has no gap), just do `Cmd-Shift-[`. (Trim > Ripple > Start to Playhead)
    - Otherwise, first delete all the SRT blocks you want to remove on the left
 
 
