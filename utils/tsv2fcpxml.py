@@ -219,7 +219,7 @@ if __name__ == "__main__":
     for k in media_assets:
         xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=[0 if is_pure_audio else 1][0])
         if is_pure_audio:
-            eprint("WARNING: hasVideo=0, if you want to import into DaVinci Resolve as a multicam. You may change it in .fcpxml manually")
+            eprint("WARNING & FIXME: hasVideo=0, if you want to import into DaVinci Resolve as a multicam. You may change it in .fcpxml manually")
     xmlhead += xmlheader3
     print(xmlhead)
 
