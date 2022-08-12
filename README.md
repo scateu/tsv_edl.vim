@@ -123,6 +123,7 @@ Press `g9` will:
 
 ## Overview
 
+<details markdown="1"><summary>Click here to see full ASCII diagram</summary>
 ```
 media -- [scenecut_preview]  detect scene cut and slice into tsv
          [    audiocut    ]  detect scene cut by audio silence
@@ -157,6 +158,8 @@ media -- [scenecut_preview]  detect scene cut and slice into tsv
 							               \
 							                \---> Production
 ```
+
+</details>
 
 ![screenshot](screenshots/a.png)
 ![screenshot](screenshots/c.jpg)
