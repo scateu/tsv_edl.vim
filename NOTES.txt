@@ -37,3 +37,8 @@ ffmpeg -i input2.mp4 -c copy -bsf:v h264_mp4toannexb -f mpegts intermediate2.ts
 ffmpeg -i "concat:intermediate1.ts|intermediate2.ts" -c copy -bsf:a aac_adtstoasc output.mp4
 
 
+------
+
+DEBUG:
+
+vim -c "breakadd file ~/.vim/pack/plugins/start/tsv_edl.vim/syntax/tsv_edl.vim"  somefile.txt

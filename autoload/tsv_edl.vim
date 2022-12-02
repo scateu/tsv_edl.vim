@@ -19,7 +19,7 @@ endfunction
 
 
 function! tsv_edl#infer_time_pos(line)
-	"""""" infer current timecode
+	" infer current timecode
 	let cursor_pos = getpos(".")[2]  "41
 	let words_start_pos = matchstrpos(a:line, '|\t', 32, 1)[-1]  + 1.0
 	let b = len(a:line) - words_start_pos
@@ -65,7 +65,7 @@ function! tsv_edl#play_current_range(...) "stop_at_end = v:true)
 			let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
 			"echo "[deduced_timecode]: ". deduced_timecode
 
-			"""""" command, go!
+			"command, go!
 			"let command_play_from_start = 'ffplay -hide_banner -noborder -seek_interval 1 -ss ' . record_in . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)&'
 			"let command_play_from_cursor = printf('ffplay -autoexit -hide_banner -noborder -seek_interval 1 -ss %s -t %.3f ./*"%s"*.!(tsv|srt|txt)', deduced_start_pos_secs, deduced_line_duration, filename)
 			"let command_mpv_from_cursor = 'mpv --profile=low-latency --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)'
@@ -219,8 +219,8 @@ function!  tsv_edl#join_with_next_line()
 	endif
 endfunction
 
-"" see !shopt
-""     extglob off
+" see !shopt
+"     extglob off
 
 "======================
 " IPC

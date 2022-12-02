@@ -109,12 +109,16 @@ syn sync fromstart
 "	let g:org_heading_highlight_levels = len(g:org_heading_highlight_colors)
 "endif
 "
-"let g:org_heading_shade_leading_stars = 0 "Disable g:org_heading_shade_leading_stars, for now
+"
+"let g:org_heading_shade_leading_stars = 0 
+"Disable g:org_heading_shade_leading_stars, for now
+"
 "if !exists('g:org_heading_shade_leading_stars')
 "	let g:org_heading_shade_leading_stars = 1
 "endif
 "
-"" Enable Syntax HL:
+" Enable Syntax HL
+"
 "unlet! s:i s:j s:contains
 "let s:i = 1
 "let s:j = len(g:org_heading_highlight_colors)

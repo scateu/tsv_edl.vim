@@ -7,17 +7,20 @@ augroup END
 fun! s:test_tsv_edl()
   if getline(1) =~ '^EDL\t'
   "if getline(1) =~ '^EDL.*Record In'
-    setfiletype tsv_edl
+    "setfiletype tsv_edl
+    set filetype=tsv_edl
     return
   endif
   let n = 1
   while n < 20 && n < line("$")
     if getline(n) =~ '^EDL.*\d\d:\d\d:\d\d'
-      setfiletype tsv_edl
+      "setfiletype tsv_edl
+      set filetype=tsv_edl
       return
     endif
     if getline(n) =~ '^---.*\d\d\:\d\d:\d\d'
-      setfiletype tsv_edl
+      "setfiletype tsv_edl
+      set filetype=tsv_edl
       return
     endif
     let n = n + 1
