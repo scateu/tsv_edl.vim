@@ -22,21 +22,21 @@ install-utils:
 	chmod +x ${CURDIR}/utils/srt2txt.sh
 	chmod +x ${CURDIR}/utils/tsv2zh_cn.sh
 	chmod +x ${CURDIR}/utils/tsv2fcpxml.py
-	sudo ln -s ${CURDIR}/utils/tsv2edl.py /usr/local/bin/tsv2edl
-	sudo ln -s ${CURDIR}/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
-	sudo ln -s ${CURDIR}/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
-	sudo ln -s ${CURDIR}/utils/tsv2srt.py /usr/local/bin/tsv2srt
-	sudo ln -s ${CURDIR}/utils/tsv2srt_all.py /usr/local/bin/tsv2srt_all
-	sudo ln -s ${CURDIR}/utils/tsv2roughcut.py /usr/local/bin/tsv2roughcut
-	sudo ln -s ${CURDIR}/utils/mkgap_10_mp4 /usr/local/bin/mkgap_10_mp4
-	sudo ln -s ${CURDIR}/utils/mkgap_10_mp3 /usr/local/bin/mkgap_10_mp3
-	sudo ln -s ${CURDIR}/utils/tsv2srt_reflow.py /usr/local/bin/tsv2srt_reflow
-	sudo ln -s ${CURDIR}/utils/srt2tsv.sh /usr/local/bin/srt2tsv
-	sudo ln -s ${CURDIR}/utils/scenecut_preview.sh /usr/local/bin/scenecut_preview
-	sudo ln -s ${CURDIR}/utils/audiocut.sh /usr/local/bin/audiocut
-	sudo ln -s ${CURDIR}/utils/srt2txt.sh /usr/local/bin/srt2txt
-	sudo ln -s ${CURDIR}/utils/tsv2zh_cn.sh /usr/local/bin/tsv2zh_cn
-	sudo ln -s ${CURDIR}/utils/tsv2fcpxml.py /usr/local/bin/tsv2fcpxml
+	sudo ln -sf ${CURDIR}/utils/tsv2edl.py /usr/local/bin/tsv2edl
+	sudo ln -sf ${CURDIR}/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
+	sudo ln -sf ${CURDIR}/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
+	sudo ln -sf ${CURDIR}/utils/tsv2srt.py /usr/local/bin/tsv2srt
+	sudo ln -sf ${CURDIR}/utils/tsv2srt_all.py /usr/local/bin/tsv2srt_all
+	sudo ln -sf ${CURDIR}/utils/tsv2roughcut.py /usr/local/bin/tsv2roughcut
+	sudo ln -sf ${CURDIR}/utils/mkgap_10_mp4 /usr/local/bin/mkgap_10_mp4
+	sudo ln -sf ${CURDIR}/utils/mkgap_10_mp3 /usr/local/bin/mkgap_10_mp3
+	sudo ln -sf ${CURDIR}/utils/tsv2srt_reflow.py /usr/local/bin/tsv2srt_reflow
+	sudo ln -sf ${CURDIR}/utils/srt2tsv.sh /usr/local/bin/srt2tsv
+	sudo ln -sf ${CURDIR}/utils/scenecut_preview.sh /usr/local/bin/scenecut_preview
+	sudo ln -sf ${CURDIR}/utils/audiocut.sh /usr/local/bin/audiocut
+	sudo ln -sf ${CURDIR}/utils/srt2txt.sh /usr/local/bin/srt2txt
+	sudo ln -sf ${CURDIR}/utils/tsv2zh_cn.sh /usr/local/bin/tsv2zh_cn
+	sudo ln -sf ${CURDIR}/utils/tsv2fcpxml.py /usr/local/bin/tsv2fcpxml
 
 uninstall-utils:
 	cd /usr/local/bin; sudo rm -i audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow scenecut_preview srt2txt tsv2zh_cn audiocut
@@ -55,7 +55,7 @@ install-mpv-mac: mpv-latest.tar.gz
 	tar zxvf mpv-latest.tar.gz
 	mv mpv.app /Applications/
 	rm -r documentation/
-	sudo ln -s /Applications/mpv.app/Contents/MacOS/mpv /usr/local/bin/mpv
+	sudo ln -sf /Applications/mpv.app/Contents/MacOS/mpv /usr/local/bin/mpv
 
 install-jq-mac: jq_macOS.bin
 	chmod +x $<
