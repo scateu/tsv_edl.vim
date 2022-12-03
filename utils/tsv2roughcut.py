@@ -293,3 +293,5 @@ if __name__ == "__main__":
         os.rename(roughcut_filename, newname + roughcut_ext_name)
         eprint("[Rename] ", srt_filename, 'to', '[' + newname + '.srt' + ']')
         os.rename(srt_filename, newname + '.srt')
+
+        #FIXME: tsv2roughcut  缺最后一行的回车，可能会导致srt2tsv脚本失效
