@@ -310,9 +310,12 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 	endif
 
 
-	let output = system("pgrep -f input-ipc-server=/tmp/mpvsocket")
-	if len(output) != 0
+	"FreeBSD's pgrep excludes ancestors of the pgrep process, including the script instance that ran it. Linux's pgrep doesn't have a corresponding feature.
+	"https://unix.stackexchange.com/questions/290553/pgrep-in-my-shell-script-not-counting-the-script-itself
+	"let output = system("pgrep -f input-ipc-server=/tmp/mpvsocket")
 	"if v:shell_error != 0
+	let output = system("ps aux |grep 'input-ipc-server=/tmp/mpvsocket' |grep -v grep")
+	if len(output) != 0
 		echon '[pgrep] existing mpvsocket found, reuse. '
 		let result=trim(system('echo "{ \"command\": [\"get_property\", \"filename\" ] }" | nc -U /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 		"echo result
