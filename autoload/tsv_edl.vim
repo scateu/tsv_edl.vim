@@ -311,7 +311,8 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 
 
 	let output = system("pgrep -f input-ipc-server=/tmp/mpvsocket")
-	if v:shell_error != 0
+	if len(output) != 0
+	"if v:shell_error != 0
 		echon '[pgrep] existing mpvsocket found, reuse. '
 		let result=trim(system('echo "{ \"command\": [\"get_property\", \"filename\" ] }" | nc -U /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 		"echo result
