@@ -253,10 +253,10 @@ function! tsv_edl#ipc_load_media(filename)
 	let filename_with_ext = trim(system('ls *"' . a:filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1"))
 	echon "[ipc_load_media] loading " . filename_with_ext
 
-	call system('echo "{ \"command\": [\"loadfile\", \"' . filename_with_ext . '\", \"replace\", \"start=' . string(deduced_start_pos_secs) . '\" ] }" | nc -U /tmp/mpvsocket 2>/dev/null')
+	call system('echo "{ \"command\": [\"loadfile\", \"' . filename_with_ext . '\", \"replace\", \"start=' . string(deduced_start_pos_secs) . '\" ] }" | socat - /tmp/mpvsocket 2>/dev/null')
 	let g:ipc_loaded_media_name = a:filename
 	" seek again
-	"let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | nc -U /tmp/mpvsocket > /dev/null'
+	"let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | socat - /tmp/mpvsocket > /dev/null'
 	"let prompt = "[mpv ipc] load new clip, then seek to " . string(deduced_start_pos_secs) . "  "
 	"sleep 400m
 	"echon prompt
@@ -317,7 +317,7 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 	let output = system("ps aux |grep 'input-ipc-server=/tmp/mpvsocket' |grep -v grep")
 	if len(output) != 0
 		echon '[pgrep] existing mpvsocket found, reuse. '
-		let result=trim(system('echo "{ \"command\": [\"get_property\", \"filename\" ] }" | nc -U /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+		let result=trim(system('echo "{ \"command\": [\"get_property\", \"filename\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 		"echo result
 		let clipname = fnamemodify(result, ":r")
 		"echo clipname
@@ -369,7 +369,7 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 endfunction
 
 function! tsv_edl#ipc_quit()
-	let command_ipc_quit = 'echo "{ \"command\": [\"quit\"] }" | nc -U /tmp/mpvsocket > /dev/null &'
+	let command_ipc_quit = 'echo "{ \"command\": [\"quit\"] }" | socat - /tmp/mpvsocket > /dev/null &'
 	let command_pkill = "pkill -f input-ipc-server=/tmp/mpvsocket"
 	call system(command_ipc_quit)
 	let g:ipc_media_ready = v:false
@@ -396,7 +396,7 @@ function! tsv_edl#ipc_quit()
 endfunction
 
 function! tsv_edl#ipc_toggle_play()
-	let result=trim(system('echo "{ \"command\": [\"get_property\", \"pause\" ] }" | nc -U /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	let result=trim(system('echo "{ \"command\": [\"get_property\", \"pause\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 
 	if result ==? "true"
 		call tsv_edl#ipc_always_play()
@@ -406,7 +406,7 @@ function! tsv_edl#ipc_toggle_play()
 endfunction
 
 function! tsv_edl#ipc_always_pause()
-	call system('echo "{ \"command\": [\"set_property\", \"pause\", true ] }" | nc -U /tmp/mpvsocket > /dev/null &')
+	call system('echo "{ \"command\": [\"set_property\", \"pause\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 	let playback_time=tsv_edl#ipc_get_playback_time()
 	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
 	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
@@ -414,7 +414,7 @@ function! tsv_edl#ipc_always_pause()
 	let g:ipc_pause = v:true
 endfunction
 function! tsv_edl#ipc_always_play()
-	call system('echo "{ \"command\": [\"set_property\", \"pause\", false ] }" | nc -U /tmp/mpvsocket > /dev/null &')
+	call system('echo "{ \"command\": [\"set_property\", \"pause\", false ] }" | socat - /tmp/mpvsocket > /dev/null &')
 	echo "[mpv ipc] PLAY"
 	let g:ipc_pause = v:false
 endfunction
@@ -481,8 +481,8 @@ function! tsv_edl#ipc_seek()
 	"echo "[deduced_timecode]: ". deduced_timecode
 
 	"let command = 'mpvc -T '. string(deduced_start_pos_secs)  . ' &'
-	let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | nc -U /tmp/mpvsocket > /dev/null &'
-	" socat can be replaced by: nc -U -N $SOCKET
+	let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | socat - /tmp/mpvsocket > /dev/null &'
+	" socat can be replaced by: socat - -N $SOCKET
 	let prompt = "[mpv ipc] seek to " . string(deduced_timecode) . "  "
 
 	echon prompt
@@ -536,7 +536,7 @@ function! tsv_edl#ipc_continous_play()
 				"echo "[deduced_timecode]: ". deduced_timecode
 				let g:ipc_timecode = deduced_timecode
 
-				let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | nc -U /tmp/mpvsocket > /dev/null &'
+				let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | socat - /tmp/mpvsocket > /dev/null &'
 				let prompt = "[mpv ipc] seek to " .  string(deduced_start_pos_secs)
 
 				echo prompt
@@ -794,5 +794,5 @@ function! tsv_edl#write_record_out()
 endfunction
 
 function! tsv_edl#ipc_get_playback_time()
-	return trim(system('echo "{ \"command\": [\"get_property\", \"playback-time\" ] }" | nc -U /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	return trim(system('echo "{ \"command\": [\"get_property\", \"playback-time\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
 endfunction
