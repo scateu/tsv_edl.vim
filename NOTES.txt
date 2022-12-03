@@ -42,3 +42,12 @@ ffmpeg -i "concat:intermediate1.ts|intermediate2.ts" -c copy -bsf:a aac_adtstoas
 DEBUG:
 
 vim -c "breakadd file ~/.vim/pack/plugins/start/tsv_edl.vim/syntax/tsv_edl.vim"  somefile.txt
+
+
+
+-----
+
+macOS(native): nc -U
+
+Linux: nc -U doesn't work.  use socat -
+       find ./ -name \*.vim -exec sed -i 's/nc -U/socat -/g' {} \;
