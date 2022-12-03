@@ -51,3 +51,9 @@ macOS(native): nc -U
 
 Linux: nc -U doesn't work.  use socat -
        find ./ -name \*.vim -exec sed -i 's/nc -U/socat -/g' {} \;
+
+----
+
+VTT:
+
+	youtube-dl --all-subs --skip-download  https://www.c-span.org/video/?66368-1/madame-chiang-kai-shek-reception
