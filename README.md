@@ -418,6 +418,8 @@ geometry=100%
  - [X] bug: macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
  - [X] `set fdm=expr` is very slow. need to switch to `manual` or add a cache
  - [X] doesn't work on vim 9
+ - [ ] fcpxml2tsv
+ - [ ] robustness of tsv2fcpxml
 
 
 ## DEMO
