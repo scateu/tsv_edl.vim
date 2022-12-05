@@ -172,6 +172,8 @@ media -- [scenecut_preview]  detect scene cut and slice into tsv
 
 ## Install
 
+### Install on macOS with homebrew
+
 ```bash
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
