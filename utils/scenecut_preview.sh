@@ -1,7 +1,7 @@
 #!/bin/bash
 
 media="$1"
-threshold=0.4
+threshold=0.1
 #threshold = 0.1 for webcast
 #threshold = 0.4 for movie
 #threshold is (0, 1)   the smaller the finer chopped
