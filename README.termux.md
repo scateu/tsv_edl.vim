@@ -17,7 +17,8 @@ Patch some:
 	$ sed -i 's,/usr/local/bin/,/data/data/com.termux/files/usr/bin/,g' Makefile
 	$ make install-utils
 
-The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs, stay calm, wait for 20 secs.
+The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs, ~~ stay calm, wait for 20 secs until pulseaudio timeout. ~~  use `mpv -ao opensles ` instead
+	$ find ./ -name *.vim -exec sed -i 's,mpv --,mpv -ao opensles --,g' {} \;
 
 
  - FIXME: in termux, gnu sed doesn't support '-l'
@@ -45,7 +46,7 @@ Install some packages:
 	$ export DISPLAY=:1 
 
 	$ echo "vo=x11" >> $PREFIX/etc/mpv/mpv.conf
-	$ find ./ -name *.vim -exec sed -i 's,mpv --,mpv -vo=x11 --,g' {} \;
+	$ find ./ -name *.vim -exec sed -i 's,mpv --,mpv -ao opensles -vo=x11 --,g' {} \;
 	
 Some patient may be needed after press `\\`.
 
@@ -68,3 +69,10 @@ from outside:
 ## TIPS: mpv in text terminal
 
 	mpv --vo=tct ./video.mp4
+
+## TIPS: x11 forward
+	pkg install x11-repo
+	pkg install xorg-xauth
+	echo "X11Forwarding yes" >> $PREFIX/etc/ssh/sshd_config
+	sshd
+	$ ssh -X you@android-device
