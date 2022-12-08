@@ -8,7 +8,7 @@ Install [termux](https://mirrors.tuna.tsinghua.edu.cn/help/termux/) from [fdroid
  
 Install packages:
 
-	$ pkg install vim jq socat make git mpv
+	$ pkg install vim jq socat make git mpv bc
 
 Patch some:
 
@@ -18,6 +18,9 @@ Patch some:
 	$ make install-utils
 
 The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs, stay calm, wait for 20 secs.
+
+
+ - FIXME: in termux, gnu sed doesn't support '-l'
 
 ## VIDEO (if you insist)
 
