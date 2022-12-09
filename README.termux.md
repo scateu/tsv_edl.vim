@@ -17,7 +17,8 @@ Patch some:
 	$ sed -i 's,/usr/local/bin/,/data/data/com.termux/files/usr/bin/,g' Makefile
 	$ make install-utils
 
-The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs, ~~ stay calm, wait for 20 secs until pulseaudio timeout. ~~  use `mpv -ao opensles ` instead
+The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs, ~~ stay calm, wait for 20 secs until pulseaudio timeout. ~~  use `mpv -ao opensles ` instead of
+
 	$ find ./ -name *.vim -exec sed -i 's,mpv --,mpv -ao opensles --,g' {} \;
 
 
@@ -51,6 +52,7 @@ Install some packages:
 Some patient may be needed after press `\\`.
 
 Some commands:
+
 	$ mpv -vo=x11 ./video.mp4
 	Press 'f' to go fullscreen, to avoid only a portion of video is displayed.
 	# https://github.com/termux/termux-packages/issues/5057
@@ -71,6 +73,7 @@ from outside:
 	mpv --vo=tct ./video.mp4
 
 ## TIPS: x11 forward
+
 	pkg install x11-repo
 	pkg install xorg-xauth
 	echo "X11Forwarding yes" >> $PREFIX/etc/ssh/sshd_config
