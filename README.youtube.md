@@ -11,3 +11,8 @@ $ ffmpeg -ss 01:43:07 -to 01:43:50 -i "https://rr3---sn-oguelnzl.googlevideo.com
 
 
  - see <https://superuser.com/questions/1661048/how-to-download-a-portion-of-a-youtube-video>
+
+
+or use `yt-dlp` <https://github.com/yt-dlp/yt-dlp>
+
+> Download time range: Videos can be downloaded partially based on either timestamps or chapters using --download-sections
