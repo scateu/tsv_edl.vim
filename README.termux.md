@@ -17,7 +17,7 @@ Patch some:
 	$ sed -i 's,/usr/local/bin/,/data/data/com.termux/files/usr/bin/,g' Makefile
 	$ make install-utils
 
-The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs, ~~ stay calm, wait for 20 secs until pulseaudio timeout. ~~  use `mpv -ao opensles ` instead of
+The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs,  ~~ stay calm, wait for 20 secs until pulseaudio timeout.  ~~  use `mpv -ao opensles ` instead of
 
 	$ find ./ -name *.vim -exec sed -i 's,mpv --,mpv -ao opensles --,g' {} \;
 
