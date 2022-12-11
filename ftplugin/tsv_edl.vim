@@ -130,6 +130,7 @@ nnoremap <silent> g0 02f\|2l
 
 " append a gap for 5 secs below current line.
 nnoremap <silent> gO oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
+nnoremap <silent> gN oEDL	00:00:00,000	00:10:00,000	\|  \|	[ VIDEO 10*60 secs  ]<esc>0f\|la
 
 nmap <silent> \| :call tsv_edl#break_line()<CR>
 nmap <silent> mm :call DoSetColorColumn()<CR>
