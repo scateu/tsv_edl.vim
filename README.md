@@ -26,6 +26,7 @@
 | g8    | go to `record_out` timecode in prev line                                                                     |
 | g9    | go to `record_in` timecode                                                                                   |
 | gO    | append a gap for 5 secs below current line                                                                   |
+| gN    | append a line for 10 minutes below current line, place cursor to input clipname                              |
 | \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
 
 ### EDITORIAL DECISION
