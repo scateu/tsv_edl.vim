@@ -71,7 +71,11 @@ function! tsv_edl#play_current_range(...) "stop_at_end = v:true)
 			"let command_mpv_from_cursor = 'mpv --profile=low-latency --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ./*"' . filename . '"' . '*.!(tsv|srt|txt)'
 
 			if stop_at_end == v:true
-				let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
+				if filename =~? "^http"
+					let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' ' . filename
+				else
+					let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' --end='. record_out . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
+				endif
 				" on the nested quote inside brackets
 				" > Once one is inside $(...), quoting starts all over from scratch.
 				" -- https://unix.stackexchange.com/questions/289574/nested-double-quotes-in-assignment-with-command-substitution
@@ -80,7 +84,11 @@ function! tsv_edl#play_current_range(...) "stop_at_end = v:true)
 				"echo '[Ctrl-C to stop.] '
 				let prompt = "[mpv] " . filename . " " . deduced_timecode . " --> " . record_out
 			else
-				let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
+				if filename =~? "^http"
+					let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' ' . filename
+				else
+					let command_mpv_from_cursor = 'mpv --no-terminal --start='. deduced_timecode . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
+				endif
 				let prompt = "[mpv] " . filename . " " . deduced_timecode . " --> EOF"
 			endif
 
@@ -250,7 +258,11 @@ function! tsv_edl#ipc_load_media(filename)
 	let deduced_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
 	let g:ipc_timecode = tsv_edl#sec_to_timecode(deduced_start_pos_secs)
 
-	let filename_with_ext = trim(system('ls *"' . a:filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1"))
+	if a:filename =~? "^http"
+		let filename_with_ext = a:filename
+	else
+		let filename_with_ext = trim(system('ls *"' . a:filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1"))
+	endif
 	echon "[ipc_load_media] loading " . filename_with_ext
 
 	call system('echo "{ \"command\": [\"loadfile\", \"' . filename_with_ext . '\", \"replace\", \"start=' . string(deduced_start_pos_secs) . '\" ] }" | socat - /tmp/mpvsocket 2>/dev/null')
@@ -351,7 +363,14 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 	else
 		let g:ipc_pause = v:false
 	endif
-	let command = command . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
+
+	" http, https:// then skip local file searching
+	if filename =~? "^http"
+	"=~? means case insensitive.  =~# means case sensitive
+		let command = command . ' ' . filename . " &"
+	else
+		let command = command . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
+	endif
 	"echo command
 	echon "[mpv] load media: " . filename
 	call system(command)
@@ -457,9 +476,21 @@ function! tsv_edl#ipc_seek()
 
 	let filename = trim(trim(line_list[3],'|'))
 
-	if filename !=# g:ipc_loaded_media_name
-		echon "[mpv ipc] different media, load new. "
-		call tsv_edl#ipc_load_media(filename)
+	if filename =~? "^http"
+		" g:ipc_loaded_media_name			filename
+		" ---------------------------------------       ----------------------
+		" 1601846128877576193				https://twitter.com/i/status/1601846128877576193
+		" watch?v=MKWZB_kEwUo				https://www.youtube.com/watch?v=MKWZB_kEwUo
+		" https://www.bilibili.com/video/BV128411G7Xw/ 	https://www.bilibili.com/video/BV128411G7Xw/
+		if stridx(filename,g:ipc_loaded_media_name) == -1  "not a substring
+			echon "[mpv ipc] different online media, load new. "
+			call tsv_edl#ipc_load_media(filename)
+		endif
+	else
+		if filename !=# g:ipc_loaded_media_name
+			echon "[mpv ipc] different media, load new. "
+			call tsv_edl#ipc_load_media(filename)
+		endif
 	endif
 
 	let record_in = substitute(line_list[1], ',' , '.', 'g') 
@@ -512,10 +543,19 @@ function! tsv_edl#ipc_continous_play()
 			if line_list[0] == 'EDL' || line_list[0] == '---' "|| line_list[0] == 'xxx'
 				let filename = trim(trim(line_list[3],'|'))
 
-				if filename !=# g:ipc_loaded_media_name
-					echon "[mpv ipc] different media, load new. "
-					call tsv_edl#ipc_load_media(filename)
-					call tsv_edl#ipc_always_play()
+				if filename =~? "^http"
+					if stridx(filename,g:ipc_loaded_media_name) == -1  "not a substring
+						echon "[mpv ipc] different online media, load new. "
+						call tsv_edl#ipc_load_media(filename)
+						call tsv_edl#ipc_always_play()
+					endif
+				else
+
+					if filename !=# g:ipc_loaded_media_name
+						echon "[mpv ipc] different media, load new. "
+						call tsv_edl#ipc_load_media(filename)
+						call tsv_edl#ipc_always_play()
+					endif
 				endif
 
 				let record_in = substitute(line_list[1], ',' , '.', 'g') 
