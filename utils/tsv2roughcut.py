@@ -230,7 +230,7 @@ if __name__ == "__main__":
                     #--merge-output-format mkv 
                     # this command doesn't work very well, causing A-V sync and stall issues
                     
-                    command = "ffmpeg $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
+                    command = "ffmpeg -hide_banner $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
                     # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
                     # courtesy of user18298375298759 
                     eprint("")
