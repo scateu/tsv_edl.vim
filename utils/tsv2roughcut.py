@@ -112,29 +112,34 @@ if __name__ == "__main__":
                 srt_last_position += srt_duration
                 srt_last_position = round(srt_last_position, 3)
 
-            filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ] 
-            #FIXME didn't test. *%s*.*
-            filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
-            # FIXME a.mp3 another.m4a
+            if clipname.startswith("http"):
+                is_pure_audio_project = False
+                #filename = list(filter(None, clipname.split('/')))[-1] + ".mp4"
+                filename = clipname
+            else:
+                filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ] 
+                #FIXME didn't test. *%s*.*
+                filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
+                # FIXME a.mp3 another.m4a
 
-            if len(filenames_v) > 1:
-                eprint("WARNING: filename similar to clip %s has more than one"%clipname)
-                eprint("Choosing the %s"%filenames_v[0])
-                filename = filenames_v[0]
-                is_pure_audio_project = False
-            elif len(filenames_v) == 1:
-                filename = filenames_v[0]
-                is_pure_audio_project = False
-            elif len(filenames_v) == 0:
-                if len(filenames_a) > 1:
-                    eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+                if len(filenames_v) > 1:
+                    eprint("WARNING: filename similar to clip %s has more than one"%clipname)
                     eprint("Choosing the %s"%filenames_v[0])
-                    filename = filenames_a[0]
-                elif len(filenames_a) == 1:
-                    filename = filenames_a[0] 
-                elif len(filenames_a) == 0:
-                    eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
-                    continue
+                    filename = filenames_v[0]
+                    is_pure_audio_project = False
+                elif len(filenames_v) == 1:
+                    filename = filenames_v[0]
+                    is_pure_audio_project = False
+                elif len(filenames_v) == 0:
+                    if len(filenames_a) > 1:
+                        eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+                        eprint("Choosing the %s"%filenames_v[0])
+                        filename = filenames_a[0]
+                    elif len(filenames_a) == 1:
+                        filename = filenames_a[0] 
+                    elif len(filenames_a) == 0:
+                        eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
+                        continue
             output_queue.append([filename, record_in, record_out])
 
     if len(output_queue) > 99999:
@@ -212,43 +217,66 @@ if __name__ == "__main__":
             counter = 0
             eprint("[ffmpeg] writing ", end="") 
             for f,r_in,r_out in output_queue:
-                eprint(" %05d.ts"%counter, end="")
+                eprint(" %05d"%counter, end="")
                 sys.stderr.flush()
-                if 0: # it worked.
-                    #FIXME detect if it's macOS. otherwise libx264
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v %s -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), codec_v ,tempdirname,counter), shell=True)
-
-                if 1: # but this works faster in seeking
+                if f.startswith('http'):
+                    fragment_ext = "mp4"
+                    #00:02:03,500 -> 123.5
                     a = r_in.replace(',',':').split(':')
-                    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
-                    skip_time = 15
-                    if (t1 - skip_time > 0):
-                        t2 = t1 - skip_time
-                        t3 = skip_time + int(a[3])/1000.0
-                    else:
-                        t2 = 0
-                        t3 = t1 + int(a[3])/1000.0
-
                     b = r_out.replace(',',':').split(':')
-
-                    if 1:
-                        #eprint("fps=24, scale=1920:1080")
-                        # use -to to get more accuracy
-                        to = round(srttime_to_sec(r_out) - t2, 3)
-                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
-                        # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
-                        # a FPS filter is very good.
-                        # -r? no good.
-                    else:
-                        duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
-                        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, codec_v,tempdirname,counter), shell=True)
-
-                if 0:
-                    a = r_in.replace(',',':').split(':')
                     t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
-                    b = r_out.replace(',',':').split(':')
                     t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -vf \"trim=start=%s:end=%s,setpts=PTS-STARTPTS\" -af \"atrim=start=%s:end=%s,asetpts=PTS-STARTPTS\" -c:v %s  %s/%05d.ts"%(f, t1, t2, t1, t2, codec_v, tempdirname,counter), shell=True)
+                    #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
+                    #--merge-output-format mkv 
+                    # this command doesn't work very well, causing A-V sync and stall issues
+                    
+                    command = "ffmpeg $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
+                    # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
+                    # courtesy of user18298375298759 
+                    eprint("")
+                    eprint("[yt-dlp] "+command)
+                    subprocess.call(command, shell=True)
+                    #command2 = "ffmpeg -i %s/%05d.mkv %s/%05d.ts"%(tempdirname, counter, tempdirname, counter)
+                    #eprint("[ffmpeg] "+command2)
+                    #subprocess.call(command2, shell=True)
+                    #fragment_ext = "ts"
+                else:
+                    fragment_ext = "ts"
+                    if 0: # it worked.
+                        #FIXME detect if it's macOS. otherwise libx264
+                        subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v %s -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), codec_v ,tempdirname,counter), shell=True)
+
+                    if 1: # but this works faster in seeking
+                        a = r_in.replace(',',':').split(':')
+                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
+                        skip_time = 15
+                        if (t1 - skip_time > 0):
+                            t2 = t1 - skip_time
+                            t3 = skip_time + int(a[3])/1000.0
+                        else:
+                            t2 = 0
+                            t3 = t1 + int(a[3])/1000.0
+
+                        b = r_out.replace(',',':').split(':')
+
+                        if 1:
+                            #eprint("fps=24, scale=1920:1080")
+                            # use -to to get more accuracy
+                            to = round(srttime_to_sec(r_out) - t2, 3)
+                            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
+                            # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
+                            # a FPS filter is very good.
+                            # -r? no good.
+                        else:
+                            duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
+                            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, codec_v,tempdirname,counter), shell=True)
+
+                    if 0:
+                        a = r_in.replace(',',':').split(':')
+                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
+                        b = r_out.replace(',',':').split(':')
+                        t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
+                        subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -vf \"trim=start=%s:end=%s,setpts=PTS-STARTPTS\" -af \"atrim=start=%s:end=%s,asetpts=PTS-STARTPTS\" -c:v %s  %s/%05d.ts"%(f, t1, t2, t1, t2, codec_v, tempdirname,counter), shell=True)
                 # NOTE -ss -to placed before -i, cannot be used with -c copy
                 # See https://trac.ffmpeg.org/wiki/Seeking
                 counter += 1
@@ -256,7 +284,7 @@ if __name__ == "__main__":
 
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for i in range(len(output_queue)):
-                    output_file.write("file '%s/%05d.ts'\n"%(tempdirname,i))
+                    output_file.write("file '%s/%05d.%s'\n"%(tempdirname,i,fragment_ext))
 
             roughcut_ext_name = ".mp4" # or ".mkv"
             roughcut_filename = "roughcut" + roughcut_ext_name
