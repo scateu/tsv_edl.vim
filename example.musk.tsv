@@ -1,0 +1,5 @@
+EDL	00:00:01,000	00:00:15,982	| https://twitter.com/i/status/1605749737201754113 |	giga Texas;14.98s.
+this one doesn't have audio. so if you tsv2roughcut including this line, the product video will not have audio.
+
+EDL	00:00:00,000	00:00:09,407	| https://twitter.com/i/status/1602789582881587200 |	tesla car ;8.41s.
+EDL	00:00:00,000	00:00:28,164	| https://twitter.com/i/status/1604872936976154624 |	starlink;28.16s
