@@ -220,17 +220,17 @@ if __name__ == "__main__":
                 eprint(" %05d"%counter, end="")
                 sys.stderr.flush()
                 if f.startswith('http'):
-                    fragment_ext = "mp4"
                     #00:02:03,500 -> 123.5
                     a = r_in.replace(',',':').split(':')
                     b = r_out.replace(',',':').split(':')
                     t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
                     t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
                     if f.find("bilibili.com") != -1: #bilibili
+                        fragment_ext = "ts"   #ts will make A-V sync better
                         stream_urls = subprocess.check_output( ['yt-dlp', '-g', f], encoding='UTF-8').splitlines()
                         # -f "w*"
                         assert(len(stream_urls) == 2)
-                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s %s/%05d_0.mp4"%(f, t1, stream_urls[0], t2-t1, tempdirname, counter)
+                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s -c copy %s/%05d_0.mp4"%(f, t1, stream_urls[0], t2-t1, tempdirname, counter)
                         # bilibili doesn't allow 2 downloader running simultaneously
                         # youtube-dl --dump-user-agent
                         #select worst format for bilibili. FIXME
@@ -239,14 +239,15 @@ if __name__ == "__main__":
                         eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
 
-                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s %s/%05d_1.mp4"%(f, t1, stream_urls[1], t2-t1, tempdirname, counter)
+                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s -c copy %s/%05d_1.mp4"%(f, t1, stream_urls[1], t2-t1, tempdirname, counter)
                         eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
 
-                        command = "ffmpeg -hide_banner -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -c copy %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
+                        command = "ffmpeg -hide_banner -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -qscale 0 %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
                         eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
                     else:  #youtube, twitter, ...
+                        fragment_ext = "mp4"
                         #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
                         #--merge-output-format mkv 
                         # this command doesn't work very well, causing A-V sync and stall issues
