@@ -223,35 +223,48 @@ if __name__ == "__main__":
                     #00:02:03,500 -> 123.5
                     a = r_in.replace(',',':').split(':')
                     b = r_out.replace(',',':').split(':')
-                    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
-                    t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
                     if f.find("bilibili.com") != -1: #bilibili
                         fragment_ext = "ts"   #ts will make A-V sync better
-                        stream_urls = subprocess.check_output( ['yt-dlp', '-g', f], encoding='UTF-8').splitlines()
-                        # -f "w*"
+                        stream_urls = subprocess.check_output( ['yt-dlp', '-g', f], encoding='UTF-8').splitlines() # -f "w*" #select worst format for bilibili. FIXME
                         assert(len(stream_urls) == 2)
-                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s -c copy %s/%05d_0.mp4"%(f, t1, stream_urls[0], t2-t1, tempdirname, counter)
+                        #FIXME seeking needs the same strategy
+                        #/########### FAST and ACCURE SEEKING  ###########\#
+                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
+                        skip_time = 15
+                        if (t1 - skip_time > 0):
+                            t2 = t1 - skip_time
+                            t3 = skip_time + int(a[3])/1000.0
+                        else:
+                            t2 = 0
+                            t3 = t1 + int(a[3])/1000.0
+                        #to = round(srttime_to_sec(r_out) - t2, 3)
+                        #\########### FAST and ACCURE SEEKING  ###########/#
+
+                        duration = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0 - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0)
+                        command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -ss %s -t %s %s/%05d_0.mp4"%(f, t2, stream_urls[0], t3, duration, tempdirname, counter)
                         # bilibili doesn't allow 2 downloader running simultaneously
                         # youtube-dl --dump-user-agent
-                        #select worst format for bilibili. FIXME
                         # [BiliBili] Format(s) 720P 高清, 1080P 高码率, 1080P 高清 are missing; you have to login or become premium member to download them
                         eprint("")
                         eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
 
-                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s -c copy %s/%05d_1.mp4"%(f, t1, stream_urls[1], t2-t1, tempdirname, counter)
+                        command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -ss %s -t %s %s/%05d_1.mp4"%(f, t2, stream_urls[1], t3, duration, tempdirname, counter)
                         eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
 
-                        command = "ffmpeg -hide_banner -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -qscale 0 %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
+                        command = "ffmpeg -hide_banner -loglevel error -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -qscale 0 %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
                         eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
                     else:  #youtube, twitter, ...
+                        #FIXME seeking needs the same strategy
+                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
+                        t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
                         fragment_ext = "mp4"
                         #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
                         #--merge-output-format mkv 
                         # this command doesn't work very well, causing A-V sync and stall issues
-                        command = "ffmpeg -hide_banner $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
+                        command = "ffmpeg -hide_banner -loglevel error $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
                         # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
                         # courtesy of user18298375298759 
                         eprint("")
@@ -261,7 +274,7 @@ if __name__ == "__main__":
                         #eprint("[ffmpeg] "+command2)
                         #subprocess.call(command2, shell=True)
                         #fragment_ext = "ts"
-                else:
+                else: #local media files
                     fragment_ext = "ts"
                     if 0: # it worked.
                         #FIXME detect if it's macOS. otherwise libx264
