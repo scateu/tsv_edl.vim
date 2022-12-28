@@ -346,6 +346,10 @@ if __name__ == "__main__":
 
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
 
+            if 0:  #DEBUG
+                sys.stdin = os.fdopen(1)
+                input("[DEBUG] press enter to destory tmp dir:")
+
     if len(sys.argv) > 1: #wait for user input then rename
         if "--user-input-newname" in sys.argv:
             sys.stdin = os.fdopen(1)
