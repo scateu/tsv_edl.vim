@@ -152,6 +152,7 @@ if __name__ == "__main__":
     after_stitch_lines = len(output_queue)
     eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
 
+
     if is_pure_audio_project: #Audio only
         # determine output audio file ext
         exts = list(set([os.path.splitext(c[0])[1][1:].lower() for c in output_queue]))
@@ -212,6 +213,7 @@ if __name__ == "__main__":
             #import time; time.sleep(100000)
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt %s %s"%(tempdirname, roughcut_audio_codec, roughcut_filename), shell=True)
     else: # VIDEEEEO
+        roughcut_txt_lines = [] #to generate roughcut.txt
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("[tempdir]", tempdirname)
             counter = 0
@@ -256,6 +258,7 @@ if __name__ == "__main__":
                         command = "ffmpeg -hide_banner -loglevel error -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -qscale 0 %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
                         eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
+                        roughcut_txt_lines.append("file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext))
                     else:  #youtube, twitter, ...
                         #FIXME seeking needs the same strategy
                         t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
@@ -274,6 +277,7 @@ if __name__ == "__main__":
                         #eprint("[ffmpeg] "+command2)
                         #subprocess.call(command2, shell=True)
                         #fragment_ext = "ts"
+                        roughcut_txt_lines.append("file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext))
                 else: #local media files
                     fragment_ext = "ts"
                     if 0: # it worked.
@@ -313,13 +317,15 @@ if __name__ == "__main__":
                         subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -vf \"trim=start=%s:end=%s,setpts=PTS-STARTPTS\" -af \"atrim=start=%s:end=%s,asetpts=PTS-STARTPTS\" -c:v %s  %s/%05d.ts"%(f, t1, t2, t1, t2, codec_v, tempdirname,counter), shell=True)
                 # NOTE -ss -to placed before -i, cannot be used with -c copy
                 # See https://trac.ffmpeg.org/wiki/Seeking
+                    roughcut_txt_lines.append("file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext))
                 counter += 1
             eprint("") # .ts segments written
 
+            ##### GENERATE roughcut.txt #####
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
-                for i in range(len(output_queue)):
-                    output_file.write("file '%s/%05d.%s'\n"%(tempdirname,i,fragment_ext))
+                output_file.write("\n".join(roughcut_txt_lines))
 
+            #################################
             roughcut_ext_name = ".mp4" # or ".mkv"
             roughcut_filename = "roughcut" + roughcut_ext_name
             srt_filename = "roughcut.srt"
