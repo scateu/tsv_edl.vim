@@ -6,8 +6,7 @@ EDL	00:21:54,000	00:21:59,000	| https://www.bilibili.com/video/BV1Ed4y1b7bm?p=1 
 EDL	00:31:54,000	00:31:59,000	| https://www.bilibili.com/video/BV1Ed4y1b7bm?p=1 |	.....
 EDL	00:41:54,000	00:41:59,000	| https://www.bilibili.com/video/BV1Ed4y1b7bm?p=1 |	.....
 
-EDL	00:00:00,417	00:00:00,417	| https://www.bilibili.com/video/BV128411G7Xw/ |	0.00s.
-EDL	00:00:06,500	00:00:09,541	| https://www.bilibili.com/video/BV128411G7Xw/ |	3.04s. 
+EDL	00:00:00,417	00:00:09,541	| https://www.bilibili.com/video/BV128411G7Xw/ |	0.00s. 3.04s. 
 
 EDL	00:57:06,139	00:57:13,362	| https://www.youtube.com/watch?v=MKWZB_kEwUo |	0.02s.;7.22s. .... future
 EDL	00:26:09,014	00:26:19,034	| https://www.bilibili.com/video/BV128411G7Xw/ |	0.02s.
