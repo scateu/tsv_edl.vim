@@ -39,3 +39,22 @@ Then place cursor at the first line, then press `J`. It will become:
 ```
 EDL	00:01:09,000	00:01:12,000	| https://youtu.be/aJOPr2S0HXg |	3.0 secs. 
 ```
+## Notes about bilibili
+
+Now `tsv_edl.vim` can handle the following URLs correctly,
+
+```
+https://www.bilibili.com/video/BV1sQ4y1B7wY?t=0.9
+https://www.bilibili.com/video/BV1sQ4y1B7wY?t=100.0
+```
+
+and 
+
+
+```
+https://www.bilibili.com/video/BV1sQ4y1B7wY?t=2.3&p=6
+https://www.bilibili.com/video/BV1sQ4y1B7wY?t=102.3&p=6
+```
+
+
+However, please be advised -- due to bug of `youtube-dl`/`yt-dlp`, sometime you have to add `&p=1` at the first episode of a bilibili list. Otherwise `youtube-dl` won't work.
