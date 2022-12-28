@@ -21,5 +21,21 @@ EDL	00:00:01,000	00:00:20,633	| https://twitter.com/i/status/1601846128877576193
 
 # TODO
 
- - [ ] tsv2roughcut needs to download the portion/full of the http(s) media, and render them. but it shouldn't be too painful to do by hand.
- - [ ] `gi`  `go` works as before. however, as in youtube and twitter videos, the media file name is truncated. 
+ - [X] tsv2roughcut needs to download the portion/full of the http(s) media, and render them. but it shouldn't be too painful to do by hand.
+ - [-] `gi`  `go` works as before. however, as in youtube and twitter videos, the media file name is truncated. 
+
+
+# Copy URL with timestamp and make an EDL line
+
+Suppose you paste the following two lines into vim. You can get this by right-click on the youtube or bilibili web player.
+
+```
+https://youtu.be/aJOPr2S0HXg?t=69
+https://youtu.be/aJOPr2S0HXg?t=72
+```
+
+Then place cursor at the first line, then press `J`. It will become:
+
+```
+EDL	00:01:09,000	00:01:12,000	| https://youtu.be/aJOPr2S0HXg |	3.0 secs. 
+```

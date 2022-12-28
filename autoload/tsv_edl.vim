@@ -227,6 +227,36 @@ function!  tsv_edl#join_with_next_line()
 	endif
 endfunction
 
+function!  tsv_edl#join_http_with_next_line()
+	echon 'http detected'
+	let cur_line=getline('.')->trim()
+	let next_line=getline(line('.')+1)->trim()
+	let cur_line_end_col = col('$') "record the pos of EOL
+
+	let cur_line_url = cur_line->split("?t=")[0]
+	let cur_line_time = str2float(cur_line->split("?t=")[1])
+	let next_line_url = next_line->split("?t=")[0]
+	let next_line_time = str2float(next_line->split("?t=")[1])
+
+	let duration = next_line_time - cur_line_time
+	if (cur_line_url !=# next_line_url)
+		echohl WarningMsg
+		echo "Refuse to make an EDL line with different URLs"
+		echohl None
+		return
+	endif
+
+	let tc1 = tsv_edl#sec_to_timecode(cur_line_time)->substitute('\.',",","g")
+	let tc2 = tsv_edl#sec_to_timecode(next_line_time)->substitute('\.',",","g")
+
+	let new_line = printf("%s\t%s\t%s\t| %s |\t%s secs. ","EDL",tc1,tc2,cur_line_url, duration)
+	call setline(".", new_line )
+	call setline(line(".")+1, "")
+	execute "normal! jddk"
+	call cursor(0, cur_line_end_col) "place cursor right between the joined lines
+	echon "http clips made and joined."
+endfunction
+
 " see !shopt
 "     extglob off
 

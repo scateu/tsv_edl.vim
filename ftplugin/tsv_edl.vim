@@ -158,6 +158,10 @@ endfunc
 func! DoJoin()
 	if (getline(".")  =~# g:edl_line_pattern)
 		call tsv_edl#join_with_next_line()
+	elseif (getline(".") =~# '^http.*?t=.*') && (getline(line('.')+1) =~# '^http.*?t=.*')
+		"https://www.bilibili.com/video/blahblahblbah?t=143.8
+		"https://youtu.be/blahblahbah?t=20
+		call tsv_edl#join_http_with_next_line()
 	else
 		normal! J
 	endif
