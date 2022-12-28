@@ -226,24 +226,40 @@ if __name__ == "__main__":
                     b = r_out.replace(',',':').split(':')
                     t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
                     t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
-                    #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
-                    #--merge-output-format mkv 
-                    # this command doesn't work very well, causing A-V sync and stall issues
-                    
-                    command = "ffmpeg -hide_banner $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
-                    # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
-                    # courtesy of user18298375298759 
-                    if f.find("bilibili.com") != -1:
-                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3554.0 Safari/537.36\" -headers \"referer: https://www.bilibili.com\" $(yt-dlp -f \"w*\" -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
+                    if f.find("bilibili.com") != -1: #bilibili
+                        stream_urls = subprocess.check_output( ['yt-dlp', '-g', f], encoding='UTF-8').splitlines()
+                        # -f "w*"
+                        assert(len(stream_urls) == 2)
+                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s %s/%05d_0.mp4"%(f, t1, stream_urls[0], t2-t1, tempdirname, counter)
+                        # bilibili doesn't allow 2 downloader running simultaneously
+                        # youtube-dl --dump-user-agent
                         #select worst format for bilibili. FIXME
                         # [BiliBili] Format(s) 720P 高清, 1080P 高码率, 1080P 高清 are missing; you have to login or become premium member to download them
-                    eprint("")
-                    eprint("[yt-dlp] "+command)
-                    subprocess.call(command, shell=True)
-                    #command2 = "ffmpeg -i %s/%05d.mkv %s/%05d.ts"%(tempdirname, counter, tempdirname, counter)
-                    #eprint("[ffmpeg] "+command2)
-                    #subprocess.call(command2, shell=True)
-                    #fragment_ext = "ts"
+                        eprint("")
+                        eprint("[yt-dlp:bilibili] "+command)
+                        subprocess.call(command, shell=True)
+
+                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -t %s %s/%05d_1.mp4"%(f, t1, stream_urls[1], t2-t1, tempdirname, counter)
+                        eprint("[yt-dlp:bilibili] "+command)
+                        subprocess.call(command, shell=True)
+
+                        command = "ffmpeg -hide_banner -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -c copy %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
+                        eprint("[yt-dlp:bilibili] "+command)
+                        subprocess.call(command, shell=True)
+                    else:  #youtube, twitter, ...
+                        #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
+                        #--merge-output-format mkv 
+                        # this command doesn't work very well, causing A-V sync and stall issues
+                        command = "ffmpeg -hide_banner $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
+                        # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
+                        # courtesy of user18298375298759 
+                        eprint("")
+                        eprint("[yt-dlp] "+command)
+                        subprocess.call(command, shell=True)
+                        #command2 = "ffmpeg -i %s/%05d.mkv %s/%05d.ts"%(tempdirname, counter, tempdirname, counter)
+                        #eprint("[ffmpeg] "+command2)
+                        #subprocess.call(command2, shell=True)
+                        #fragment_ext = "ts"
                 else:
                     fragment_ext = "ts"
                     if 0: # it worked.
