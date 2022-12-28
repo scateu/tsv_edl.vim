@@ -234,9 +234,18 @@ function!  tsv_edl#join_http_with_next_line()
 	let cur_line_end_col = col('$') "record the pos of EOL
 
 	let cur_line_url = cur_line->split("?t=")[0]
-	let cur_line_time = str2float(cur_line->split("?t=")[1])
+	let cur_line_time = str2float(cur_line->split("?t=")[1]->split("&")[0])
+	if (cur_line->split("?t=")[1]->split("&")->len() == 2)
+	"https://www.bilibili.com/video/BV1Cg4y1i7gV?t=2404.6&p=6
+		let cur_line_url = cur_line_url . "?" . cur_line->split("&")[1]
+	endif
+
 	let next_line_url = next_line->split("?t=")[0]
-	let next_line_time = str2float(next_line->split("?t=")[1])
+	let next_line_time = str2float(next_line->split("?t=")[1]->split("&")[0])
+	if (next_line->split("?t=")[1]->split("&")->len() == 2)
+		let next_line_url = next_line_url . "?" . next_line->split("&")[1]
+	endif
+
 
 	let duration = next_line_time - cur_line_time
 	if (cur_line_url !=# next_line_url)
