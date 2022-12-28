@@ -234,7 +234,7 @@ if __name__ == "__main__":
                     # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
                     # courtesy of user18298375298759 
                     if f.find("bilibili.com") != -1:
-                        command = "ffmpeg -hide_banner $(yt-dlp -f \"w*\" -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
+                        command = "ffmpeg -hide_banner -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3554.0 Safari/537.36\" -headers \"referer: https://www.bilibili.com\" $(yt-dlp -f \"w*\" -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
                         #select worst format for bilibili. FIXME
                         # [BiliBili] Format(s) 720P 高清, 1080P 高码率, 1080P 高清 are missing; you have to login or become premium member to download them
                     eprint("")
