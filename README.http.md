@@ -58,3 +58,41 @@ https://www.bilibili.com/video/BV1sQ4y1B7wY?t=102.3&p=6
 
 
 However, please be advised -- due to bug of `youtube-dl`/`yt-dlp`, sometime you have to add `&p=1` at the first episode of a bilibili list. Otherwise `youtube-dl` won't work.
+
+
+# TIPS:
+
+You can easily change clipname to URL in vim like so:
+
+```
+:%s,| .* |,| https://www.c-span.org/video/?159079-1/president-jiang-interview |,
+```
+
+
+# Youtube
+
+Don't worry. I've handled this in `tsv2roughtcut.py`.
+
+
+## Youtube download a portion
+
+```
+$ youtube-dl --get-url --youtube-skip-dash-manifest "https://www.youtube.com/watch?v=UxWuy6zSWOA"
+https://rr3---sn-oguelnzl.googlevideo.com/videoplayback?expire=1670596230&ei=JfKSY4mTN6Kxigbr67vwCQ&ip=202.182.105.114&id=o-ACGz_jL-o5wuwMpgOmwFrXOK7jxcPykJKob5J99OZ-9D&itag=136&aitags=133%2C134%2C135%2C136%2C160%2C242%2C243%2C244%2C247%2C278&source=youtube&requiressl=yes&mh=ve&mm=31%2C29&mn=sn-oguelnzl%2Csn-oguesndr&ms=au%2Crdu&mv=m&mvi=3&pl=24&gcr=jp&initcwndbps=1333750&vprv=1&mime=video%2Fmp4&ns=wPf3BtPCRZf1cF0LLngcaDkJ&gir=yes&clen=1265600061&otfp=1&dur=6490.249&lmt=1624129867558506&mt=1670574291&fvip=3&keepalive=yes&fexp=24001373%2C24007246&c=WEB&txp=6216224&n=wjxP4kp-CTUM2uN5c&sparams=expire%2Cei%2Cip%2Cid%2Caitags%2Csource%2Crequiressl%2Cgcr%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cotfp%2Cdur%2Clmt&sig=AOq0QJ8wRgIhAJfXcpAhTjmtU_Lbk4NwczKrWYxSxj8zFqFSOoDuQFFQAiEAhWEECaLBlVGKA9ZDRUtSjSKIq2pQrtSf-gxgFnvGqyI%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIgThtalb7xvhLkIMPGcizAK3j-2saH108gJa34HNzP2l4CIQCNH36X2prTUxaDmxREpdtVfiWUB2ecupSxCi4aCF11rg%3D%3D
+https://rr3---sn-oguelnzl.googlevideo.com/videoplayback?expire=1670596230&ei=JfKSY4mTN6Kxigbr67vwCQ&ip=202.182.105.114&id=o-ACGz_jL-o5wuwMpgOmwFrXOK7jxcPykJKob5J99OZ-9D&itag=140&source=youtube&requiressl=yes&mh=ve&mm=31%2C29&mn=sn-oguelnzl%2Csn-oguesndr&ms=au%2Crdu&mv=m&mvi=3&pl=24&gcr=jp&initcwndbps=1333750&vprv=1&mime=audio%2Fmp4&ns=wPf3BtPCRZf1cF0LLngcaDkJ&gir=yes&clen=105040576&otfp=1&dur=6490.394&lmt=1624130253419646&mt=1670574291&fvip=3&keepalive=yes&fexp=24001373%2C24007246&c=WEB&txp=6211224&n=wjxP4kp-CTUM2uN5c&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cgcr%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cotfp%2Cdur%2Clmt&sig=AOq0QJ8wRgIhAJAMguVNzfE11WIc5x-2Vu6QBnf0bI2SWrqcIfA8bbUXAiEA3WngVAqB6ejCvVGxWSJ2tpLIbZ9Wkgscf5zyJdropVM%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIgThtalb7xvhLkIMPGcizAK3j-2saH108gJa34HNzP2l4CIQCNH36X2prTUxaDmxREpdtVfiWUB2ecupSxCi4aCF11rg%3D%3D
+
+$ ffmpeg -ss 01:43:07 -to 01:43:50 -i "https://rr3---sn-oguelnzl.googlevideo.com/videoplayback?expire=1670596230&ei=JfKSY4mTN6Kxigbr67vwCQ&ip=202.182.105.114&id=o-ACGz_jL-o5wuwMpgOmwFrXOK7jxcPykJKob5J99OZ-9D&itag=136&aitags=133%2C134%2C135%2C136%2C160%2C242%2C243%2C244%2C247%2C278&source=youtube&requiressl=yes&mh=ve&mm=31%2C29&mn=sn-oguelnzl%2Csn-oguesndr&ms=au%2Crdu&mv=m&mvi=3&pl=24&gcr=jp&initcwndbps=1333750&vprv=1&mime=video%2Fmp4&ns=wPf3BtPCRZf1cF0LLngcaDkJ&gir=yes&clen=1265600061&otfp=1&dur=6490.249&lmt=1624129867558506&mt=1670574291&fvip=3&keepalive=yes&fexp=24001373%2C24007246&c=WEB&txp=6216224&n=wjxP4kp-CTUM2uN5c&sparams=expire%2Cei%2Cip%2Cid%2Caitags%2Csource%2Crequiressl%2Cgcr%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cotfp%2Cdur%2Clmt&sig=AOq0QJ8wRgIhAJfXcpAhTjmtU_Lbk4NwczKrWYxSxj8zFqFSOoDuQFFQAiEAhWEECaLBlVGKA9ZDRUtSjSKIq2pQrtSf-gxgFnvGqyI%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIgThtalb7xvhLkIMPGcizAK3j-2saH108gJa34HNzP2l4CIQCNH36X2prTUxaDmxREpdtVfiWUB2ecupSxCi4aCF11rg%3D%3D" -ss 01:43:07 -to 01:43:50 -i "https://rr3---sn-oguelnzl.googlevideo.com/videoplayback?expire=1670596230&ei=JfKSY4mTN6Kxigbr67vwCQ&ip=202.182.105.114&id=o-ACGz_jL-o5wuwMpgOmwFrXOK7jxcPykJKob5J99OZ-9D&itag=140&source=youtube&requiressl=yes&mh=ve&mm=31%2C29&mn=sn-oguelnzl%2Csn-oguesndr&ms=au%2Crdu&mv=m&mvi=3&pl=24&gcr=jp&initcwndbps=1333750&vprv=1&mime=audio%2Fmp4&ns=wPf3BtPCRZf1cF0LLngcaDkJ&gir=yes&clen=105040576&otfp=1&dur=6490.394&lmt=1624130253419646&mt=1670574291&fvip=3&keepalive=yes&fexp=24001373%2C24007246&c=WEB&txp=6211224&n=wjxP4kp-CTUM2uN5c&sparams=expire%2Cei%2Cip%2Cid%2Citag%2Csource%2Crequiressl%2Cgcr%2Cvprv%2Cmime%2Cns%2Cgir%2Cclen%2Cotfp%2Cdur%2Clmt&sig=AOq0QJ8wRgIhAJAMguVNzfE11WIc5x-2Vu6QBnf0bI2SWrqcIfA8bbUXAiEA3WngVAqB6ejCvVGxWSJ2tpLIbZ9Wkgscf5zyJdropVM%3D&lsparams=mh%2Cmm%2Cmn%2Cms%2Cmv%2Cmvi%2Cpl%2Cinitcwndbps&lsig=AG3C_xAwRQIgThtalb7xvhLkIMPGcizAK3j-2saH108gJa34HNzP2l4CIQCNH36X2prTUxaDmxREpdtVfiWUB2ecupSxCi4aCF11rg%3D%3D"  -c copy a.mkv
+
+```
+
+
+ - see <https://superuser.com/questions/1661048/how-to-download-a-portion-of-a-youtube-video>
+
+
+or use `yt-dlp` <https://github.com/yt-dlp/yt-dlp>
+
+> Download time range: Videos can be downloaded partially based on either timestamps or chapters using --download-sections
+
+```
+yt-dlp --download-sections "*10:00-11:00" https://www.youtube.com/watch?v=PdMp_RjO7CA
+```
