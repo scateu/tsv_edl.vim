@@ -18,10 +18,11 @@
 
 | Key   | Function                                                                                                     |
 |-------|--------------------------------------------------------------------------------------------------------------|
-| J     | Join (timecode) with the next line; If on the first of two http lines, will made an EDL line.                |
+| J     | Join (timecode) with the next line; If on the first of two http lines with timestamp, will made an EDL line. |
 | \|    | [split] this line into two, guessing a new timecode                                                          |
-| mm    | mark/unmark word break point. [split] will use this and cursor together. useful when audio/words not   sync  |
-| ⇧←/⇧→ | Roll timecode with the previous line for 1 sec                                                               |
+| mm    | mark/unmark word break point, then [split] will use this and cursor together.                                |
+|       | useful when cut time not predicted well.                                                                     |        
+| ⇧← ⇧→ | Roll timecode with the previous line for 1 sec                                                               |
 | g0    | go to the start of subtitle                                                                                  |
 | g8    | go to `record_out` timecode in prev line                                                                     |
 | g9    | go to `record_in` timecode                                                                                   |
@@ -29,7 +30,7 @@
 | gN    | append a line for 10 minutes below current line, place cursor to input clipname                              |
 | \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
 
-### EDITORIAL DECISION
+### EDITORIAL DECISION / BBC Paper Edit
 
 | Key          | Function                                              |
 |--------------|-------------------------------------------------------|
@@ -49,10 +50,10 @@
 |             | and enter IPC Control mode. `s ← → ↑ ↓ ⎵ ⏎` is redefined, and restored at quit       |
 | \ \ (again) | send quit signal via ipc socket to mpv                                               |
 | ⎵           | [mpv ipc] toggle play                                                                |
-| ←, →        | move, then [mpv ipc] seek to cursor                                                  |
-| ↑, ↓        | move, then [mpv ipc] seek; reload when clip changed                                  |
+| ←  →        | move, then [mpv ipc] seek to cursor                                                  |
+| ↑  ↓        | move, then [mpv ipc] seek; reload when clip changed                                  |
 | \ ⎵         | [mpv ipc] play from this line till EOF                                               |
-| ⏎, s        | [mpv ipc] seek to cursor                                                             |
+| ⏎ or s      | [mpv ipc] seek to cursor                                                             |
 | ns          | [mpv ipc] search next (`n`), and seek                                                |
 | S           | [mpv ipc] sync playhead: seek vim cursor to nearest of mpv timecode, wrap end        |
 | \ S         | backwards of sync playhead                                                           |
