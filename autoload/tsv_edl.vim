@@ -790,7 +790,13 @@ function! s:line_clipname_match_mpc_filename(line_number)
 		if line_list[0] == 'EDL' || line_list[0] == '---' || line_list[0] == 'xxx'
 			let filename = trim(trim(line_list[3],'|'))
 			if filename ==# g:ipc_loaded_media_name
-				"call cursor(_s, 1) " matched timecode line, first column
+				"call cursor(_s, 1) 
+				" matched timecode line, first column
+				return v:true
+			elseif filename =~# '^http' && filename->count(g:ipc_loaded_media_name)
+				" filename = https://youtube.com/watch?v=blahblah
+				" g:ipc_loaded_media_name = watch?v=blahblah
+				" Actually it's a bad design from mpv
 				return v:true
 			endif
 		endif
