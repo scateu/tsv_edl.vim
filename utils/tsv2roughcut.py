@@ -267,7 +267,7 @@ if __name__ == "__main__":
                         #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
                         #--merge-output-format mkv 
                         # this command doesn't work very well, causing A-V sync and stall issues
-                        command = "ffmpeg -hide_banner -loglevel error $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, t1, t2-t1, tempdirname, counter, fragment_ext)
+                        command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, f, t1, t2-t1, tempdirname, counter, fragment_ext)
                         # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
                         # courtesy of user18298375298759 
                         eprint("")
