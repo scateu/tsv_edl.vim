@@ -13,6 +13,8 @@ is_pure_audio_project = True
 
 GENERATE_SRT = True
 
+DEBUG = False
+
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
@@ -247,16 +249,23 @@ if __name__ == "__main__":
                         # bilibili doesn't allow 2 downloader running simultaneously
                         # youtube-dl --dump-user-agent
                         # [BiliBili] Format(s) 720P 高清, 1080P 高码率, 1080P 高清 are missing; you have to login or become premium member to download them
-                        eprint("")
-                        eprint("[yt-dlp:bilibili] "+command)
+                        eprint(".",end=""); sys.stderr.flush()
+                        if DEBUG:
+                            eprint("")
+                            eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
 
                         command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -ss %s -t %s %s/%05d_1.mp4"%(f, t2, stream_urls[1], t3, duration, tempdirname, counter)
-                        eprint("[yt-dlp:bilibili] "+command)
+                        #eprint("[yt-dlp:bilibili] "+command)
+                        eprint(".",end=""); sys.stderr.flush()
+                        if DEBUG:
+                            eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
 
                         command = "ffmpeg -hide_banner -loglevel error -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -qscale 0 %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
-                        eprint("[yt-dlp:bilibili] "+command)
+                        eprint(".",end=""); sys.stderr.flush()
+                        if DEBUG:
+                            eprint("[yt-dlp:bilibili] "+command)
                         subprocess.call(command, shell=True)
                         roughcut_txt_lines.append("file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext))
                     else:  #youtube, twitter, ...
@@ -270,8 +279,10 @@ if __name__ == "__main__":
                         command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, f, t1, t2-t1, tempdirname, counter, fragment_ext)
                         # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
                         # courtesy of user18298375298759 
-                        eprint("")
-                        eprint("[yt-dlp] "+command)
+                        eprint(".",end=""); sys.stderr.flush()
+                        if DEBUG:
+                            eprint("")
+                            eprint("[yt-dlp] "+command)
                         subprocess.call(command, shell=True)
                         #command2 = "ffmpeg -i %s/%05d.mkv %s/%05d.ts"%(tempdirname, counter, tempdirname, counter)
                         #eprint("[ffmpeg] "+command2)
@@ -346,13 +357,12 @@ if __name__ == "__main__":
 
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
 
-            if 0:  #DEBUG
-                sys.stdin = os.fdopen(1)
-                input("[DEBUG] press enter to destory tmp dir:")
+            sys.stdin = os.fdopen(1)
+            input("Press enter to destory tmp dir:  %s  > "%tempdirname)
 
     if len(sys.argv) > 1: #wait for user input then rename
         if "--user-input-newname" in sys.argv:
-            sys.stdin = os.fdopen(1)
+            #sys.stdin = os.fdopen(1)
 
             newname = input("Input CLIPNAME to rename. ENTER to ignore > ")
             newname = newname.strip()
