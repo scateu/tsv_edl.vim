@@ -68,6 +68,23 @@ You can easily change clipname to URL in vim like so:
 :%s,| .* |,| https://www.c-span.org/video/?159079-1/president-jiang-interview |,
 ```
 
+# TIPS: duration unknown
+
+You may set a significantly larger duration if it's unknown while you want to combine two videos. FFmpeg will tolerate it. It's especially useful when using twitter.
+
+```
+EDL	00:00:00,000	00:02:30,000	| https://video.twimg.com/ext_tw_video/xxxxxxxxxxxxxxxxxxx/pu/vid/480x848/xxxxxxxxxxxxxxxx.mp4?tag=12 |	[ VIDEO 10*60 secs  ]
+EDL	00:00:00,000	00:01:38,000	| https://video.twimg.com/ext_tw_video/xxxxxxxxxxxxxxxxxxx/pu/vid/480x848/yyyyyyyyyyyyyyyy.mp4?tag=12 |	[ VIDEO 10*60 secs  ]
+```
+
+By the way, when a twitter link has multiple videos, you can manually get the URLs first.
+
+```bash
+$ yt-dlp -g https://twitter.com/xxxxxxxx/status/yyyyyyyyyyyyyyyyyyy/video/2
+https://video.twimg.com/ext_tw_video/1111111111111111111/pu/vid/480x848/aaaaaaaaaaaaaaaa.mp4?tag=12
+https://video.twimg.com/ext_tw_video/1222222222222222222/pu/vid/480x848/bbbbbbbbbbbbbbbb.mp4?tag=12
+```
+
 
 # Youtube
 
