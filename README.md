@@ -18,7 +18,7 @@
 
 | Key   | Function                                                                                                     |
 |-------|--------------------------------------------------------------------------------------------------------------|
-| J     | Join (timecode) with the next line                                                                           |
+| J     | Join (timecode) with the next line; If on the first of two http lines, will made an EDL line.                |
 | \|    | [split] this line into two, guessing a new timecode                                                          |
 | mm    | mark/unmark word break point. [split] will use this and cursor together. useful when audio/words not   sync  |
 | ⇧←/⇧→ | Roll timecode with the previous line for 1 sec                                                               |
