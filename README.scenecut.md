@@ -19,3 +19,4 @@ you may concatenate scenecut/audiocut with origin subtitles, with `sort` command
 ```
 cat movie_scenecut.tsv movie.tsv | sort > movie1.tsv
 ```
+After sorting, you may replace those scenecut lines with empty ones. It will be extremely useful as a scene indication.
