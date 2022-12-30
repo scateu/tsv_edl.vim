@@ -258,7 +258,7 @@ function!  tsv_edl#join_http_with_next_line()
 	let tc1 = tsv_edl#sec_to_timecode(cur_line_time)->substitute('\.',",","g")
 	let tc2 = tsv_edl#sec_to_timecode(next_line_time)->substitute('\.',",","g")
 
-	let new_line = printf("%s\t%s\t%s\t| %s |\t%ss. ","EDL",tc1,tc2,cur_line_url, duration)
+	let new_line = printf("%s\t%s\t%s\t| %s |\t%ss","EDL",tc1,tc2,cur_line_url, duration)
 	call setline(".", new_line )
 	call setline(line(".")+1, "")
 	execute "normal! jddk"
@@ -864,13 +864,13 @@ function! tsv_edl#write_record_out()
 		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
-		call setline('.', getline('.') . line_duration . 's.')
+		call setline('.', getline('.') . line_duration . 's')
 	elseif (getline(".") =~# pattern_2) "full line overwrite
 		echon "Overwrite record_out ... "
 		exec "normal! 0WWcW" . rec_out
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
-		call setline('.', getline('.') . '; ' . line_duration . 's.')
+		call setline('.', getline('.') . '; ' . line_duration . 's')
 	else
 		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 	endif
