@@ -223,8 +223,8 @@ function!  tsv_edl#join_with_next_line()
 			execute "normal! jddk"
 			call cursor(0, cur_line_end_col) "place cursor right between the joined lines
 			echo "Clips joined."
-		endif
 	endif
+endif
 endfunction
 
 function!  tsv_edl#join_http_with_next_line()
@@ -258,7 +258,7 @@ function!  tsv_edl#join_http_with_next_line()
 	let tc1 = tsv_edl#sec_to_timecode(cur_line_time)->substitute('\.',",","g")
 	let tc2 = tsv_edl#sec_to_timecode(next_line_time)->substitute('\.',",","g")
 
-	let new_line = printf("%s\t%s\t%s\t| %s |\t%s secs. ","EDL",tc1,tc2,cur_line_url, duration)
+	let new_line = printf("%s\t%s\t%s\t| %s |\t%ss. ","EDL",tc1,tc2,cur_line_url, duration)
 	call setline(".", new_line )
 	call setline(line(".")+1, "")
 	execute "normal! jddk"
@@ -354,7 +354,7 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 	nmap <silent> go :call tsv_edl#write_record_out()<CR>
 
 	if g:cherry_pick_mode_entered
-		echon "already in cherry_pick_mode, do not map Enter to seek"
+		echon "already in cherry_pick_mode, will not map Enter to Seek"
 	else
 		noremap <silent> <cr> :call tsv_edl#ipc_seek()<CR>
 		let g:cr_map_status = "[⏎ = seek] "
@@ -870,7 +870,7 @@ function! tsv_edl#write_record_out()
 		exec "normal! 0WWcW" . rec_out
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
-		call setline('.', getline('.') . ';' . line_duration . 's.')
+		call setline('.', getline('.') . '; ' . line_duration . 's.')
 	else
 		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 	endif
