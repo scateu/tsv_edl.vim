@@ -214,6 +214,9 @@ if __name__ == "__main__":
                     output_file.write('\n'.join(srt_queue))
             #import time; time.sleep(100000)
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt %s %s"%(tempdirname, roughcut_audio_codec, roughcut_filename), shell=True)
+
+            sys.stdin = os.fdopen(1)
+            input("Press enter to destory tmp dir:  %s  > "%tempdirname)
     else: # VIDEEEEO
         roughcut_txt_lines = [] #to generate roughcut.txt
         with tempfile.TemporaryDirectory() as tempdirname:
