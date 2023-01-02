@@ -191,7 +191,23 @@ if __name__ == "__main__":
                         intermediate_audio_codec = ''
                     eprint("%05d%s "%(counter,audioclips_ext_name), end="")
                     sys.stderr.flush()
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s %s %s/%05d%s"%(f,r_in.replace(',','.'),r_out.replace(',','.'), intermediate_audio_codec, tempdirname,counter, audioclips_ext_name), shell=True)
+
+                    #FIXME use the same strategy of seeking
+                    #/########### FAST and ACCURE SEEKING  ###########\#
+                    a = r_in.replace(',',':').split(':')
+                    b = r_out.replace(',',':').split(':')
+                    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
+                    skip_time = 15
+                    if (t1 - skip_time > 0):
+                        t2 = t1 - skip_time
+                        t3 = skip_time + int(a[3])/1000.0
+                    else:
+                        t2 = 0
+                        t3 = t1 + int(a[3])/1000.0
+                    #to = round(srttime_to_sec(r_out) - t2, 3)
+                    duration = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0 - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0)
+                    #\########### FAST and ACCURE SEEKING  ###########/#
+                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s %s %s/%05d%s"%(t2,f,t3,duration, intermediate_audio_codec, tempdirname,counter, audioclips_ext_name), shell=True)
                     output_file.write("file '%s/%05d%s'\n"%(tempdirname, counter, audioclips_ext_name))
                     counter += 1
                 eprint("")
@@ -234,7 +250,8 @@ if __name__ == "__main__":
                         fragment_ext = "ts"   #ts will make A-V sync better
                         stream_urls = subprocess.check_output( ['yt-dlp', '-g', f], encoding='UTF-8').splitlines() # -f "w*" #select worst format for bilibili. FIXME
                         assert(len(stream_urls) == 2)
-                        #FIXME seeking needs the same strategy
+
+                        #seeking needs the same strategy
                         #/########### FAST and ACCURE SEEKING  ###########\#
                         t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
                         skip_time = 15
