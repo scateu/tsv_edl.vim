@@ -7,7 +7,7 @@ import tempfile
 import platform
 
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
-audio_formats = ['wav', 'mp3', 'm4a']
+audio_formats = ['wav', 'mp3', 'm4a', 'ogg']
 
 is_pure_audio_project = True
 
