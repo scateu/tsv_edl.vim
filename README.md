@@ -123,46 +123,7 @@ Press `g9` will:
 </details>
 
 
-## Overview
-
-<details markdown="1"><summary>Click here to see full ASCII diagram</summary>
-
-```
-media -- [scenecut_preview]  detect scene cut and slice into tsv
-         [    audiocut    ]  detect scene cut by audio silence
-                       |
-		       V
-.srt --- [srt2tsv] --> .tsv file
-                       |
-		       V
-		      Vim: proofread ---- [tsv2srt] ------> .srt file 
-		       |                                       \- [audio2srtvideo]
-		       |                                                \---> .mkv (with TC)
-		       V
-		      Vim: add notes and '* Section' '** Subsection'
-		       |
-		       V
-		      Vim: Tab    (Preview)
-		       |   Enter  (Select)
-		       |   Delete (Reject)
-		       |   cherry-pick / re-arrange
-		       V 
-	       Google Spreadsheet: Invite your editor friends to edit
-		       |
-		       |
-		       \----> selected .tsv file 
-		                |       \
-				|	 \----[tsv2fcpxml] -> .fcpxml --> FCPX/DaVinci 
-				|	  \
-			        |     [tsv2edl] --> .edl file
-				|                         \
-				v  	                   \--> DaVinci Resolve: fine tuning
-			 [tsv2roughcut]	                              \
-							               \
-							                \---> Production
-```
-
-</details>
+## Screenshots
 
 ![screenshot](screenshots/a.png)
 ![screenshot](screenshots/c.jpg)
@@ -256,7 +217,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 
 tips: you may `s/，/, /g`, to make Chinese lines wrap. Otherwise ,`mpv` treat those as a bloody long line.
 
-## tsv2roughcut: Assemble a rough cut
+## tsv2roughcut: Assemble a rough cut with ffmpeg
 
 ```bash
 cat selection.tsv | tsv2roughcut  #will generate roughtcut.mp3/mp4, srt. auto increase filename
@@ -308,7 +269,7 @@ You can draw a progress bar on the fly. Isn't that cool, huh?
 
 Then `gi`, `go`.
 
-## Vim Conceal: Hide the first 4 columns
+## \c Vim Conceal: Hide the first 4 columns
 
 ... to stay more focused when listening to tape.
 
@@ -364,20 +325,6 @@ will yield a `Some podcast E01.mkv`
 
 *NOTE*: You may want to move those mkv files into a subdirectory named, for example, `mkvs`, so that `Tab` key `ffplay` will not be confused.
 
-## mpv conf suggestion
-
-~/.config/mpv/mpv.conf
-
-```
-screen=1
-fs-screen=1
-window-maximized=yes
-geometry=100%
-#profile=low-latency
-#no-focus-on-open
-#keep-open=always
-#untimed=yes
-```
 ## See Also
 
  - sc-im: spreadsheet in terminal
@@ -388,42 +335,6 @@ geometry=100%
  - BBC Paper Edit: [Slides](https://docs.google.com/presentation/d/1vVe_hgTj6JhLhU2WuZBOWx41ajcKX-8m8Xa0NIVZT2M/edit#slide=id.g6b51b79a88_2_245) | [github](https://github.com/bbc/digital-paper-edit-client) | [bbcnewslab](https://bbcnewslabs.co.uk/projects/digital-paper-edit/)
  - [AVID Media Composer - PhraseFind Option](https://www.avid.com/zh/products/media-composer-phrasefind-option)
  - <https://podcast.adobe.com>
-
-### 中文相关 Chinese words tips
-
-```
-:%s/，/, /g
-:%s/。/. /g
-
-操作完了再反向换回来了就是；注意半角的. 和, 后面跟一个空格。这样w ) ( 都能用一用。
-
-:%s/\. /。/g
-:%s/, /，/g
-```
- - 略慢凑合用: Chinese words motion plugin for vim: <https://github.com/ZWindL/chword.vim>
- - https://github.com/deton/motion_ja.vim 没跑起来
-
-> 水木vim版上一些人说，不如改造我们的语言，让 每个 词 后面 都 跟 空格 太 激进 了
-> 也可以用jieba分词等，提前处理一下srt。
-> 反正就是规则，加工的时候用一下，后面直接反过来
-
-## TODOs
-
- - [ ] mpv ipc mode: Tab should stop at Record Out.
- - [ ] media path support. or a very fancy `ln -s` helper?
- - [ ] tesseract OCR on existing burn-in subtitle
- - [ ] replace 'jq' 'socat' with python standard library, maybe with [this](https://github.com/iwalton3/python-mpv-jsonipc)
- - [X] Gap: EDLSPACE?  `go`
- - [X] When there's only one tab, `Enter` should cease to work. 
- - [X] Tab/Space key on a visual region. render the region into a media file
- - [X] tsv2srt -reflow: reassign the timestamp of each srt block. generate a srt for the rendered region
- - [X] mpv --input-ipc-server 
- - [X] bug: macOS: `set shell=/bin/bash` otherwise, in zsh, error will occur
- - [X] `set fdm=expr` is very slow. need to switch to `manual` or add a cache
- - [X] doesn't work on vim 9
- - [ ] fcpxml2tsv
- - [ ] robustness of tsv2fcpxml
-
 
 ## DEMO
  - Never, never. [Bilibili](https://www.bilibili.com/video/bv19b4y1e7Cn) [Youtube](https://youtu.be/avIspauKS3c)
