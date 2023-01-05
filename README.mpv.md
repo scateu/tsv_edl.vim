@@ -12,3 +12,13 @@ geometry=100%
 #keep-open=always
 #untimed=yes
 ```
+
+## MPV keyboard cheatsheet
+
+
+ - You may find this [MPV keyboard cheatsheet](https://cheatography.com/someone/cheat-sheets/mpv-media-player/) very useful.
+
+
+## Remote working
+
+ - `ssh -R/tmp/mpvsocket:/tmp/mpvsocket remoteserver` may also be useful
