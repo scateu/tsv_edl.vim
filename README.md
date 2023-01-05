@@ -57,7 +57,7 @@
 | ns          | [mpv ipc] search next (`n`), and seek                                                |
 | S           | [mpv ipc] sync playhead: seek vim cursor to nearest of mpv timecode, wrap end        |
 | \ S         | backwards of sync playhead                                                           |
-| ⇥           | seek to cursor, [mpv ipc] alway play. if in comment region, jump to next 'EDL'       |
+| ⇥           | seek to cursor, [mpv ipc] always play. if in comment region, jump to next 'EDL'      |
 | ⇧⇥          | seek to line head, then ⇥                                                            |
 | gi          | [mpv ipc] get current timecode, write record_in. overwrite existing.                 |
 | go          | [mpv ipc] get current timecode, write record_out and clipname. overwrite existing    |
