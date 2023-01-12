@@ -29,7 +29,7 @@ mkdir "${dirname}"
 echo "Will extract key frames into dir: ${dirname}/"
 echo "You may convert * slides.pdf afterwards"
 echo "Scene detect threshold: ${threshold}"
-
+#FIXME the first page may be omitted.
 ffmpeg -y -i "./${media}" -vf "select=gt(scene\,${threshold}),showinfo"  -vsync vfr "${dirname}/${media%.*}-%05d.png" 2>&1 |  sed -n -E -l '/^.*showinfo.*pts_time.*$/ {s/.*pts_time:([0-9]+\.?[0-9]+).*/\1/g;p;}'  |  secs2timecode |  sed -n -l 'N;s/\./,/g;h;s/\n/	/;p;x;D;' | sed -l 's/^/EDL	/' | sed -l "s/$/	| ${media%.*} |	/" | tee "${media%.*}_scenecut.tsv"
 # for lower sed version(2005), \t won't be recognized. Input with C-v <tab>
 
