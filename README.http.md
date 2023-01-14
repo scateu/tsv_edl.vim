@@ -113,3 +113,11 @@ or use `yt-dlp` <https://github.com/yt-dlp/yt-dlp>
 ```
 yt-dlp --download-sections "*10:00-11:00" https://www.youtube.com/watch?v=PdMp_RjO7CA
 ```
+
+# TIPS: Clear DNS cache on macOS
+
+if something goes wrong, like, you dial up a VPN just now. Clear DNS cache may helps:
+
+```
+dscacheutil -flushcache; sudo killall -HUP mDNSResponder
+```
