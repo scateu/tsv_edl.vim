@@ -12,6 +12,7 @@ install-utils:
 	chmod +x ${CURDIR}/utils/tsv2srt.py
 	chmod +x ${CURDIR}/utils/tsv2srt_all.py
 	chmod +x ${CURDIR}/utils/audio2srtvideo.sh
+	chmod +x ${CURDIR}/utils/audio2video.sh
 	chmod +x ${CURDIR}/utils/tsv2roughcut.py
 	chmod +x ${CURDIR}/utils/mkgap_10_mp3
 	chmod +x ${CURDIR}/utils/mkgap_10_mp4
@@ -25,6 +26,7 @@ install-utils:
 	sudo ln -sf ${CURDIR}/utils/tsv2edl.py /usr/local/bin/tsv2edl
 	sudo ln -sf ${CURDIR}/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
 	sudo ln -sf ${CURDIR}/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
+	sudo ln -sf ${CURDIR}/utils/audio2video /usr/local/bin/audio2video
 	sudo ln -sf ${CURDIR}/utils/tsv2srt.py /usr/local/bin/tsv2srt
 	sudo ln -sf ${CURDIR}/utils/tsv2srt_all.py /usr/local/bin/tsv2srt_all
 	sudo ln -sf ${CURDIR}/utils/tsv2roughcut.py /usr/local/bin/tsv2roughcut
@@ -39,7 +41,7 @@ install-utils:
 	sudo ln -sf ${CURDIR}/utils/tsv2fcpxml.py /usr/local/bin/tsv2fcpxml
 
 uninstall-utils:
-	cd /usr/local/bin; sudo rm -i audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow scenecut_preview srt2txt tsv2zh_cn audiocut
+	cd /usr/local/bin; sudo rm -i audio2video audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow scenecut_preview srt2txt tsv2zh_cn audiocut
 
 install-depends-on-mac-no-homebrew: install-ffmpeg-mac install-jq-mac install-mpv-mac install-socat-mac
 	rm -i ffmpeg-mac.zip mpv-latest.tar.gz socat_macOS.bin jq_macOS.bin
