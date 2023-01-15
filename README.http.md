@@ -59,6 +59,10 @@ https://www.bilibili.com/video/BV1sQ4y1B7wY?t=102.3&p=6
 
 However, please be advised -- due to bug of `youtube-dl`/`yt-dlp`, sometime you have to add `&p=1` at the first episode of a bilibili list. Otherwise `youtube-dl` won't work.
 
+# TIPS: Download Bilibili auto-generated subtitle
+
+- <https://greasyfork.org/zh-TW/scripts/378513-bilibili-cc%E5%AD%97%E5%B9%95%E5%B7%A5%E5%85%B7>
+
 
 # TIPS:
 
