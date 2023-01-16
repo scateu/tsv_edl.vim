@@ -279,7 +279,7 @@ Then `gi`, `go`.
 
 It's mapped to `\ c` for your convenience.
 
-## tsv2edl: Assemble a EDL timeline
+## tsv2edl: Assemble an EDL timeline
 
 (You may want to change the `FPS` value in `utils/tsv2edl.py`)
 
