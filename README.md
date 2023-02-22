@@ -333,6 +333,7 @@ will yield a `Some podcast E01.mkv`
  - BBC Paper Edit: [Slides](https://docs.google.com/presentation/d/1vVe_hgTj6JhLhU2WuZBOWx41ajcKX-8m8Xa0NIVZT2M/edit#slide=id.g6b51b79a88_2_245) | [github](https://github.com/bbc/digital-paper-edit-client) | [bbcnewslab](https://bbcnewslabs.co.uk/projects/digital-paper-edit/)
  - [AVID Media Composer - PhraseFind Option](https://www.avid.com/zh/products/media-composer-phrasefind-option)
  - <https://podcast.adobe.com>
+ - [Steve Audette, ACE](https://www.youtube.com/watch?v=6hW5FR8rYm4) \| [Walter Murch](https://www.youtube.com/watch?v=KuUUP2eP1_k)
 
 ## DEMO
  - Never, never. [Bilibili](https://www.bilibili.com/video/bv19b4y1e7Cn) [Youtube](https://youtu.be/avIspauKS3c)
