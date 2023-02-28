@@ -57,3 +57,11 @@ Linux: nc -U doesn't work.  use socat -
 VTT:
 
 	youtube-dl --all-subs --skip-download  https://www.c-span.org/video/?66368-1/madame-chiang-kai-shek-reception
+
+
+---- Vim: Add a new line before every '-' (different speaker)
+
+
+:g/|^I-/normal O
+
+
