@@ -408,7 +408,7 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 	"=~? means case insensitive.  =~# means case sensitive
 		let command = command . ' ' . filename . " &"
 	else
-		let command = command . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\"" . " &"
+		let command = command . ' "$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d; /m3u8$/d; /ass$/d; /docx$/d; /md$/d;' | head -n1)\"" . " &"
 	endif
 	"echo command
 	echon "[mpv] load media: " . filename
