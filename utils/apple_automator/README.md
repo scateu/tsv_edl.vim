@@ -1,11 +1,11 @@
 # scenecut_preview
 
-Workflow receives current "movie files" in "Finder"
-Image: screenshot
-Color: 
+ - Workflow receives current "movie files" in "Finder"
+ - Image: screenshot
+ - Color: 
 
 
-Shell: /bin/bash   Pass input: as arguments
+ - Shell: /bin/bash   Pass input: as arguments
 
 
 ```
