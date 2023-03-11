@@ -34,7 +34,7 @@ To use it:
 
 ```applescript
 tell application "Finder" to set currentDir to (target of front Finder window) as text
-do shell script "export LANG=en_US.UTF-8; export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & "; pbpaste | /usr/local/bin/tsv2roughcut && echo '完了' | say -v Ting-Ting"
+do shell script "export LANG=en_US.UTF-8; export PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & "; pbpaste | /usr/local/bin/tsv2roughcut && say yay"
 ```
 
  - [X] Pin in Menu Bar
