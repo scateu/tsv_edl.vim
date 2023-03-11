@@ -231,8 +231,12 @@ if __name__ == "__main__":
             #import time; time.sleep(100000)
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt %s %s"%(tempdirname, roughcut_audio_codec, roughcut_filename), shell=True)
 
-            sys.stdin = os.fdopen(1)
-            input("Press enter to destory tmp dir:  %s  > "%tempdirname)
+            try:  # in Shortcuts.app  OSError: [Errno 9] Bad file descriptor
+                sys.stdin = os.fdopen(1)
+                input("Press enter to destory tmp dir:  %s  > "%tempdirname)
+            except OSError:
+                pass
+
     else: # VIDEEEEO
         roughcut_txt_lines = [] #to generate roughcut.txt
         with tempfile.TemporaryDirectory() as tempdirname:
@@ -375,10 +379,15 @@ if __name__ == "__main__":
                 with open(srt_filename, "w") as output_file:
                     output_file.write('\n'.join(srt_queue))
 
-            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
+            #subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
+            # To make preview in macOS work, re-encode audio. Hope it won't bring to much pain.
+            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c:v copy %s"%(tempdirname, roughcut_filename), shell=True)
 
-            sys.stdin = os.fdopen(1)
-            input("Press enter to destory tmp dir:  %s  > "%tempdirname)
+            try:  # in Shortcuts.app  OSError: [Errno 9] Bad file descriptor
+                sys.stdin = os.fdopen(1)
+                input("Press enter to destory tmp dir:  %s  > "%tempdirname)
+            except OSError:
+                pass
 
     if len(sys.argv) > 1: #wait for user input then rename
         if "--user-input-newname" in sys.argv:
