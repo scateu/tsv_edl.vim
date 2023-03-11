@@ -173,6 +173,8 @@ if __name__ == "__main__":
                 _r = _items[0].split() #['EDL', '01:26:16.12', '01:27:22.10']
                 #fcpx_record_in = timecode_to_fcpx_time(_r[1], FPS)
                 #fcpx_record_out  = timecode_to_fcpx_time(_r[2], FPS)
+                _r[1] = _r[1].replace('"', '')
+                _r[2] = _r[2].replace('"', '')
                 fcpx_record_in = round(timecode_to_frame_number(_r[1], FPS) * FCPX_SCALE / FPS)
                 fcpx_record_out  = round(timecode_to_frame_number(_r[2], FPS) * FCPX_SCALE / FPS)
                 duration = fcpx_record_out - fcpx_record_in

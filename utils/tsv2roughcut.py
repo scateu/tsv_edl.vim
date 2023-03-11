@@ -90,8 +90,8 @@ if __name__ == "__main__":
             else:
                 continue
             _l = _l.split() #['EDL', '01:26:16.12', '01:27:22.10']
-            record_in = _l[1]
-            record_out  = _l[2]
+            record_in = _l[1].replace('"', '')  #Number.app will add quote to time code as "01:02:03,123"
+            record_out  = _l[2].replace('"', '')
 
             if GENERATE_SRT:
                 t2 = srttime_to_sec(record_out)
