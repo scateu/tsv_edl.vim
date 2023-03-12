@@ -78,26 +78,26 @@ def eprint(*args, **kwargs):
 
 
 def stitch_fcpxml_queue(raw_queue):
-    #([clipname, ref_id, offset, fcpx_record_in, duration ])
+    #([clipname, ref_id, offset, fcpx_record_in, duration, lane ])
     length = len(raw_queue)
     stitched_output = []
     i = 0
     while i < length:
-        clip, r, o, t1, d = raw_queue[i]
+        clip, r, o, t1, d, lane = raw_queue[i]
         j = i + 1
         if (i == length - 1): #last line
             stitched_output.append(raw_queue[i])
             break
-        clip_next, r_next, o_next, t1_next, d_next = raw_queue[j]
-        output_pending = [clip, r, o, t1, d]
-        while (clip == clip_next and r == r_next and t1 + d == t1_next):
-            output_pending = [clip, r, o, t1, d + d_next] #update pending output
+        clip_next, r_next, o_next, t1_next, d_next, lane_next = raw_queue[j]
+        output_pending = [clip, r, o, t1, d, lane]
+        while (clip == clip_next and r == r_next and t1 + d == t1_next and lane == lane_next):
+            output_pending = [clip, r, o, t1, d + d_next, lane] #update pending output
             #update item on the left to be examined
-            [clip, r, o, t1, d] = output_pending
+            [clip, r, o, t1, d, lane] = output_pending
             j += 1
             if (j == length): #out of index
                 break
-            clip_next, r_next, o_next, t1_next, d_next = raw_queue[j]
+            clip_next, r_next, o_next, t1_next, d_next, lane_next = raw_queue[j]
         stitched_output.append(output_pending)
         i = j
     return stitched_output
@@ -188,7 +188,7 @@ if __name__ == "__main__":
 
                 if GENERATE_SRT:
                     subtitle = _items[2].strip()
-                    if subtitle == "" or ("[ SPACE" in subtitle):
+                    if subtitle == "" or ("[ SPACE" in subtitle) or subtitle.startswith("[B]"):
                         pass
                     else:
                         srt_in = sec_to_srttime(offset / FCPX_SCALE)
@@ -203,9 +203,11 @@ if __name__ == "__main__":
             else:
                 continue
 
-
-            output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration ])
-            offset += duration
+            if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
+                output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 1 ]) #1 stands for lane='1'
+            else: #Normal lines
+                output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 0 ]) #0 can be ignored
+                offset += duration
 
     ####### Stitching #######
     if len(output_queue) > 99999:
@@ -225,8 +227,8 @@ if __name__ == "__main__":
     xmlhead += xmlheader3
     print(xmlhead)
 
-    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration in output_queue:
-        xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" />\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)
+    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane in output_queue:
+        xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}"/>\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane=_lane)
         #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
     print(xmlbody)
     print(xmltail)
@@ -236,4 +238,3 @@ if __name__ == "__main__":
         eprint("[srt] writing ",srt_filename)
         with open(srt_filename, "w") as output_file:
             output_file.write('\n'.join(srt_queue))
-
