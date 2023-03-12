@@ -20,5 +20,7 @@ if __name__ == "__main__":
                     print("")
                 print(counter)
                 print("%s --> %s"%(fields[1], fields[2]))
+                if len(fields) == 4:
+                    fields.append("")  #empty subtitle, make fields[4] exist
                 print(fields[4].replace("\\N",'\n'))
                 counter += 1
