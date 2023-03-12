@@ -9,3 +9,4 @@ EDL 00:03:04,000    00:03:09,000    | A roll video |  more normal lines
 It works in `tsv2fcpxml` now.
 
  - [ ] Support in tsv2roughcut
+ - [ ] Only supported in Davinci Resolve. FCPX doesn't work.
