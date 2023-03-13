@@ -21,13 +21,15 @@
 | J     | Join (timecode) with the next line; If on the first of two http lines with timestamp, will made an EDL line. |
 | \|    | [split] this line into two, guessing a new timecode                                                          |
 | mm    | mark/unmark word break point, then [split] will use this and cursor together.                                |
-|       | useful when cut time not predicted well.                                                                     |        
+|       | useful when cut time not predicted well.                                                                     |
 | ⇧← ⇧→ | Roll timecode with the previous line for 1 sec                                                               |
 | g0    | go to the start of subtitle                                                                                  |
 | g8    | go to `record_out` timecode in prev line                                                                     |
 | g9    | go to `record_in` timecode                                                                                   |
 | gO    | append a gap for 5 secs below current line                                                                   |
 | gN    | append a line for 10 minutes below current line, place cursor to input clipname                              |
+| gB    | toggle a line between '[B]' or not.                                                                          |
+| gb    | the same as gB                                                                                               |
 | \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
 
 ### EDITORIAL DECISION / BBC Paper Edit
