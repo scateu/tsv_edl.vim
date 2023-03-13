@@ -143,10 +143,12 @@ if __name__ == "__main__":
                         filename = filenames_a[0] 
                     elif len(filenames_a) == 0:
                         if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
+                            is_pure_audio_project = False
                             eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
                             eprint("Choosing the %s"%filenames_i[0])
                             filename = filenames_i[0] 
                         elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
+                            is_pure_audio_project = False
                             filename = filenames_i[0] 
                         elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
                             eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
