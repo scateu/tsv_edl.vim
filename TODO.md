@@ -15,10 +15,9 @@
  - [ ] fcpxml2tsv
  - [ ] robustness of tsv2fcpxml
 
- - [ ] sometime the final product starts with a black screen
+ - [X] sometime the final product starts with a black screen
 
 >  The following words are from losslesscut project
 >  '-i', filePath,
 > '-ss', '0', // If we don't do this, the output seems to start with an empty black after merging with the encoded part
 >  '-t', (cutTo - cutFrom).toFixed(5),
-
