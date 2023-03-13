@@ -12,9 +12,12 @@ EDL 00:03:04,000    00:03:09,000    | A roll video |  more normal lines
 
 It works in `tsv2fcpxml` now.
 
- - [ ] Support in tsv2roughcut
- - [X] Only supported in Davinci Resolve. FCPX doesn't work.
+ - [ ] B-Roll support in tsv2roughcut
+ - [X] Supported in Davinci Resolve. 
+ - [X] FCPX Support
  - [ ] FPS conform
+ - [X] Still image as both B roll and A roll works in Davinci Resolve
+   - [ ] But doesn't work in FCPX, and will crash it. Gap is needed.
 
 
 # FCPXML samples
@@ -87,6 +90,39 @@ It works in `tsv2fcpxml` now.
                                 <adjust-transform position="0 0" anchor="0 0" scale="1 1"/>
                             </asset-clip>
                         </asset-clip>
+                    </spine>
+                </sequence>
+            </project>
+        </event>
+    </library>
+</fcpxml>
+```
+
+
+# FCPXML sample: still image as B-Roll
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fcpxml>
+<fcpxml version="1.8">
+    <resources>
+        <format id="r0" height="1080" frameDuration="1/25s" width="1920" name="FFVideoFormat1080p25"/>
+        <format id="r1" height="1234" width="1918" name="FFVideoFormatRateUndefined"/>
+        <asset src="file:///Users/k/Screenshots/%E6%88%AA%E5%B1%8F2023-03-09%2014.11.25.png" id="r2" duration="0/1s" hasVideo="1" start="0/1s" name="截屏2023-03-09 14.11.25.png" format="r1"/>
+        <asset src="file:///Users/k/CUT/2023-03-13-dev/1994050DECUSNewOrleansLinuxImplementationIssuesInLinux.mp3" audioChannels="2" id="r3" duration="858901871/249750s" audioSources="1" start="0/1s" hasAudio="1" name="1994050DECUSNewOrleansLinuxImplementationIssuesInLinux.mp3"/>
+    </resources>
+    <library>
+        <event name="DEFAULT (Resolve)">
+            <project name="DEFAULT (Resolve)">
+                <sequence tcStart="0/1s" duration="1562/25s" tcFormat="NDF" format="r0">
+                    <spine>
+                        <gap duration="353/25s" start="3600/1s" name="Gap" offset="0/1s">
+                            <asset-clip duration="1562/25s" enabled="1" start="50593/25s" ref="r3" lane="1" offset="3600/1s" name="1994050DECUSNewOrleansLinuxImplementationIssuesInLinux.mp3"/>
+                        </gap>
+                        <video duration="5/1s" enabled="1" start="0/1s" ref="r2" offset="353/25s" name="截屏2023-03-09 14.11.25.png">
+                            <adjust-transform anchor="0 0" position="0 0" scale="1 1"/>
+                        </video>
+                        <gap duration="1084/25s" start="3600/1s" name="Gap" offset="478/25s"/>
                     </spine>
                 </sequence>
             </project>
