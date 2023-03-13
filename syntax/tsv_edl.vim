@@ -23,6 +23,7 @@ syn match tsv_edlHead /^EDL\tRecord In\tRecord Out\tClipname\tSubtitle$/
 
 syn match tsv_edlSpace /\[ SPACE .* secs \]/
 syn match tsv_edlNewline /\\N/ conceal cchar=_
+syn match tsv_edlBroll /\(|\t\)\@<=\[B\]/     "Look ahead search, [B] in the head of subtitle column
 
 syn match    markdownHeader1     "^# .*$"
 syn match    markdownHeader2     "^## .*$"
@@ -80,6 +81,7 @@ HiLink tsv_edlUsed 	NonText
 HiLink tsv_edlHead	Comment
 HiLink tsv_edlSpace	Comment
 HiLink tsv_edlNewline	Comment
+HiLink tsv_edlBroll	Constant
 
 
 " conceal reference: https://vimjc.com/vim-conceal-text.html
