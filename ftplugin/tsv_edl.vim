@@ -202,7 +202,7 @@ nmap <silent> <S-Right> 02f:l<C-A>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-A>:.,/^
 "====================
 "vnoremap <space> :'<,'>w !tsv2roughcut<CR>
 vnoremap <space> :w !tsv2roughcut --user-input-newname<CR>
-vnoremap x :w !tsv2fcpxml > a.fcpxml<left><left><left><left><left><left><left>
+vnoremap x :w !tsv2fcpxml --fps=25 > a.fcpxml<left><left><left><left><left><left><left>
 
 set nrformats=
 " only decimal

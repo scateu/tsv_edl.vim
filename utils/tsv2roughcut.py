@@ -396,7 +396,10 @@ if __name__ == "__main__":
 
             #subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c copy %s"%(tempdirname, roughcut_filename), shell=True)
             # To make preview in macOS work, re-encode audio. Hope it won't bring to much pain.
-            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -c:v copy %s"%(tempdirname, roughcut_filename), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -ss 0 -c:v copy %s"%(tempdirname, roughcut_filename), shell=True)
+
+            # > '-ss', '0', // If we don't do this, the output seems to start with an empty black after merging with the encoded part
+            # tips from losslesscut project.
 
             try:  # in Shortcuts.app  OSError: [Errno 9] Bad file descriptor
                 sys.stdin = os.fdopen(1)
