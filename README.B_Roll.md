@@ -13,6 +13,7 @@ EDL 00:03:04,000    00:03:09,000    | A roll video |  more normal lines
 It works in `tsv2fcpxml` now.
 
  - [ ] B-Roll support in tsv2roughcut
+ - [X] Still image support in tsv2roughcut
  - [X] Supported in Davinci Resolve. 
  - [X] FCPX Support
  - [ ] FPS conform

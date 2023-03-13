@@ -277,7 +277,6 @@ if __name__ == "__main__":
             for i in index_B:
                 _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B = output_queue_B[i] #get B roll clip information
                 xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" />\n'.format(clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset , start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
-                #_offset_B + _fcpx_record_in # B roll offset +=   start of A
 #FIXME
 #            for i in index_B:
 #                del(output_queue_B[i])

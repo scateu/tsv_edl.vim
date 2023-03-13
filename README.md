@@ -43,6 +43,7 @@
 | ⌫ (BS)       | reject this line, mark `xxx`, then go to next line    |
 | ⌦ (DEL, fn⌫) | toggle between `EDL` and `xxx`; toggle `---` to `EDL` |
 | V (region) ⎵ | render those highlighted lines with `tsv2roughcut`    |
+| V  x         | export those highlighted lines with `tsv2fcpxml`      |
 
 ### MPV IPC CONTROL MODE
 
