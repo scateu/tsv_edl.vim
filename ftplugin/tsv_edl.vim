@@ -132,6 +132,17 @@ nnoremap <silent> g0 02f\|2l
 nnoremap <silent> gO oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
 nnoremap <silent> gN oEDL	00:00:00,000	00:10:00,000	\|  \|	[ VIDEO 10*60 secs  ]<esc>0f\|la
 
+"toggle this line as [B]roll
+nnoremap <silent> gB :call DoToggleBroll()<CR>
+nnoremap <silent> gb :call DoToggleBroll()<CR>
+func! DoToggleBroll()
+	if (getline('.') =~# '|\t\[B\]')
+		s/|\t\[B\]/|\t/ 
+	else 
+		s/| .* |\t\zs\ze/\[B\]/
+	endif
+endfunc
+
 nmap <silent> \| :call tsv_edl#break_line()<CR>
 nmap <silent> mm :call DoSetColorColumn()<CR>
 
