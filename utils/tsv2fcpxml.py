@@ -36,7 +36,7 @@ xmlheader3 = """
     <library>
         <event name="DEFAULT">
             <project name="DEFAULT">
-                <sequence duration="15720000/90000s" format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k">
+                <sequence format="r1" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k">
                     <spine>"""
 
 #TODO: 用模板语言?
@@ -102,11 +102,22 @@ def stitch_fcpxml_queue(raw_queue):
         i = j
     return stitched_output
 
+def find_b_roll_of_clip(offset, duration, output_queue_B):
+    # if output_queue_B item's offset is within [offset, offset + duration] of output_queue, then output as nested.
+    indexs = []
+    index = -1
+    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane in output_queue_B:
+        index += 1
+        if _offset >= offset:
+            if _offset >= offset+duration:
+                eprint("WARNING: B roll reaches the outside of A roll")
+            indexs.append(index)
+    return indexs
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='convert tsv_edl to fcpxml')
     parser.add_argument('--offsetonehour', action="store_true", default=False)
-    parser.add_argument('--fps', action="store", default=24, type=float)
+    parser.add_argument('--fps', action="store", default=25, type=float)
     parser.add_argument('--nosrt', action="store_false", default=True)
     arguments = parser.parse_args()
 
@@ -118,6 +129,7 @@ if __name__ == "__main__":
     xmlhead = ""
     xmlbody = ""
     output_queue = []
+    output_queue_B = []
     xmlhead += xmlheader1.format(fps=int(FCPX_SCALE/FPS), fcpx_scale = FCPX_SCALE)
     #xmlhead += xmlheader1.format(fps=3753.75)
     offset = 0
@@ -204,13 +216,13 @@ if __name__ == "__main__":
                 continue
 
             if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
-                output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 1 ]) #1 stands for lane='1'
+                output_queue_B.append([ clipname, ref_id, offset, fcpx_record_in, duration, 1 ]) #1 stands for lane='1'
             else: #Normal lines
                 output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 0 ]) #0 can be ignored
                 offset += duration
 
     ####### Stitching #######
-    if len(output_queue) > 99999:
+    if len(output_queue) > 99999 or len(output_queue_B) > 99999:
         eprint("Too much. That's too much.")
         sys.exit(-1)
     # stitch adjecent clips in output_queue
@@ -218,7 +230,12 @@ if __name__ == "__main__":
     output_queue = stitch_fcpxml_queue(output_queue)
     after_stitch_lines = len(output_queue)
     eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
-
+    # stitch adjecent clips in output_queue_B
+    before_stitch_lines_B = len(output_queue_B)
+    if before_stitch_lines_B > 0:
+        output_queue_B = stitch_fcpxml_queue(output_queue_B)
+        after_stitch_lines_B = len(output_queue_B)
+        eprint("[stitch B] %d --> %d lines"%(before_stitch_lines_B, after_stitch_lines_B))
 
     for k in media_assets:
         xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=[0 if is_pure_audio else 1][0])
@@ -228,8 +245,22 @@ if __name__ == "__main__":
     print(xmlhead)
 
     for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane in output_queue:
-        xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}"/>\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane=_lane)
-        #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
+        index_B = find_b_roll_of_clip(_offset, _duration, output_queue_B)
+        if  len(index_B) != 0:  # B roll found
+            xmlbody += '<asset-clip ref="{ref_id}" offset="{offset}/{fcpx_scale}s" name="{clipname}" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue">\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)  # A roll
+            for i in index_B:
+                _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B = output_queue_B[i] #get B roll clip information
+                _offset_B += _fcpx_record_in # B roll offset +=   start of A
+                xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" />\n'.format(clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B, start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
+
+#FIXME
+#            for i in index_B:
+#                del(output_queue_B[i])
+            xmlbody += '</asset-clip>'
+        else:
+            xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}"/>\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane = _lane)
+            #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
+
     print(xmlbody)
     print(xmltail)
 
