@@ -8,6 +8,7 @@ import platform
 
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
 audio_formats = ['wav', 'mp3', 'm4a', 'ogg']
+image_formats = ['png', 'jpg', 'jpeg', 'bmp']
 
 is_pure_audio_project = True
 
@@ -123,6 +124,7 @@ if __name__ == "__main__":
                 #FIXME didn't test. *%s*.*
                 filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
                 # FIXME a.mp3 another.m4a
+                filenames_i = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in image_formats ]
 
                 if len(filenames_v) > 1:
                     eprint("WARNING: filename similar to clip %s has more than one"%clipname)
@@ -140,9 +142,17 @@ if __name__ == "__main__":
                     elif len(filenames_a) == 1:
                         filename = filenames_a[0] 
                     elif len(filenames_a) == 0:
-                        eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
-                        continue
+                        if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
+                            eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+                            eprint("Choosing the %s"%filenames_i[0])
+                            filename = filenames_i[0] 
+                        elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
+                            filename = filenames_i[0] 
+                        elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
+                            eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
+                            continue
             output_queue.append([filename, record_in, record_out])
+    #print(output_queue);import sys;sys.exit(-1)
 
     if len(output_queue) > 99999:
         eprint("Too much. That's too much.")
@@ -340,6 +350,9 @@ if __name__ == "__main__":
                             # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
                             # a FPS filter is very good.
                             # -r? no good.
+                            #FIXME if is still image
+                            #FIXME: when still image in queue, ffmpeg needs to generate a silence REF: https://video.stackexchange.com/questions/35526/concatenate-no-audio-video-with-with-audio-video
+                            # ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -i video.mov -c:v copy -c:a aac -shortest output.mov
                         else:
                             duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
                             subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, codec_v,tempdirname,counter), shell=True)
