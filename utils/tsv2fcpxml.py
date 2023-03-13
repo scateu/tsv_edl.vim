@@ -102,16 +102,16 @@ def stitch_fcpxml_queue(raw_queue):
         i = j
     return stitched_output
 
-def find_b_roll_of_clip(offset, duration, output_queue_B):
+def find_b_roll_of_clip(offset_A, duration_A, output_queue_B):
     # if output_queue_B item's offset is within [offset, offset + duration] of output_queue, then output as nested.
     indexs = []
     index = -1
-    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane in output_queue_B:
+    for clipname_B, ref_id_B, offset_B, fcpx_record_in_B, duration_B, lane_B in output_queue_B:
         index += 1
-        if _offset >= offset:
-            if _offset >= offset+duration:
-                eprint("WARNING: B roll reaches the outside of A roll")
+        if offset_A <= offset_B < (offset_A + duration_A):
             indexs.append(index)
+        if (offset_B+duration_B) >= (offset_A+duration_A):
+            eprint("WARNING: B roll reaches the outside of A roll")
     return indexs
 
 if __name__ == "__main__":
@@ -250,13 +250,12 @@ if __name__ == "__main__":
             xmlbody += '<asset-clip ref="{ref_id}" offset="{offset}/{fcpx_scale}s" name="{clipname}" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue">\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)  # A roll
             for i in index_B:
                 _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B = output_queue_B[i] #get B roll clip information
-                _offset_B += _fcpx_record_in # B roll offset +=   start of A
-                xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" />\n'.format(clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B, start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
-
+                xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" />\n'.format(clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset , start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
+                #_offset_B + _fcpx_record_in # B roll offset +=   start of A
 #FIXME
 #            for i in index_B:
 #                del(output_queue_B[i])
-            xmlbody += '</asset-clip>'
+            xmlbody += '</asset-clip>\n'
         else:
             xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}"/>\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane = _lane)
             #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
