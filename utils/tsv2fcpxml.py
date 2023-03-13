@@ -125,7 +125,7 @@ if __name__ == "__main__":
     OFFSET_1HOUR = arguments.offsetonehour
     FPS = arguments.fps
 
-    media_assets = {} # { "clipname": [ abspath, ref_id ] , ... }
+    media_assets = {} # { "clipname": [ abspath, ref_id, hasVideo ] , ... }
     xmlhead = ""
     xmlbody = ""
     output_queue = []
@@ -178,7 +178,11 @@ if __name__ == "__main__":
 
                 if not clipname in media_assets:
                     ref_id = "r%d"%(len(media_assets) + 2) #id start from r2
-                    media_assets[clipname] = [abspath, ref_id ]
+                    if is_pure_audio:
+                        hasVideo = 0
+                    else:
+                        hasVideo = 1
+                    media_assets[clipname] = [abspath, ref_id, hasVideo ]
                 else:
                     ref_id = media_assets[clipname][1]
 
@@ -238,7 +242,7 @@ if __name__ == "__main__":
         eprint("[stitch B] %d --> %d lines"%(before_stitch_lines_B, after_stitch_lines_B))
 
     for k in media_assets:
-        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=[0 if is_pure_audio else 1][0])
+        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=media_assets[k][2])
         if is_pure_audio:
             eprint("WARNING & FIXME: hasVideo=0, if you want to import into DaVinci Resolve as a multicam. You may change it in .fcpxml manually")
     xmlhead += xmlheader3
