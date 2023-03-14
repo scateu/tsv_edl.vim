@@ -32,30 +32,64 @@ def sec_to_srttime(sec):
     MS = (sec - int(sec))*1000.0
     return "%02d:%02d:%02d,%03d"%(HH,MM,SS,MS)
 
+
+def is_b_roll_continuous(first, second):
+    if first != "NO_B_ROLL" and second != "NO_B_ROLL":
+        if first[0] == second[0] and first[2] == second[1]: #filename, out = in
+            return True
+    elif first == "NO_B_ROLL" and second == "NO_B_ROLL":
+        return True
+    else:
+        return False
+
+def join_b_roll(first, second):
+    if first != "NO_B_ROLL" and second != "NO_B_ROLL":
+        assert(first[2] == second[1])
+        assert(first[0] == second[0])
+        return [first[0], first[1], second[2]]
+    if first == "NO_B_ROLL" and second == "NO_B_ROLL":
+        return "NO_B_ROLL"
+    
+
 def stitch_edl_queue(raw_queue):
+    # [ filename, in, out, NO_B_ROLL]
+    # [ filename, in, out, [filename, in, out]]
     length = len(raw_queue)
     stitched_output = [] 
     i = 0
     while i < length:
-        clip, t1, t2 = raw_queue[i]
+        clip, t1, t2, b_roll = raw_queue[i]
         j = i + 1
         if (i == length - 1): #last line
             stitched_output.append(raw_queue[i])
             break
-        clip_next, t1_next, t2_next = raw_queue[j]
-        _item = [clip, t1, t2]
-        while (clip == clip_next and t2 == t1_next):
-            _item = [clip, t1, t2_next] #update pending output
-            clip, t1, t2 = _item #update item on the left to be examined
+        clip_next, t1_next, t2_next, b_roll_next = raw_queue[j]
+        _item = [clip, t1, t2, b_roll]
+        while (clip == clip_next and t2 == t1_next and is_b_roll_continuous(b_roll, b_roll_next)):
+            _item = [clip, t1, t2_next, join_b_roll(b_roll, b_roll_next)] #update pending output
+            clip, t1, t2, b_roll = _item #update item on the left to be examined
             j += 1
             if (j == length): #out of index
                 break
-            clip_next, t1_next, t2_next = raw_queue[j]
+            clip_next, t1_next, t2_next, b_roll_next = raw_queue[j]
         stitched_output.append(_item)
         i = j
     return stitched_output
 
+def accurate_and_fast_time_for_ffmpeg(r_in,r_out, skip_time=15):
+    a = r_in.replace(',',':').split(':')
+    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
+    if (t1 - skip_time > 0):
+        t2 = t1 - skip_time
+        t3 = skip_time + int(a[3])/1000.0
+    else:
+        t2 = 0
+        t3 = t1 + int(a[3])/1000.0
+    to = round(srttime_to_sec(r_out) - t2, 3)
+    return t2,t3,to
+
 output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
+B_buffer = [] # [filename, start_tc, end_tc]
 
 srt_queue = []
 
@@ -85,8 +119,10 @@ if __name__ == "__main__":
         if line.startswith('EDL'):
             _l = line.strip()
             if _l.count('|'):
-                clipname = _l.split('|')[1].strip()
-                _l = _l.split('|')[0]
+                _l, clipname, subtitle = _l.split('|')
+                _l = _l.strip()
+                clipname = clipname.strip()
+                subtitle = subtitle.strip()
                 #import pdb;pdb.set_trace()
             else:
                 continue
@@ -153,7 +189,32 @@ if __name__ == "__main__":
                         elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
                             eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
                             continue
-            output_queue.append([filename, record_in, record_out])
+            if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
+                B_buffer = [filename, record_in, record_out]
+            else: #Normal lines
+                output_queue.append([filename, record_in, record_out, "B_ROLL_UNDETERMINED"])
+
+                if len(B_buffer) == 3: #handle B roll buffer
+                    f_a,s_a,e_a = output_queue[-1][:3] #A: filename, start, end
+                    f_b,s_b,e_b = B_buffer  #B: filename, start, end
+                    # B roll shorter than A clip
+                    duration_a = srttime_to_sec(e_a) - srttime_to_sec(s_a)
+                    duration_b = srttime_to_sec(e_b) - srttime_to_sec(s_b)
+                    if duration_b <= duration_a:
+                        output_queue[-1][3]=B_buffer  # [f,in,out, B_ROLL]
+                        B_buffer = "" #clear B_buffer
+                    else:
+                        # B roll longer than A clip
+                        # B.start = A.end; next
+                        output_queue[-1][3] = [f_b, s_b, sec_to_srttime(srttime_to_sec(s_b) + duration_a)]  # [f,in,out, B_ROLL]
+                        B_buffer = [f_b, sec_to_srttime(srttime_to_sec(s_b) + duration_a) , e_b]
+                        # NOTE: B Roll may be cut into pieces. Due to uncompleted stitching of A clips. 
+                        #       Maybe stitching B roll afterwards is a good idea.  Maybe I was overthinking....  Wed Mar 15 00:30:35 CST 2023
+                        # B: [..................]
+                        # A: [.....||.......||.....
+                else:
+                    output_queue[-1][3]="NO_B_ROLL"  #[f,in,out,"NO_B_ROLL"]
+
     #print(output_queue);import sys;sys.exit(-1)
 
     if len(output_queue) > 99999:
@@ -165,7 +226,6 @@ if __name__ == "__main__":
     output_queue = stitch_edl_queue(output_queue)
     after_stitch_lines = len(output_queue)
     eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
-
 
     if is_pure_audio_project: #Audio only
         # determine output audio file ext
@@ -194,7 +254,7 @@ if __name__ == "__main__":
             counter = 0
             eprint("[ffmpeg] writing ", end="") 
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
-                for f,r_in,r_out in output_queue:
+                for f,r_in,r_out,_ in output_queue:
                     if intermediate_ext_name == None:
                         audioclips_ext_name = os.path.splitext(f)[1].lower()
                         intermediate_audio_codec = '-c:a copy'
@@ -255,7 +315,8 @@ if __name__ == "__main__":
             eprint("[tempdir]", tempdirname)
             counter = 0
             eprint("[ffmpeg] writing ", end="") 
-            for f,r_in,r_out in output_queue:
+            #eprint(output_queue)
+            for f,r_in,r_out,f_B in output_queue:
                 eprint(" %05d"%counter, end="")
                 sys.stderr.flush()
                 if f.startswith('http'):
@@ -357,6 +418,29 @@ if __name__ == "__main__":
                                 subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/%05d.ts"%(f, to-t3, codec_v, tempdirname,counter), shell=True)
                                 #FIXME: when still image in queue, ffmpeg needs to generate a silence REF: https://video.stackexchange.com/questions/35526/concatenate-no-audio-video-with-with-audio-video
                             # ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -i video.mov -c:v copy -c:a aac -shortest output.mov
+
+                            ###### B Roll Handling ######
+                            if f_B == "NO_B_ROLL":
+                                pass
+                            else: #Has B Roll
+                                assert(len(f_B) == 3)
+                                b_filename, b_in, b_out = f_B
+                                subprocess.call("mv %s/%05d.ts %s/_%05d.ts"%(tempdirname,counter, tempdirname,counter), shell=True)  #rename from 00000.ts to _00000.ts
+                                #FIXME use  accurate and fast seeking
+                                b_t2,b_t3,b_to = accurate_and_fast_time_for_ffmpeg(b_in,b_out)
+
+                                # Render b_00000.ts:
+                                if os.path.splitext(b_filename)[1].lower()[1:] in video_formats:
+                                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/b_%05d.ts"%(b_t2, b_filename, b_t3, b_to, codec_v, tempdirname,counter), shell=True)
+                                else:#still image
+                                    subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
+                                # then overlay b_00000.ts / _00000.ts --> 00000.ts
+                                subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -i %s/b_%05d.ts -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s/%05d.ts"%(tempdirname,counter, tempdirname,counter, codec_v, tempdirname,counter), shell=True)
+                                # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
+                                #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
+                                eprint("+") #indicates B roll generated
+
+                            ######\ B Roll Handling / ######
                         else:
                             duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
                             subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, codec_v,tempdirname,counter), shell=True)
