@@ -135,7 +135,7 @@ if __name__ == "__main__":
                 t1 = srttime_to_sec(record_in)
                 srt_duration = round(t2 - t1, 3)
                 #eprint("srt_duration:", srt_duration)
-                if not ('[ SPACE' in line):
+                if not ('[ SPACE' in line or '|\t[B]' in line):
                     _s = line.strip().split('\t')
                     if len(_s) > 4: #subtitle is not empty
                         if srt_counter != 0: #not first block
@@ -148,8 +148,11 @@ if __name__ == "__main__":
                         # FIXME: https://superuser.com/questions/1433644/ffmpeg-unable-to-recode-subtitle-event
                         srt_queue.append( _s[4].replace("\\N",'\n') )
                         srt_counter += 1
-                srt_last_position += srt_duration
-                srt_last_position = round(srt_last_position, 3)
+                if '|\t[B]' in line:
+                    pass  #B roll shouldn't increase srt time.
+                else:
+                    srt_last_position += srt_duration
+                    srt_last_position = round(srt_last_position, 3)
 
             if clipname.startswith("http"):
                 is_pure_audio_project = False
@@ -432,12 +435,13 @@ if __name__ == "__main__":
                                 # Render b_00000.ts:
                                 if os.path.splitext(b_filename)[1].lower()[1:] in video_formats:
                                     subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/b_%05d.ts"%(b_t2, b_filename, b_t3, b_to, codec_v, tempdirname,counter), shell=True)
-                                else:#still image
-                                    subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
-                                # then overlay b_00000.ts / _00000.ts --> 00000.ts
-                                subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -i %s/b_%05d.ts -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s/%05d.ts"%(tempdirname,counter, tempdirname,counter, codec_v, tempdirname,counter), shell=True)
-                                # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
-                                #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
+                                    # then overlay b_00000.ts / _00000.ts --> 00000.ts
+                                    subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -i %s/b_%05d.ts -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s/%05d.ts"%(tempdirname,counter, tempdirname,counter, codec_v, tempdirname,counter), shell=True)
+                                    # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
+                                    #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
+                                else:#still image  
+                                    #subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
+                                    subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s/%05d.ts"%(tempdirname,counter, b_to-b_t3, b_filename, codec_v, tempdirname,counter), shell=True)
                                 eprint("+",end="") #indicates B roll generated
 
                             ######\ B Roll Handling / ######
