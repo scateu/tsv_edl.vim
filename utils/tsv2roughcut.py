@@ -438,7 +438,7 @@ if __name__ == "__main__":
                                 subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -i %s/b_%05d.ts -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s/%05d.ts"%(tempdirname,counter, tempdirname,counter, codec_v, tempdirname,counter), shell=True)
                                 # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
                                 #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
-                                eprint("+") #indicates B roll generated
+                                eprint("+",end="") #indicates B roll generated
 
                             ######\ B Roll Handling / ######
                         else:
