@@ -185,16 +185,20 @@ def handle_http_clip(url, r_in, r_out, f_B, counter, tempdirname): #youtube, twi
     return "file '%s/%05d.%s'"%(tempdirname,counter,fragment_ext)
 
 def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
+    # in a video project
     fragment_ext = "ts"
 
     t2, t3, to, duration = accurate_and_fast_time_for_ffmpeg(r_in, r_out)
     #eprint("fps=24, scale=1920:1080")
     # use -to to get more accuracy
-    if os.path.splitext(f)[1].lower()[1:] in video_formats:
+    ext = os.path.splitext(f)[1].lower()[1:]
+    if ext in video_formats:
         subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
         # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
         # a FPS filter is very good.
         # -r? no good.
+    elif ext in audio_formats:  #audio clip in a video project. generate a black screen
+        subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i color=size=1920x1080:rate=24:color=black -ss %s -i \"%s\" -ss %s -to %s -c:v %s -b:v 2M -shortest %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
     else: #still image
         subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/%05d.ts"%(f, to-t3, codec_v, tempdirname,counter), shell=True)
 
