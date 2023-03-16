@@ -76,17 +76,18 @@ def stitch_edl_queue(raw_queue):
     return stitched_output
 
 def accurate_and_fast_time_for_ffmpeg(r_in,r_out, skip_time=15):
-    a = r_in.replace(',',':').split(':')
-    b = r_out.replace(',',':').split(':')
-    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
+    # r_in, r_out are in secs
+    a = r_in
+    b = r_out
+    t1 = int(a)
     if (t1 - skip_time > 0):
         t2 = t1 - skip_time
-        t3 = skip_time + int(a[3])/1000.0
+        t3 = skip_time + (a - t1)
     else:
         t2 = 0
-        t3 = t1 + int(a[3])/1000.0
-    to = round(srttime_to_sec(r_out) - t2, 3)
-    duration = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0 - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0)
+        t3 = t1 + (a - t1)
+    to = round(b - t2, 3)
+    duration = b-a
     return t2,t3,to,duration
 
 def determine_filename_from_clipname(clipname):
@@ -282,7 +283,7 @@ def determine_roughcut_filename(roughcut_ext_name):
 
 
 if __name__ == "__main__":
-    output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
+    output_queue = [] # [[filename, start_tc in secs, end_tc in secs], [...], [...], ...]
     B_buffer = [] # [filename, start_tc, end_tc]
     srt_queue = []
     srt_counter = 1
@@ -353,25 +354,26 @@ if __name__ == "__main__":
                     continue
 
             if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
-                B_buffer = [filename, record_in, record_out]
+                B_buffer = [filename, srttime_to_sec(record_in), srttime_to_sec(record_out)]
             else: #Normal lines
-                output_queue.append([filename, record_in, record_out, "B_ROLL_UNDETERMINED"])
+                output_queue.append([filename, srttime_to_sec(record_in), srttime_to_sec(record_out), "B_ROLL_UNDETERMINED"])
 
                 if isinstance(B_buffer, list) and len(B_buffer) == 3: #handle B roll buffer
                     f_a,s_a,e_a = output_queue[-1][:3] #A: filename, start, end
                     f_b,s_b,e_b = B_buffer  #B: filename, start, end
                     # B roll shorter than A clip
-                    duration_a = srttime_to_sec(e_a) - srttime_to_sec(s_a)
-                    duration_b = srttime_to_sec(e_b) - srttime_to_sec(s_b)
+                    duration_a = e_a - s_a
+                    duration_b = e_b - s_b
                     if duration_b <= duration_a:
                         output_queue[-1][3]=B_buffer  # [f,in,out, B_ROLL]
                         B_buffer = "" #clear B_buffer
                     else:
                         # B roll longer than A clip
                         # B.start = A.end; next
-                        output_queue[-1][3] = [f_b, s_b, sec_to_srttime( srttime_to_sec(s_b) + duration_a )]  # [f,in,out, B_ROLL]
-                        B_buffer = [f_b, sec_to_srttime(srttime_to_sec(s_b) + duration_a) , e_b]
-                        # NOTE: B Roll may be cut into pieces. Due to uncompleted stitching of A clips.
+                        output_queue[-1][3] = [f_b, s_b,  s_b + duration_a + 1.0/24.0]  # [f,in,out, B_ROLL]
+                        # make sure B roll covers the end of A clip. Padding one frame for B roll. don't worry, the next start timecode isn't affected.
+                        B_buffer = [f_b, s_b + duration_a , e_b]
+                        # MAYBE DONE: B Roll may be cut into pieces. Due to uncompleted stitching of A clips.
                         #       Maybe stitching B roll afterwards is a good idea.  Maybe I was overthinking....  Wed Mar 15 00:30:35 CST 2023
                         # B: [..................]
                         # A: [.....||.......||.....
