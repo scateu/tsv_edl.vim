@@ -78,6 +78,7 @@ def stitch_edl_queue(raw_queue):
 
 def accurate_and_fast_time_for_ffmpeg(r_in,r_out, skip_time=15):
     a = r_in.replace(',',':').split(':')
+    b = r_out.replace(',',':').split(':')
     t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
     if (t1 - skip_time > 0):
         t2 = t1 - skip_time
@@ -86,7 +87,155 @@ def accurate_and_fast_time_for_ffmpeg(r_in,r_out, skip_time=15):
         t2 = 0
         t3 = t1 + int(a[3])/1000.0
     to = round(srttime_to_sec(r_out) - t2, 3)
-    return t2,t3,to
+    duration = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0 - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0)
+    return t2,t3,to,duration
+
+def determine_filename_from_clipname(clipname):
+    global is_pure_audio_project
+    filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ] 
+    #FIXME didn't test. *%s*.*
+    filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
+    # FIXME a.mp3 another.m4a
+    filenames_i = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in image_formats ]
+
+    if len(filenames_v) > 1:
+        eprint("WARNING: filename similar to clip %s has more than one"%clipname)
+        eprint("Choosing the %s"%filenames_v[0])
+        filename = filenames_v[0]
+        is_pure_audio_project = False
+    elif len(filenames_v) == 1:
+        filename = filenames_v[0]
+        is_pure_audio_project = False
+    elif len(filenames_v) == 0:
+        if len(filenames_a) > 1:
+            eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+            eprint("Choosing the %s"%filenames_v[0])
+            filename = filenames_a[0]
+        elif len(filenames_a) == 1:
+            filename = filenames_a[0] 
+        elif len(filenames_a) == 0:
+            if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
+                is_pure_audio_project = False
+                eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+                eprint("Choosing the %s"%filenames_i[0])
+                filename = filenames_i[0] 
+            elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
+                is_pure_audio_project = False
+                filename = filenames_i[0] 
+            elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
+                eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
+                filename = ""
+    return filename
+
+def handle_bilibili_clip(url, r_in, r_out, f_B, counter, tempdirname):
+    txt_lines = []
+    fragment_ext = "ts"   #ts will make A-V sync better
+    stream_urls = subprocess.check_output( ['yt-dlp', '-g', url], encoding='UTF-8').splitlines() # -f "w*" #select worst format for bilibili. FIXME
+    assert(len(stream_urls) == 2)
+
+    t2, t3, to, duration = accurate_and_fast_time_for_ffmpeg(r_in, r_out)
+
+    command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -ss %s -t %s %s/%05d_0.mp4"%(f, t2, stream_urls[0], t3, duration, tempdirname, counter)
+    # bilibili doesn't allow 2 downloader running simultaneously
+    # youtube-dl --dump-user-agent
+    # [BiliBili] Format(s) 720P 高清, 1080P 高码率, 1080P 高清 are missing; you have to login or become premium member to download them
+    eprint(".",end=""); sys.stderr.flush()
+    if DEBUG:
+        eprint("")
+        eprint("[yt-dlp:bilibili] "+command)
+    subprocess.call(command, shell=True)
+
+    command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -ss %s -t %s %s/%05d_1.mp4"%(url, t2, stream_urls[1], t3, duration, tempdirname, counter)
+    eprint(".",end=""); sys.stderr.flush()
+    if DEBUG:
+        eprint("[yt-dlp:bilibili] "+command)
+    subprocess.call(command, shell=True)
+
+    command = "ffmpeg -hide_banner -loglevel error -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -qscale 0 %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
+    eprint(".",end=""); sys.stderr.flush()
+    if DEBUG:
+        eprint("[yt-dlp:bilibili] "+command)
+    subprocess.call(command, shell=True)
+    return "file '%s/%05d.%s'"%(tempdirname,counter,fragment_ext)
+
+def handle_http_clip(url, r_in, r_out, f_B, counter, tempdirname): #youtube, twitter
+    #FIXME seeking needs the same strategy
+    a = r_in.replace(',',':').split(':'); b = r_out.replace(',',':').split(':');
+    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
+    t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
+    fragment_ext = "mp4"
+    #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
+    #--merge-output-format mkv 
+    # this command doesn't work very well, causing A-V sync and stall issues
+    command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(url, url, t1, t2-t1, tempdirname, counter, fragment_ext)
+    # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
+    # courtesy of user18298375298759 
+    eprint(".",end=""); sys.stderr.flush()
+    if DEBUG:
+        eprint("")
+        eprint("[yt-dlp] "+command)
+    subprocess.call(command, shell=True)
+    #command2 = "ffmpeg -i %s/%05d.mkv %s/%05d.ts"%(tempdirname, counter, tempdirname, counter)
+    #eprint("[ffmpeg] "+command2)
+    #subprocess.call(command2, shell=True)
+    #fragment_ext = "ts"
+    return "file '%s/%05d.%s'"%(tempdirname,counter,fragment_ext)
+
+def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
+    fragment_ext = "ts"
+
+    t2, t3, to, duration = accurate_and_fast_time_for_ffmpeg(r_in, r_out)
+    #eprint("fps=24, scale=1920:1080")
+    # use -to to get more accuracy
+    if os.path.splitext(f)[1].lower()[1:] in video_formats:
+        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
+        # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
+        # a FPS filter is very good.
+        # -r? no good.
+    else: #still image
+        subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/%05d.ts"%(f, to-t3, codec_v, tempdirname,counter), shell=True)
+    ###### B Roll Handling ######
+    if f_B == "NO_B_ROLL":
+        pass
+    else: #Has B Roll
+        assert(len(f_B) == 3)
+        b_filename, b_in, b_out = f_B
+        subprocess.call("mv %s/%05d.ts %s/_%05d.ts"%(tempdirname,counter, tempdirname,counter), shell=True)  #rename from 00000.ts to _00000.ts
+        #FIXME use  accurate and fast seeking
+        b_t2,b_t3,b_to, b_duration = accurate_and_fast_time_for_ffmpeg(b_in,b_out)
+
+        # Render b_00000.ts:
+        if os.path.splitext(b_filename)[1].lower()[1:] in video_formats:
+            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/b_%05d.ts"%(b_t2, b_filename, b_t3, b_to, codec_v, tempdirname,counter), shell=True)
+            # then overlay b_00000.ts / _00000.ts --> 00000.ts
+            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -i %s/b_%05d.ts -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s/%05d.ts"%(tempdirname,counter, tempdirname,counter, codec_v, tempdirname,counter), shell=True)
+            # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
+            #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
+        else:#still image  
+            #subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s/%05d.ts"%(tempdirname,counter, b_to-b_t3, b_filename, codec_v, tempdirname,counter), shell=True)
+        eprint("+",end="") #indicates B roll generated
+
+        ######\ B Roll Handling Finished/ ######
+# NOTE -ss -to placed before -i, cannot be used with -c copy
+# See https://trac.ffmpeg.org/wiki/Seeking
+    return "file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext)
+
+def handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ext_name):
+    if intermediate_ext_name == None:
+        audioclips_ext_name = os.path.splitext(f)[1].lower()
+        intermediate_audio_codec = '-c:a copy'
+    else:
+        audioclips_ext_name = intermediate_ext_name
+        intermediate_audio_codec = ''
+    eprint("%05d%s "%(counter,audioclips_ext_name), end="")
+    sys.stderr.flush()
+
+    ############ FAST and ACCURE SEEKING  #########
+    t2, t3, to, duration = accurate_and_fast_time_for_ffmpeg(r_in, r_out)
+
+    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s %s %s/%05d%s"%(t2,f,t3,duration, intermediate_audio_codec, tempdirname,counter, audioclips_ext_name), shell=True)
+    return "file '%s/%05d%s'"%(tempdirname, counter, audioclips_ext_name)
 
 output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
 B_buffer = [] # [filename, start_tc, end_tc]
@@ -159,39 +308,10 @@ if __name__ == "__main__":
                 #filename = list(filter(None, clipname.split('/')))[-1] + ".mp4"
                 filename = clipname
             else:
-                filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ] 
-                #FIXME didn't test. *%s*.*
-                filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
-                # FIXME a.mp3 another.m4a
-                filenames_i = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in image_formats ]
+                filename = determine_filename_from_clipname(clipname)
+                if filename == "":
+                    continue
 
-                if len(filenames_v) > 1:
-                    eprint("WARNING: filename similar to clip %s has more than one"%clipname)
-                    eprint("Choosing the %s"%filenames_v[0])
-                    filename = filenames_v[0]
-                    is_pure_audio_project = False
-                elif len(filenames_v) == 1:
-                    filename = filenames_v[0]
-                    is_pure_audio_project = False
-                elif len(filenames_v) == 0:
-                    if len(filenames_a) > 1:
-                        eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
-                        eprint("Choosing the %s"%filenames_v[0])
-                        filename = filenames_a[0]
-                    elif len(filenames_a) == 1:
-                        filename = filenames_a[0] 
-                    elif len(filenames_a) == 0:
-                        if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
-                            is_pure_audio_project = False
-                            eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
-                            eprint("Choosing the %s"%filenames_i[0])
-                            filename = filenames_i[0] 
-                        elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
-                            is_pure_audio_project = False
-                            filename = filenames_i[0] 
-                        elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
-                            eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
-                            continue
             if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
                 B_buffer = [filename, record_in, record_out]
             else: #Normal lines
@@ -251,39 +371,13 @@ if __name__ == "__main__":
             roughcut_audio_codec = '-c:a libmp3lame -b:a 320k'
             #roughcut_audio_codec = ''
 
-
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("[tempdir]", tempdirname)
             counter = 0
             eprint("[ffmpeg] writing ", end="") 
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
-                for f,r_in,r_out,_ in output_queue:
-                    if intermediate_ext_name == None:
-                        audioclips_ext_name = os.path.splitext(f)[1].lower()
-                        intermediate_audio_codec = '-c:a copy'
-                    else:
-                        audioclips_ext_name = intermediate_ext_name
-                        intermediate_audio_codec = ''
-                    eprint("%05d%s "%(counter,audioclips_ext_name), end="")
-                    sys.stderr.flush()
-
-                    #FIXME use the same strategy of seeking
-                    #/########### FAST and ACCURE SEEKING  ###########\#
-                    a = r_in.replace(',',':').split(':')
-                    b = r_out.replace(',',':').split(':')
-                    t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
-                    skip_time = 15
-                    if (t1 - skip_time > 0):
-                        t2 = t1 - skip_time
-                        t3 = skip_time + int(a[3])/1000.0
-                    else:
-                        t2 = 0
-                        t3 = t1 + int(a[3])/1000.0
-                    #to = round(srttime_to_sec(r_out) - t2, 3)
-                    duration = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0 - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0)
-                    #\########### FAST and ACCURE SEEKING  ###########/#
-                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s %s %s/%05d%s"%(t2,f,t3,duration, intermediate_audio_codec, tempdirname,counter, audioclips_ext_name), shell=True)
-                    output_file.write("file '%s/%05d%s'\n"%(tempdirname, counter, audioclips_ext_name))
+                for f,r_in,r_out, f_B in output_queue:
+                    output_file.write(handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ext_name))
                     counter += 1
                 eprint("")
 
@@ -311,7 +405,6 @@ if __name__ == "__main__":
                 input("Press enter to destory tmp dir:  %s  > "%tempdirname)
             except OSError:
                 pass
-
     else: # VIDEEEEO
         roughcut_txt_lines = [] #to generate roughcut.txt
         with tempfile.TemporaryDirectory() as tempdirname:
@@ -324,140 +417,12 @@ if __name__ == "__main__":
                 sys.stderr.flush()
                 if f.startswith('http'):
                     #00:02:03,500 -> 123.5
-                    a = r_in.replace(',',':').split(':')
-                    b = r_out.replace(',',':').split(':')
                     if f.find("bilibili.com") != -1: #bilibili
-                        fragment_ext = "ts"   #ts will make A-V sync better
-                        stream_urls = subprocess.check_output( ['yt-dlp', '-g', f], encoding='UTF-8').splitlines() # -f "w*" #select worst format for bilibili. FIXME
-                        assert(len(stream_urls) == 2)
-
-                        #seeking needs the same strategy
-                        #/########### FAST and ACCURE SEEKING  ###########\#
-                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
-                        skip_time = 15
-                        if (t1 - skip_time > 0):
-                            t2 = t1 - skip_time
-                            t3 = skip_time + int(a[3])/1000.0
-                        else:
-                            t2 = 0
-                            t3 = t1 + int(a[3])/1000.0
-                        #to = round(srttime_to_sec(r_out) - t2, 3)
-                        #\########### FAST and ACCURE SEEKING  ###########/#
-
-                        duration = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0 - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0)
-                        command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -ss %s -t %s %s/%05d_0.mp4"%(f, t2, stream_urls[0], t3, duration, tempdirname, counter)
-                        # bilibili doesn't allow 2 downloader running simultaneously
-                        # youtube-dl --dump-user-agent
-                        # [BiliBili] Format(s) 720P 高清, 1080P 高码率, 1080P 高清 are missing; you have to login or become premium member to download them
-                        eprint(".",end=""); sys.stderr.flush()
-                        if DEBUG:
-                            eprint("")
-                            eprint("[yt-dlp:bilibili] "+command)
-                        subprocess.call(command, shell=True)
-
-                        command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" -ss %s -i \"%s\" -ss %s -t %s %s/%05d_1.mp4"%(f, t2, stream_urls[1], t3, duration, tempdirname, counter)
-                        #eprint("[yt-dlp:bilibili] "+command)
-                        eprint(".",end=""); sys.stderr.flush()
-                        if DEBUG:
-                            eprint("[yt-dlp:bilibili] "+command)
-                        subprocess.call(command, shell=True)
-
-                        command = "ffmpeg -hide_banner -loglevel error -i %s/%05d_0.mp4 -i %s/%05d_1.mp4 -qscale 0 %s/%05d.%s"%(tempdirname, counter, tempdirname, counter, tempdirname, counter, fragment_ext)
-                        eprint(".",end=""); sys.stderr.flush()
-                        if DEBUG:
-                            eprint("[yt-dlp:bilibili] "+command)
-                        subprocess.call(command, shell=True)
-                        roughcut_txt_lines.append("file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext))
+                        roughcut_txt_lines.append(handle_bilibili_clip(f, r_in, r_out, f_B, counter, tempdirname))
                     else:  #youtube, twitter, ...
-                        #FIXME seeking needs the same strategy
-                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
-                        t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
-                        fragment_ext = "mp4"
-                        #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
-                        #--merge-output-format mkv 
-                        # this command doesn't work very well, causing A-V sync and stall issues
-                        command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(f, f, t1, t2-t1, tempdirname, counter, fragment_ext)
-                        # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
-                        # courtesy of user18298375298759 
-                        eprint(".",end=""); sys.stderr.flush()
-                        if DEBUG:
-                            eprint("")
-                            eprint("[yt-dlp] "+command)
-                        subprocess.call(command, shell=True)
-                        #command2 = "ffmpeg -i %s/%05d.mkv %s/%05d.ts"%(tempdirname, counter, tempdirname, counter)
-                        #eprint("[ffmpeg] "+command2)
-                        #subprocess.call(command2, shell=True)
-                        #fragment_ext = "ts"
-                        roughcut_txt_lines.append("file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext))
+                        roughcut_txt_lines.append(handle_http_clip(f, r_in, r_out, f_B, counter, tempdirname))
                 else: #local media files
-                    fragment_ext = "ts"
-                    if 0: # it worked.
-                        #FIXME detect if it's macOS. otherwise libx264
-                        subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -ss %s -to %s -c:v %s -b:v 2M -c:a copy %s/%05d.ts"%(f, r_in.replace(',','.'), r_out.replace(',','.'), codec_v ,tempdirname,counter), shell=True)
-
-                    if 1: # but this works faster in seeking
-                        a = r_in.replace(',',':').split(':')
-                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) #+ int(a[3])/1000.0
-                        skip_time = 15
-                        if (t1 - skip_time > 0):
-                            t2 = t1 - skip_time
-                            t3 = skip_time + int(a[3])/1000.0
-                        else:
-                            t2 = 0
-                            t3 = t1 + int(a[3])/1000.0
-
-                        b = r_out.replace(',',':').split(':')
-
-                        if 1:
-                            #eprint("fps=24, scale=1920:1080")
-                            # use -to to get more accuracy
-                            to = round(srttime_to_sec(r_out) - t2, 3)
-                            if os.path.splitext(f)[1].lower()[1:] in video_formats:
-                                subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
-                                # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
-                                # a FPS filter is very good.
-                                # -r? no good.
-                            else: #still image
-                                subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/%05d.ts"%(f, to-t3, codec_v, tempdirname,counter), shell=True)
-                                #FIXME: when still image in queue, ffmpeg needs to generate a silence REF: https://video.stackexchange.com/questions/35526/concatenate-no-audio-video-with-with-audio-video
-                            # ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -i video.mov -c:v copy -c:a aac -shortest output.mov
-
-                            ###### B Roll Handling ######
-                            if f_B == "NO_B_ROLL":
-                                pass
-                            else: #Has B Roll
-                                assert(len(f_B) == 3)
-                                b_filename, b_in, b_out = f_B
-                                subprocess.call("mv %s/%05d.ts %s/_%05d.ts"%(tempdirname,counter, tempdirname,counter), shell=True)  #rename from 00000.ts to _00000.ts
-                                #FIXME use  accurate and fast seeking
-                                b_t2,b_t3,b_to = accurate_and_fast_time_for_ffmpeg(b_in,b_out)
-
-                                # Render b_00000.ts:
-                                if os.path.splitext(b_filename)[1].lower()[1:] in video_formats:
-                                    subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/b_%05d.ts"%(b_t2, b_filename, b_t3, b_to, codec_v, tempdirname,counter), shell=True)
-                                    # then overlay b_00000.ts / _00000.ts --> 00000.ts
-                                    subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -i %s/b_%05d.ts -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s/%05d.ts"%(tempdirname,counter, tempdirname,counter, codec_v, tempdirname,counter), shell=True)
-                                    # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
-                                    #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
-                                else:#still image  
-                                    #subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
-                                    subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s/%05d.ts"%(tempdirname,counter, b_to-b_t3, b_filename, codec_v, tempdirname,counter), shell=True)
-                                eprint("+",end="") #indicates B roll generated
-
-                            ######\ B Roll Handling / ######
-                        else:
-                            duration = (int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0) - (int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0) 
-                            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, duration, codec_v,tempdirname,counter), shell=True)
-
-                    if 0:
-                        a = r_in.replace(',',':').split(':')
-                        t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
-                        b = r_out.replace(',',':').split(':')
-                        t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
-                        subprocess.call("ffmpeg -hide_banner -loglevel error -i \"%s\" -vf \"trim=start=%s:end=%s,setpts=PTS-STARTPTS\" -af \"atrim=start=%s:end=%s,asetpts=PTS-STARTPTS\" -c:v %s  %s/%05d.ts"%(f, t1, t2, t1, t2, codec_v, tempdirname,counter), shell=True)
-                # NOTE -ss -to placed before -i, cannot be used with -c copy
-                # See https://trac.ffmpeg.org/wiki/Seeking
-                    roughcut_txt_lines.append("file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext))
+                    roughcut_txt_lines.append(handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname))
                 counter += 1
             eprint("") # .ts segments written
 
