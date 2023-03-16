@@ -213,26 +213,29 @@ def handle_b_roll(f_B, tempdirname, counter, extname, codec_v, codec_a):
         pass
     else: #Has B Roll
         ts_filename = "%s/%05d.%s"%(tempdirname, counter, extname)
-        ts_filename_ = "%s/_%05d.%s"%(tempdirname, counter, extname)
-        ts_filename_b = "%s/b_%05d.%s"%(tempdirname, counter, extname)
+        _ts_filename = "%s/_%05d.%s"%(tempdirname, counter, extname)
+        b_ts_filename = "%s/b_%05d.%s"%(tempdirname, counter, extname)
 
         assert(len(f_B) == 3)
         b_filename, b_in, b_out = f_B
         if b_filename.lower().startswith("http"):
             eprint("http as B roll not supported.")
             return
-        subprocess.call("mv %s %s"%(ts_filename,ts_filename_), shell=True)  #rename from 00000.ts to _00000.ts
+        subprocess.call("mv %s %s"%(ts_filename,_ts_filename), shell=True)  #rename from 00000.ts to _00000.ts
         b_t2,b_t3,b_to, b_duration = accurate_and_fast_time_for_ffmpeg(b_in,b_out)
         # Render b_00000.ts:
-        if os.path.splitext(b_filename)[1].lower()[1:] in video_formats:
-            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s"%(b_t2, b_filename, b_t3, b_to, codec_v, ts_filename_b), shell=True)
+        ext = os.path.splitext(b_filename)[1].lower()[1:]
+        if ext in video_formats:
+            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s"%(b_t2, b_filename, b_t3, b_to, codec_v, b_ts_filename), shell=True)
             # then overlay b_00000.ts / _00000.ts --> 00000.ts
-            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -i %s -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s"%(ts_filename_, ts_filename_b, codec_v, ts_filename), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -i %s -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s"%(_ts_filename, b_ts_filename, codec_v, ts_filename), shell=True)
             # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
             #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
-        else:#still image
+        elif ext in audio_formats: # B roll is pure audio
+            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -i %s -filter_complex \"[0][1] amix [aout]\" -map 1:v -map [aout] -c:v %s -shortest %s"%(b_t2, b_filename, b_t3, b_to, _ts_filename, "copy", ts_filename), shell=True)
+        else: #still image
             #subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
-            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s"%(ts_filename_, b_to-b_t3, b_filename, codec_v, ts_filename), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s"%(_ts_filename, b_to-b_t3, b_filename, codec_v, ts_filename), shell=True)
         eprint("+",end="") #indicates B roll generated
 
 def handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ext_name):
