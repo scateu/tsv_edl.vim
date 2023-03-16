@@ -237,6 +237,27 @@ def handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ex
     subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -t %s %s %s/%05d%s"%(t2,f,t3,duration, intermediate_audio_codec, tempdirname,counter, audioclips_ext_name), shell=True)
     return "file '%s/%05d%s'"%(tempdirname, counter, audioclips_ext_name)
 
+def determine_output_audio_file_ext(output_queue):
+    exts = list(set([os.path.splitext(c[0])[1][1:].lower() for c in output_queue]))
+    if exts == ['wav']:
+        roughcut_ext_name = '.wav'
+        roughcut_audio_codec = '-c:a copy'
+        intermediate_ext_name = None
+    elif exts == ['mp3']:
+        roughcut_ext_name = '.mp3'
+        roughcut_audio_codec = '-c:a copy'
+        intermediate_ext_name = None
+    elif exts == ['m4a']:
+        roughcut_ext_name = '.m4a'
+        roughcut_audio_codec = '-c:a copy'
+        intermediate_ext_name = None
+    else:
+        intermediate_ext_name = ".wav"
+        roughcut_ext_name = ".mp3" # or ".mkv"
+        roughcut_audio_codec = '-c:a libmp3lame -b:a 320k'
+        #roughcut_audio_codec = ''
+    return roughcut_ext_name, roughcut_audio_codec, intermediate_ext_name
+
 output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
 B_buffer = [] # [filename, start_tc, end_tc]
 
@@ -351,26 +372,7 @@ if __name__ == "__main__":
     eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
 
     if is_pure_audio_project: #Audio only
-        # determine output audio file ext
-        exts = list(set([os.path.splitext(c[0])[1][1:].lower() for c in output_queue]))
-        if exts == ['wav']:
-            roughcut_ext_name = '.wav'
-            roughcut_audio_codec = '-c:a copy'
-            intermediate_ext_name = None
-        elif exts == ['mp3']:
-            roughcut_ext_name = '.mp3'
-            roughcut_audio_codec = '-c:a copy'
-            intermediate_ext_name = None
-        elif exts == ['m4a']:
-            roughcut_ext_name = '.m4a'
-            roughcut_audio_codec = '-c:a copy'
-            intermediate_ext_name = None
-        else:
-            intermediate_ext_name = ".wav"
-            roughcut_ext_name = ".mp3" # or ".mkv"
-            roughcut_audio_codec = '-c:a libmp3lame -b:a 320k'
-            #roughcut_audio_codec = ''
-
+        roughcut_ext_name, roughcut_audio_codec, intermediate_ext_name =  determine_output_audio_file_ext(output_queue)
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("[tempdir]", tempdirname)
             counter = 0
