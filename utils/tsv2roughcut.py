@@ -49,13 +49,12 @@ def join_b_roll(first, second):
         return [first[0], first[1], second[2]]
     if first == "NO_B_ROLL" and second == "NO_B_ROLL":
         return "NO_B_ROLL"
-    
 
 def stitch_edl_queue(raw_queue):
     # [ filename, in, out, NO_B_ROLL]
     # [ filename, in, out, [filename, in, out]]
     length = len(raw_queue)
-    stitched_output = [] 
+    stitched_output = []
     i = 0
     while i < length:
         clip, t1, t2, b_roll = raw_queue[i]
@@ -91,8 +90,8 @@ def accurate_and_fast_time_for_ffmpeg(r_in,r_out, skip_time=15):
     return t2,t3,to,duration
 
 def determine_filename_from_clipname(clipname):
-    global is_pure_audio_project
-    filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ] 
+    global is_pure_audio_project  #as long as one clip has video, this project goes videeeeeo!
+    filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
     #FIXME didn't test. *%s*.*
     filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
     # FIXME a.mp3 another.m4a
@@ -112,16 +111,16 @@ def determine_filename_from_clipname(clipname):
             eprint("Choosing the %s"%filenames_v[0])
             filename = filenames_a[0]
         elif len(filenames_a) == 1:
-            filename = filenames_a[0] 
+            filename = filenames_a[0]
         elif len(filenames_a) == 0:
             if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
                 is_pure_audio_project = False
                 eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
                 eprint("Choosing the %s"%filenames_i[0])
-                filename = filenames_i[0] 
+                filename = filenames_i[0]
             elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
                 is_pure_audio_project = False
-                filename = filenames_i[0] 
+                filename = filenames_i[0]
             elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
                 eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
                 filename = ""
@@ -156,20 +155,22 @@ def handle_bilibili_clip(url, r_in, r_out, f_B, counter, tempdirname):
     if DEBUG:
         eprint("[yt-dlp:bilibili] "+command)
     subprocess.call(command, shell=True)
+    handle_b_roll(f_B, tempdirname, counter, fragment_ext, codec_v, "")
     return "file '%s/%05d.%s'"%(tempdirname,counter,fragment_ext)
 
 def handle_http_clip(url, r_in, r_out, f_B, counter, tempdirname): #youtube, twitter
     #FIXME seeking needs the same strategy
-    a = r_in.replace(',',':').split(':'); b = r_out.replace(',',':').split(':');
+    a = r_in.replace(',',':').split(':');
+    b = r_out.replace(',',':').split(':');
     t1 = int(a[0])*3600 + int(a[1])*60 + int(a[2]) + int(a[3])/1000.0
     t2 = int(b[0])*3600 + int(b[1])*60 + int(b[2]) + int(b[3])/1000.0
     fragment_ext = "mp4"
     #command = "yt-dlp --download-sections \"*%.2f-%.2f\" %s -o %s/%05d --recode-video mp4"%(t1, t2, f, tempdirname, counter )
-    #--merge-output-format mkv 
+    #--merge-output-format mkv
     # this command doesn't work very well, causing A-V sync and stall issues
     command = "ffmpeg -hide_banner -loglevel error -user_agent \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.106 Safari/537.36\" -headers \"Referer: %s\" $(yt-dlp -g %s | sed \"s/.*/-ss %s -i &/\") -t %s %s/%05d.%s"%(url, url, t1, t2-t1, tempdirname, counter, fragment_ext)
     # https://www.reddit.com/r/youtubedl/comments/rx4ylp/ytdlp_downloading_a_section_of_video/
-    # courtesy of user18298375298759 
+    # courtesy of user18298375298759
     eprint(".",end=""); sys.stderr.flush()
     if DEBUG:
         eprint("")
@@ -179,6 +180,7 @@ def handle_http_clip(url, r_in, r_out, f_B, counter, tempdirname): #youtube, twi
     #eprint("[ffmpeg] "+command2)
     #subprocess.call(command2, shell=True)
     #fragment_ext = "ts"
+    handle_b_roll(f_B, tempdirname, counter, fragment_ext, codec_v, "")
     return "file '%s/%05d.%s'"%(tempdirname,counter,fragment_ext)
 
 def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
@@ -194,32 +196,39 @@ def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
         # -r? no good.
     else: #still image
         subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/%05d.ts"%(f, to-t3, codec_v, tempdirname,counter), shell=True)
-    ###### B Roll Handling ######
+
+    handle_b_roll(f_B, tempdirname, counter, fragment_ext, codec_v, "")
+
+    # NOTE -ss -to placed before -i, cannot be used with -c copy
+    # See https://trac.ffmpeg.org/wiki/Seeking
+    return "file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext)
+
+def handle_b_roll(f_B, tempdirname, counter, extname, codec_v, codec_a):
     if f_B == "NO_B_ROLL":
         pass
     else: #Has B Roll
+        ts_filename = "%s/%05d.%s"%(tempdirname, counter, extname)
+        ts_filename_ = "%s/_%05d.%s"%(tempdirname, counter, extname)
+        ts_filename_b = "%s/b_%05d.%s"%(tempdirname, counter, extname)
+
         assert(len(f_B) == 3)
         b_filename, b_in, b_out = f_B
-        subprocess.call("mv %s/%05d.ts %s/_%05d.ts"%(tempdirname,counter, tempdirname,counter), shell=True)  #rename from 00000.ts to _00000.ts
-        #FIXME use  accurate and fast seeking
+        if b_filename.lower().startswith("http"):
+            eprint("http as B roll not supported.")
+            return
+        subprocess.call("mv %s %s"%(ts_filename,ts_filename_), shell=True)  #rename from 00000.ts to _00000.ts
         b_t2,b_t3,b_to, b_duration = accurate_and_fast_time_for_ffmpeg(b_in,b_out)
-
         # Render b_00000.ts:
         if os.path.splitext(b_filename)[1].lower()[1:] in video_formats:
-            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/b_%05d.ts"%(b_t2, b_filename, b_t3, b_to, codec_v, tempdirname,counter), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s"%(b_t2, b_filename, b_t3, b_to, codec_v, ts_filename_b), shell=True)
             # then overlay b_00000.ts / _00000.ts --> 00000.ts
-            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -i %s/b_%05d.ts -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s/%05d.ts"%(tempdirname,counter, tempdirname,counter, codec_v, tempdirname,counter), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -i %s -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s"%(ts_filename_, ts_filename_b, codec_v, ts_filename), shell=True)
             # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
             #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
-        else:#still image  
+        else:#still image
             #subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
-            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s/_%05d.ts -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s/%05d.ts"%(tempdirname,counter, b_to-b_t3, b_filename, codec_v, tempdirname,counter), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s"%(ts_filename_, b_to-b_t3, b_filename, codec_v, ts_filename), shell=True)
         eprint("+",end="") #indicates B roll generated
-
-        ######\ B Roll Handling Finished/ ######
-# NOTE -ss -to placed before -i, cannot be used with -c copy
-# See https://trac.ffmpeg.org/wiki/Seeking
-    return "file '%s/%05d.%s'\n"%(tempdirname,counter,fragment_ext)
 
 def handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ext_name):
     if intermediate_ext_name == None:
@@ -258,16 +267,28 @@ def determine_output_audio_file_ext(output_queue):
         #roughcut_audio_codec = ''
     return roughcut_ext_name, roughcut_audio_codec, intermediate_ext_name
 
-output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
-B_buffer = [] # [filename, start_tc, end_tc]
+def determine_roughcut_filename(roughcut_ext_name):
+    roughcut_filename = "roughcut" + roughcut_ext_name
+    srt_filename = "roughcut.srt"
+    if os.path.exists(roughcut_filename):
+        rename_counter = 1
+        roughcut_filename = "roughcut_1" + roughcut_ext_name
+        srt_filename = "roughcut_1.srt"
+        while os.path.exists(roughcut_filename):
+            rename_counter += 1
+            roughcut_filename = "roughcut_%d"%rename_counter + roughcut_ext_name
+            srt_filename = "roughcut_%d.srt"%rename_counter
+    return roughcut_filename, srt_filename
 
-srt_queue = []
 
 if __name__ == "__main__":
+    output_queue = [] # [[filename, start_tc, end_tc], [...], [...], ...]
+    B_buffer = [] # [filename, start_tc, end_tc]
+    srt_queue = []
     srt_counter = 1
     srt_last_position = 0.0 #in sec
 
-    #$ printf("\e[?1004l") 
+    #$ printf("\e[?1004l")
     # https://stackoverflow.com/questions/14693701/how-can-i-remove-the-ansi-escape-sequences-from-a-string-in-python
     # otherwise, annoying ^[[O ^[[I will appear when terminal focus lost or get again.
     print("\033[?1004l", end="")
@@ -280,6 +301,7 @@ if __name__ == "__main__":
     else:
         codec_v = "libx264"
 
+######### 1. eat lines into output_queue
     while True: # read EDL lines
         line = sys.stdin.readline()
         if not line:
@@ -289,10 +311,7 @@ if __name__ == "__main__":
         if line.startswith('EDL'):
             _l = line.strip()
             if _l.count('|'):
-                _l, clipname, subtitle = _l.split('|')
-                _l = _l.strip()
-                clipname = clipname.strip()
-                subtitle = subtitle.strip()
+                _l, clipname, subtitle = [item.strip() for item in _l.split('|')]
                 #import pdb;pdb.set_trace()
             else:
                 continue
@@ -330,7 +349,7 @@ if __name__ == "__main__":
                 filename = clipname
             else:
                 filename = determine_filename_from_clipname(clipname)
-                if filename == "":
+                if filename == "": #not found
                     continue
 
             if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
@@ -338,7 +357,7 @@ if __name__ == "__main__":
             else: #Normal lines
                 output_queue.append([filename, record_in, record_out, "B_ROLL_UNDETERMINED"])
 
-                if len(B_buffer) == 3: #handle B roll buffer
+                if isinstance(B_buffer, list) and len(B_buffer) == 3: #handle B roll buffer
                     f_a,s_a,e_a = output_queue[-1][:3] #A: filename, start, end
                     f_b,s_b,e_b = B_buffer  #B: filename, start, end
                     # B roll shorter than A clip
@@ -350,9 +369,9 @@ if __name__ == "__main__":
                     else:
                         # B roll longer than A clip
                         # B.start = A.end; next
-                        output_queue[-1][3] = [f_b, s_b, sec_to_srttime(srttime_to_sec(s_b) + duration_a)]  # [f,in,out, B_ROLL]
+                        output_queue[-1][3] = [f_b, s_b, sec_to_srttime( srttime_to_sec(s_b) + duration_a )]  # [f,in,out, B_ROLL]
                         B_buffer = [f_b, sec_to_srttime(srttime_to_sec(s_b) + duration_a) , e_b]
-                        # NOTE: B Roll may be cut into pieces. Due to uncompleted stitching of A clips. 
+                        # NOTE: B Roll may be cut into pieces. Due to uncompleted stitching of A clips.
                         #       Maybe stitching B roll afterwards is a good idea.  Maybe I was overthinking....  Wed Mar 15 00:30:35 CST 2023
                         # B: [..................]
                         # A: [.....||.......||.....
@@ -361,6 +380,7 @@ if __name__ == "__main__":
 
     #print(output_queue);import sys;sys.exit(-1)
 
+######### 2. stitch lines
     if len(output_queue) > 99999:
         eprint("Too much. That's too much.")
         sys.exit(-1)
@@ -368,38 +388,29 @@ if __name__ == "__main__":
     # stitch adjecent clips in output_queue
     before_stitch_lines = len(output_queue)
     output_queue = stitch_edl_queue(output_queue)
-    after_stitch_lines = len(output_queue)
-    eprint("[stitch] %d --> %d lines"%(before_stitch_lines, after_stitch_lines))
+    eprint("[stitch] %d --> %d lines"%(before_stitch_lines, len(output_queue)))
 
+######### 3. clip by clip generating
+########## 3.1 pure audio project
     if is_pure_audio_project: #Audio only
         roughcut_ext_name, roughcut_audio_codec, intermediate_ext_name =  determine_output_audio_file_ext(output_queue)
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("[tempdir]", tempdirname)
             counter = 0
-            eprint("[ffmpeg] writing ", end="") 
+            eprint("[ffmpeg] writing ", end="")
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for f,r_in,r_out, f_B in output_queue:
                     output_file.write(handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ext_name))
                     counter += 1
                 eprint("")
 
-            roughcut_filename = "roughcut" + roughcut_ext_name
-            srt_filename = "roughcut.srt"
-            if os.path.exists(roughcut_filename):
-                rename_counter = 1
-                roughcut_filename = "roughcut_1" + roughcut_ext_name
-                srt_filename = "roughcut_1.srt"
-                while os.path.exists(roughcut_filename):
-                    rename_counter += 1
-                    roughcut_filename = "roughcut_%d"%rename_counter + roughcut_ext_name
-                    srt_filename = "roughcut_%d.srt"%rename_counter
+            roughcut_filename, srt_filename = determine_roughcut_filename(roughcut_ext_name)
             eprint("[ffmpeg concat] writing",roughcut_filename)
 
             if GENERATE_SRT:
                 eprint("[srt] writing",srt_filename)
                 with open(srt_filename, "w") as output_file:
                     output_file.write('\n'.join(srt_queue))
-            #import time; time.sleep(100000)
             subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt %s %s"%(tempdirname, roughcut_audio_codec, roughcut_filename), shell=True)
 
             try:  # in Shortcuts.app  OSError: [Errno 9] Bad file descriptor
@@ -407,12 +418,13 @@ if __name__ == "__main__":
                 input("Press enter to destory tmp dir:  %s  > "%tempdirname)
             except OSError:
                 pass
+########## 3.2 video project
     else: # VIDEEEEO
         roughcut_txt_lines = [] #to generate roughcut.txt
         with tempfile.TemporaryDirectory() as tempdirname:
             eprint("[tempdir]", tempdirname)
             counter = 0
-            eprint("[ffmpeg] writing ", end="") 
+            eprint("[ffmpeg] writing ", end="")
             #eprint(output_queue)
             for f,r_in,r_out,f_B in output_queue:
                 eprint(" %05d"%counter, end="")
@@ -432,18 +444,9 @@ if __name__ == "__main__":
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 output_file.write("\n".join(roughcut_txt_lines))
 
-            #################################
+            ############# Determine srt_filename, roughcut_filename for final combining in step 4 ####################
             roughcut_ext_name = ".mp4" # or ".mkv"
-            roughcut_filename = "roughcut" + roughcut_ext_name
-            srt_filename = "roughcut.srt"
-            if os.path.exists("roughcut"+roughcut_ext_name):
-                rename_counter = 1
-                roughcut_filename = "roughcut_1"+roughcut_ext_name
-                srt_filename = "roughcut_1.srt"
-                while os.path.exists(roughcut_filename):
-                    rename_counter += 1
-                    roughcut_filename = "roughcut_%d"%rename_counter + roughcut_ext_name
-                    srt_filename = "roughcut_%d.srt"%rename_counter
+            roughcut_filename, srt_filename = determine_roughcut_filename(roughcut_ext_name)
             eprint("[ffmpeg concat] writing",roughcut_filename)
 
             if GENERATE_SRT:
@@ -464,12 +467,10 @@ if __name__ == "__main__":
             except OSError:
                 pass
 
+######### 4. combine into one
     if len(sys.argv) > 1: #wait for user input then rename
         if "--user-input-newname" in sys.argv:
-            #sys.stdin = os.fdopen(1)
-
-            newname = input("Input CLIPNAME to rename. ENTER to ignore > ")
-            newname = newname.strip()
+            newname = input("Input CLIPNAME to rename. ENTER to ignore > ").strip()
             if len(newname) == 0:
                 eprint("ignored. keeping name [%s] [%s]"%(roughcut_filename, srt_filename))
                 sys.exit(0)
