@@ -28,7 +28,7 @@ xmlheader1 = """<?xml version="1.0" encoding="UTF-8"?>
 # 23.976 FPS: 3753.75/90000 = 15015/360000
 
 xmlheader2 = """
-        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="36000s" hasVideo="{hasVideo}" hasAudio="{hasAudio}" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />"""
+        <asset id="{ref_id}" src="file://{mediapath}" start="0s" duration="{duration}s" hasVideo="{hasVideo}" hasAudio="{hasAudio}" format="r1" audioSources="1" audioChannels="1" audioRate="48000" />"""
 #FIXME 36000s for 10hour max. Davinci Resolve will ignore source tape after 10hour; FCPX doesn't care
 
 
@@ -126,7 +126,7 @@ if __name__ == "__main__":
     OFFSET_1HOUR = arguments.offsetonehour
     FPS = arguments.fps
 
-    media_assets = {} # { "clipname": [ abspath, ref_id, hasVideo, hasAudio ] , ... }
+    media_assets = {} # { "clipname": [ abspath, ref_id, hasVideo, hasAudio, duration ] , ... }
     xmlhead = ""
     xmlbody = ""
     output_queue = []
@@ -160,12 +160,14 @@ if __name__ == "__main__":
                     abspath = os.path.abspath(filename)
                     hasVideo = 1
                     hasAudio = 1
+                    media_duration = 36000
                 elif len(filenames_v) == 1:  # 2. Only one video footage matched.
                     filename = filenames_v[0]
                     is_pure_audio = False
                     abspath = os.path.abspath(filename)
                     hasVideo = 1
                     hasAudio = 1
+                    media_duration = 36000
                 elif len(filenames_v) == 0:  
                     if len(filenames_a) > 1:  # 3. No video matched. Multiple audio matched
                         eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
@@ -175,12 +177,14 @@ if __name__ == "__main__":
                         abspath = os.path.abspath(filename)
                         hasVideo = 0
                         hasAudio = 1
+                        media_duration = 36000
                     elif len(filenames_a) == 1: # 4. No video matched. Only one audio matched.
                         filename = filenames_a[0]
                         is_pure_audio = True
                         abspath = os.path.abspath(filename)
                         hasVideo = 0
                         hasAudio = 1
+                        media_duration = 36000
                     elif len(filenames_a) == 0: 
                         if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
                             eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
@@ -190,21 +194,24 @@ if __name__ == "__main__":
                             abspath = os.path.abspath(filename)
                             hasVideo = 1
                             hasAudio = 0
+                            media_duration = 0
                         elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
                             filename = filenames_i[0]
                             abspath = os.path.abspath(filename)
                             hasVideo = 1
                             hasAudio = 0
+                            media_duration = 0
                         elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
                             hasVideo = 1
                             hasAudio = 1
+                            media_duration = 36000
                             eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
                             abspath = clipname
                             #continue
 
                 if not clipname in media_assets:
                     ref_id = "r%d"%(len(media_assets) + 2) #id start from r2
-                    media_assets[clipname] = [abspath, ref_id, hasVideo, hasAudio ]
+                    media_assets[clipname] = [abspath, ref_id, hasVideo, hasAudio, media_duration ]
                 else:
                     ref_id = media_assets[clipname][1]
 
@@ -264,7 +271,7 @@ if __name__ == "__main__":
         eprint("[stitch B] %d --> %d lines"%(before_stitch_lines_B, after_stitch_lines_B))
 
     for k in media_assets:
-        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=media_assets[k][2], hasAudio=media_assets[k][3])
+        xmlhead += xmlheader2.format(ref_id=media_assets[k][1] , mediapath = urllib.parse.quote(media_assets[k][0]), hasVideo=media_assets[k][2], hasAudio=media_assets[k][3], duration = media_assets[k][4])
         if is_pure_audio:
             eprint("WARNING & FIXME: hasVideo=0, if you want to import into DaVinci Resolve as a multicam. You may change it in .fcpxml manually")
     xmlhead += xmlheader3
