@@ -34,8 +34,10 @@ def sec_to_srttime(sec):
 
 
 def is_b_roll_continuous(first, second):
+    # B roll has padding by 1/24.0 to prevent ffmpeg leak one frame of A clip.
     if first != "NO_B_ROLL" and second != "NO_B_ROLL":
-        if first[0] == second[0] and first[2] == second[1]: #filename, out = in
+        #if first[0] == second[0] and first[2] == second[1]: #filename, out = in
+        if first[0] == second[0] and abs(second[1] - first[2]) < 2/24.0 : #filename, out = in
             return True
     elif first == "NO_B_ROLL" and second == "NO_B_ROLL":
         return True
@@ -44,7 +46,8 @@ def is_b_roll_continuous(first, second):
 
 def join_b_roll(first, second):
     if first != "NO_B_ROLL" and second != "NO_B_ROLL":
-        assert(first[2] == second[1])
+        #assert(first[2] == second[1])
+        assert(abs(first[2] - second[1]) < 2/24.0)
         assert(first[0] == second[0])
         return [first[0], first[1], second[2]]
     if first == "NO_B_ROLL" and second == "NO_B_ROLL":
@@ -398,6 +401,7 @@ if __name__ == "__main__":
     #print(output_queue);import sys;sys.exit(-1)
 
 ######### 2. stitch lines
+
     if len(output_queue) > 99999:
         eprint("Too much. That's too much.")
         sys.exit(-1)
