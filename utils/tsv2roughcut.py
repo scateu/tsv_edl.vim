@@ -225,11 +225,11 @@ def handle_b_roll(f_B, tempdirname, counter, extname, codec_v, codec_a):
     if b_filename.lower().startswith("http"):
         if b_filename.find("bilibili.com") != -1: #bilibili
             handle_bilibili_clip(b_filename, b_in, b_out, "NO_B_ROLL", counter, tempdirname)  #no c roll actually
-            #FIXME  when bilibili too short, it's got banned?
+            # TODO scale to 1080p, otherwise, place on center
         else:  #youtube, twitter, ...
             handle_http_clip(b_filename, b_in, b_out, "NO_B_ROLL", counter, tempdirname)
         subprocess.call("mv %s %s"%(ts_filename,http_ts_filename), shell=True)  #rename from 00000.ts to http_00000.ts
-        subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -i %s -filter_complex \"[1:v]setpts=PTS[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s"%(_ts_filename, http_ts_filename, codec_v, ts_filename), shell=True)
+        subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -i %s -filter_complex \"[1:v]setpts=PTS, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2[a]; [0:v][a]overlay=eof_action=pass[vout]; [0][1] amix [aout]\" -map [vout] -map [aout] -c:v %s -shortest -b:v 2M %s"%(_ts_filename, http_ts_filename, codec_v, ts_filename), shell=True)
     else:  # local file as B roll
         b_t2,b_t3,b_to, b_duration = accurate_and_fast_time_for_ffmpeg(b_in,b_out)
 
