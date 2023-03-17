@@ -84,21 +84,21 @@ def stitch_fcpxml_queue(raw_queue):
     stitched_output = []
     i = 0
     while i < length:
-        clip, r, o, t1, d, lane = raw_queue[i]
+        clip, r, o, t1, d, lane, subtitle = raw_queue[i]
         j = i + 1
         if (i == length - 1): #last line
             stitched_output.append(raw_queue[i])
             break
-        clip_next, r_next, o_next, t1_next, d_next, lane_next = raw_queue[j]
-        output_pending = [clip, r, o, t1, d, lane]
+        clip_next, r_next, o_next, t1_next, d_next, lane_next, subtitle_next = raw_queue[j]
+        output_pending = [clip, r, o, t1, d, lane, subtitle]
         while (clip == clip_next and r == r_next and t1 + d == t1_next and lane == lane_next):
-            output_pending = [clip, r, o, t1, d + d_next, lane] #update pending output
+            output_pending = [clip, r, o, t1, d + d_next, lane, subtitle + '\n' + subtitle_next] #update pending output
             #update item on the left to be examined
-            [clip, r, o, t1, d, lane] = output_pending
+            [clip, r, o, t1, d, lane, subtitle] = output_pending
             j += 1
             if (j == length): #out of index
                 break
-            clip_next, r_next, o_next, t1_next, d_next, lane_next = raw_queue[j]
+            clip_next, r_next, o_next, t1_next, d_next, lane_next, subtitle_next = raw_queue[j]
         stitched_output.append(output_pending)
         i = j
     return stitched_output
@@ -107,7 +107,7 @@ def find_b_roll_of_clip(offset_A, duration_A, output_queue_B):
     # if output_queue_B item's offset is within [offset, offset + duration] of output_queue, then output as nested.
     indexs = []
     index = -1
-    for clipname_B, ref_id_B, offset_B, fcpx_record_in_B, duration_B, lane_B in output_queue_B:
+    for clipname_B, ref_id_B, offset_B, fcpx_record_in_B, duration_B, lane_B, subtitle_B in output_queue_B:
         index += 1
         if offset_A <= offset_B < (offset_A + duration_A):
             indexs.append(index)
@@ -249,9 +249,9 @@ if __name__ == "__main__":
                 continue
 
             if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
-                output_queue_B.append([ clipname, ref_id, offset, fcpx_record_in, duration, 1 ]) #1 stands for lane='1'
+                output_queue_B.append([ clipname, ref_id, offset, fcpx_record_in, duration, 1, subtitle ]) #1 stands for lane='1'
             else: #Normal lines
-                output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 0 ]) #0 can be ignored
+                output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 0, subtitle ]) #0 can be ignored
                 offset += duration
 
     ####### Stitching #######
@@ -277,19 +277,25 @@ if __name__ == "__main__":
     xmlhead += xmlheader3
     print(xmlhead)
 
-    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane in output_queue:
+    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane, _subtitle in output_queue:
         index_B = find_b_roll_of_clip(_offset, _duration, output_queue_B)
         if  len(index_B) != 0:  # B roll found
             xmlbody += '<asset-clip ref="{ref_id}" offset="{offset}/{fcpx_scale}s" name="{clipname}" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue">\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)  # A roll
             for i in index_B:
-                _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B = output_queue_B[i] #get B roll clip information
-                xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" />\n'.format(clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset , start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
+                _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B, _subtitle_B = output_queue_B[i] #get B roll clip information
+                xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset , start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
+                xmlbody += '    <note>' + _subtitle_B + '</note>\n'
+                xmlbody += '    </asset-clip>\n'
 #FIXME
 #            for i in index_B:
 #                del(output_queue_B[i])
             xmlbody += '</asset-clip>\n'
         else:
-            xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}"/>\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane = _lane)
+            xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}">\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane = _lane)
+            xmlbody += '<note>'
+            xmlbody += _subtitle
+            xmlbody += '</note>\n'
+            xmlbody += '</asset-clip>\n'
             #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
 
     print(xmlbody)
