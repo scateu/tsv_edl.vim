@@ -115,6 +115,76 @@ def find_b_roll_of_clip(offset_A, duration_A, output_queue_B):
             eprint("WARNING: B roll reaches the outside of A roll")
     return indexs
 
+def determine_filename_from_clipname(clipname):
+    filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
+    filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
+    filenames_i = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in image_formats ]
+    isStillPicture = 0
+    if len(filenames_v) > 1:  # 1. Multiple Video Footage
+        eprint("WARNING: filename similar to clip %s has more than one"%clipname)
+        eprint("Choosing the %s"%filenames_v[0])
+        filename = filenames_v[0]
+        is_pure_audio = False
+        abspath = os.path.abspath(filename)
+        hasVideo = 1
+        hasAudio = 1
+        media_duration = 36000
+        isStillPicture = 0
+    elif len(filenames_v) == 1:  # 2. Only one video footage matched.
+        filename = filenames_v[0]
+        is_pure_audio = False
+        abspath = os.path.abspath(filename)
+        hasVideo = 1
+        hasAudio = 1
+        media_duration = 36000
+        isStillPicture = 0
+    elif len(filenames_v) == 0:
+        if len(filenames_a) > 1:  # 3. No video matched. Multiple audio matched
+            eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+            eprint("Choosing the %s"%filenames_a[0])
+            filename = filenames_a[0]
+            is_pure_audio = True
+            abspath = os.path.abspath(filename)
+            hasVideo = 0
+            hasAudio = 1
+            media_duration = 36000
+            isStillPicture = 0
+        elif len(filenames_a) == 1: # 4. No video matched. Only one audio matched.
+            filename = filenames_a[0]
+            is_pure_audio = True
+            abspath = os.path.abspath(filename)
+            hasVideo = 0
+            hasAudio = 1
+            media_duration = 36000
+            isStillPicture = 0
+        elif len(filenames_a) == 0:
+            if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
+                eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
+                eprint("Choosing the %s"%filenames_i[0])
+                filename = filenames_i[0]
+                is_pure_audio = False  #is_pure_audio is deprecated. FIXME
+                abspath = os.path.abspath(filename)
+                hasVideo = 1
+                hasAudio = 0
+                media_duration = 0
+                isStillPicture = 1
+            elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
+                filename = filenames_i[0]
+                abspath = os.path.abspath(filename)
+                hasVideo = 1
+                hasAudio = 0
+                media_duration = 0
+                isStillPicture = 1
+            elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
+                hasVideo = 1
+                hasAudio = 1
+                media_duration = 36000
+                eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
+                abspath = clipname
+                isStillPicture = 0
+                #continue
+    return filename, abspath, hasVideo, hasAudio, media_duration, isStillPicture
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='convert tsv_edl to fcpxml')
     parser.add_argument('--offsetonehour', action="store_true", default=False)
@@ -126,7 +196,7 @@ if __name__ == "__main__":
     OFFSET_1HOUR = arguments.offsetonehour
     FPS = arguments.fps
 
-    media_assets = {} # { "clipname": [ abspath, ref_id, hasVideo, hasAudio, duration ] , ... }
+    media_assets = {} # { "clipname": [ abspath, ref_id, hasVideo, hasAudio, media_duration, isStillPicture ] , ... }
     xmlhead = ""
     xmlbody = ""
     output_queue = []
@@ -149,69 +219,11 @@ if __name__ == "__main__":
             if _l.count('|'):
                 _items = _l.split('|')
                 clipname = _items[1].strip()
-                filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
-                filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
-                filenames_i = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in image_formats ]
-                if len(filenames_v) > 1:  # 1. Multiple Video Footage
-                    eprint("WARNING: filename similar to clip %s has more than one"%clipname)
-                    eprint("Choosing the %s"%filenames_v[0])
-                    filename = filenames_v[0]
-                    is_pure_audio = False
-                    abspath = os.path.abspath(filename)
-                    hasVideo = 1
-                    hasAudio = 1
-                    media_duration = 36000
-                elif len(filenames_v) == 1:  # 2. Only one video footage matched.
-                    filename = filenames_v[0]
-                    is_pure_audio = False
-                    abspath = os.path.abspath(filename)
-                    hasVideo = 1
-                    hasAudio = 1
-                    media_duration = 36000
-                elif len(filenames_v) == 0:  
-                    if len(filenames_a) > 1:  # 3. No video matched. Multiple audio matched
-                        eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
-                        eprint("Choosing the %s"%filenames_a[0])
-                        filename = filenames_a[0]
-                        is_pure_audio = True
-                        abspath = os.path.abspath(filename)
-                        hasVideo = 0
-                        hasAudio = 1
-                        media_duration = 36000
-                    elif len(filenames_a) == 1: # 4. No video matched. Only one audio matched.
-                        filename = filenames_a[0]
-                        is_pure_audio = True
-                        abspath = os.path.abspath(filename)
-                        hasVideo = 0
-                        hasAudio = 1
-                        media_duration = 36000
-                    elif len(filenames_a) == 0: 
-                        if len(filenames_i) > 1: # 5. No Video, no audio. Multiple still image matched.
-                            eprint("WARNING: filenames similar to clip %s has more than one"%clipname)
-                            eprint("Choosing the %s"%filenames_i[0])
-                            filename = filenames_i[0]
-                            is_pure_audio = False  #is_pure_audio is deprecated. FIXME
-                            abspath = os.path.abspath(filename)
-                            hasVideo = 1
-                            hasAudio = 0
-                            media_duration = 0
-                        elif len(filenames_i) == 1: # 6. No Video, no audio. one still image
-                            filename = filenames_i[0]
-                            abspath = os.path.abspath(filename)
-                            hasVideo = 1
-                            hasAudio = 0
-                            media_duration = 0
-                        elif len(filenames_i) == 0: # 7. No, no, no. Nothing.
-                            hasVideo = 1
-                            hasAudio = 1
-                            media_duration = 36000
-                            eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
-                            abspath = clipname
-                            #continue
+                filename, abspath, hasVideo, hasAudio, media_duration, isStillPicture = determine_filename_from_clipname(clipname)
 
                 if not clipname in media_assets:
                     ref_id = "r%d"%(len(media_assets) + 2) #id start from r2
-                    media_assets[clipname] = [abspath, ref_id, hasVideo, hasAudio, media_duration ]
+                    media_assets[clipname] = [abspath, ref_id, hasVideo, hasAudio, media_duration, isStillPicture ]
                 else:
                     ref_id = media_assets[clipname][1]
 
@@ -280,24 +292,49 @@ if __name__ == "__main__":
     for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane, _subtitle in output_queue:
         index_B = find_b_roll_of_clip(_offset, _duration, output_queue_B)
         if  len(index_B) != 0:  # B roll found
-            xmlbody += '<asset-clip ref="{ref_id}" offset="{offset}/{fcpx_scale}s" name="{clipname}" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue">\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)  # A roll
-            xmlbody += '    <note>' + _subtitle + '</note>\n'
+            if media_assets[_clipname][5] == 1: # A clip is Still Picture
+                xmlbody += '<video ref="{ref_id}" offset="{offset}/{fcpx_scale}s" name="{clipname}" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(
+                        clipname = _clipname, ref_id = _ref_id, offset =  _offset,
+                        start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)  # A roll
+                xmlbody += '    <note>' + _subtitle + '</note>\n'
+                _tail = '</video>\n'
+            else: # Video or Audio
+                xmlbody += '<asset-clip ref="{ref_id}" offset="{offset}/{fcpx_scale}s" name="{clipname}" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue">\n'.format(
+                        clipname = _clipname, ref_id = _ref_id, offset =  _offset,
+                        start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE)  # A roll
+                xmlbody += '    <note>' + _subtitle + '</note>\n'
+                _tail = '</asset-clip>\n'
+
             for i in index_B:
                 _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B, _subtitle_B = output_queue_B[i] #get B roll clip information
-                xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset , start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
-                xmlbody += '    <note>' + _subtitle_B + '</note>\n'
-                xmlbody += '    </asset-clip>\n'
-#FIXME
-#            for i in index_B:
-#                del(output_queue_B[i])
-            xmlbody += '</asset-clip>\n'
-        else:
-            xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}">\n'.format(clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane = _lane)
-            xmlbody += '<note>'
-            xmlbody += _subtitle
-            xmlbody += '</note>\n'
-            xmlbody += '</asset-clip>\n'
-            #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
+                if media_assets[_clipname_B][5] == 1: # B roll clip is still picture
+                    xmlbody += '    <video ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(
+                            clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset,
+                            start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
+                    xmlbody += '    <note>' + _subtitle_B + '</note>\n'
+                    xmlbody += '    </video>\n'
+                else:
+                    xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(
+                            clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset,
+                            start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
+                    xmlbody += '    <note>' + _subtitle_B + '</note>\n'
+                    xmlbody += '    </asset-clip>\n'
+            #FIXME
+            #for i in index_B:
+            #    del(output_queue_B[i])
+            xmlbody += _tail
+        else:  # No B roll
+            if media_assets[_clipname][5] == 1: # A clip is Still Picture
+                xmlbody += '<video name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" lane="{lane}">\n'.format(
+                        clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane = _lane)
+                xmlbody += '<note>' + _subtitle + '</note>\n'
+                xmlbody += '</video>\n'
+            else: # A clip
+                xmlbody += '<asset-clip name="{clipname}" ref="{ref_id}" offset="{offset}/{fcpx_scale}s" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s" audioRole="dialogue" lane="{lane}">\n'.format(
+                        clipname = _clipname, ref_id = _ref_id, offset =  _offset, start = _fcpx_record_in, duration = _duration, fcpx_scale = FCPX_SCALE, lane = _lane)
+                xmlbody += '<note>' + _subtitle + '</note>\n'
+                xmlbody += '</asset-clip>\n'
+                #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
 
     print(xmlbody)
     print(xmltail)
