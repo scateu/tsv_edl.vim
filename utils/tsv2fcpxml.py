@@ -315,7 +315,6 @@ if __name__ == "__main__":
             # B: [...........]       lane=1
             # A: [.......][........] lane=0
 
-            eprint(len(index_B))
             for i in index_B: 
                 _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B, _subtitle_B = output_queue_B[i] #get B roll clip information
                 if media_assets[_clipname_B][5] == 1: # B roll clip is still picture
@@ -349,6 +348,8 @@ if __name__ == "__main__":
                 xmlbody += '</asset-clip>\n'
                 #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
         B_lane_too_long_previous = B_roll_too_long
+        if B_lane_too_long_previous == 0:
+            B_lane_previous = 1  # reset counter
 
     print(xmlbody)
     print(xmltail)
