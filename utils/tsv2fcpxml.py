@@ -180,6 +180,7 @@ def determine_filename_from_clipname(clipname):
                 hasAudio = 1
                 media_duration = 36000
                 eprint("WARNING: NO clip similar to \"%s\" found. Skip."%clipname)
+                filename = "MISSING" 
                 abspath = clipname
                 isStillPicture = 0
                 #continue
