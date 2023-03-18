@@ -105,17 +105,28 @@ def stitch_fcpxml_queue(raw_queue):
 
 def find_b_roll_of_clip(offset_A, duration_A, output_queue_B):
     # if output_queue_B item's offset is within [offset, offset + duration] of output_queue, then output as nested.
+    if not hasattr(find_b_roll_of_clip, "B_roll_ends_still_above"):
+        # timestamps of the end of B clips
+        find_b_roll_of_clip.B_roll_ends_still_above = [] # it doesn't exist yet, so initialize it. [(index,lane), (index,lane), ....]
+    if not hasattr(find_b_roll_of_clip, "top_lane"):
+        find_b_roll_of_clip.top_lane = 0 # it doesn't exist yet, so initialize it
+    find_b_roll_of_clip.B_roll_ends_still_above = [e for e in find_b_roll_of_clip.B_roll_ends_still_above if e[0] > offset_A]
+    # see if B_roll_ends still affect this clip
+    lanes = [e[1] for e in find_b_roll_of_clip.B_roll_ends_still_above]
+    if len(lanes) != 0:
+        find_b_roll_of_clip.top_lane = max(lanes)
+    else:
+        find_b_roll_of_clip.top_lane = 0
+
     indexs = []
     index = -1
-    B_roll_extends_the_tail_of_A_counts = 0
     for clipname_B, ref_id_B, offset_B, fcpx_record_in_B, duration_B, lane_B, subtitle_B in output_queue_B:
         index += 1
         if offset_A <= offset_B < (offset_A + duration_A):
             indexs.append(index)
-            if (offset_B+duration_B) >= (offset_A+duration_A):
-                #eprint("WARNING: B roll reaches the outside of A roll")
-                B_roll_extends_the_tail_of_A_counts += 1   # so the next B roll clip should watch out.
-    return indexs, B_roll_extends_the_tail_of_A_counts
+            find_b_roll_of_clip.B_roll_ends_still_above.append((offset_B+duration_B, find_b_roll_of_clip.top_lane + 1))
+    #find_b_roll_of_clip.B_roll_ends_still_above = [e for e in find_b_roll_of_clip.B_roll_ends_still_above if e[0] > offset_A + duration_A]
+    return indexs
 
 def determine_filename_from_clipname(clipname):
     filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
@@ -292,10 +303,8 @@ if __name__ == "__main__":
     xmlhead += xmlheader3
     print(xmlhead)
 
-    B_lane_too_long_previous = 0
-    B_lane_previous = 1
     for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane, _subtitle in output_queue:
-        index_B, B_roll_too_long = find_b_roll_of_clip(_offset, _duration, output_queue_B)
+        index_B = find_b_roll_of_clip(_offset, _duration, output_queue_B)
         if  len(index_B) != 0:  # B roll found
             if media_assets[_clipname][5] == 1: # A clip is Still Picture
                 xmlbody += '<video ref="{ref_id}" offset="{offset}/{fcpx_scale}s" name="{clipname}" start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(
@@ -310,7 +319,7 @@ if __name__ == "__main__":
                 xmlbody += '    <note>' + _subtitle + '</note>\n'
                 _tail = '</asset-clip>\n'
 
-            _lane_B_recalculated = B_lane_previous + B_lane_too_long_previous  # if last clip too long
+            _lane_B_recalculated = 1 + find_b_roll_of_clip.top_lane # if last clip too long
             #             [.......]  lane=2
             # B: [...........]       lane=1
             # A: [.......][........] lane=0
@@ -329,11 +338,8 @@ if __name__ == "__main__":
                             start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B_recalculated)  # B roll clip
                     xmlbody += '    <note>' + _subtitle_B + '</note>\n'
                     xmlbody += '    </asset-clip>\n'
-                B_lane_previous = _lane_B_recalculated
                 _lane_B_recalculated += 1
-            #FIXME
-            #for i in index_B:
-            #    del(output_queue_B[i])
+            output_queue_B = [e for i,e in enumerate(output_queue_B) if i not in index_B]   # remove used B clips
             xmlbody += _tail
         else:  # No B roll
             if media_assets[_clipname][5] == 1: # A clip is Still Picture
@@ -347,9 +353,6 @@ if __name__ == "__main__":
                 xmlbody += '<note>' + _subtitle + '</note>\n'
                 xmlbody += '</asset-clip>\n'
                 #xmlbody += "%s\t%s\t%s\t%s\t%s\n"%(clipname, ref_id, offset, fcpx_record_in, duration) #DEBUG
-        B_lane_too_long_previous = B_roll_too_long
-        if B_lane_too_long_previous == 0:
-            B_lane_previous = 1  # reset counter
 
     print(xmlbody)
     print(xmltail)
