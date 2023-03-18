@@ -104,28 +104,17 @@ def stitch_fcpxml_queue(raw_queue):
     return stitched_output
 
 def find_b_roll_of_clip(offset_A, duration_A, output_queue_B):
+    # called only when the start of a new (stitched) A clip.
+    # B:     [...]      [......]
+    # A: [...|..|.......|....][....][....]
+    #    ^                    ^     ^
     # if output_queue_B item's offset is within [offset, offset + duration] of output_queue, then output as nested.
-    if not hasattr(find_b_roll_of_clip, "B_roll_ends_still_above"):
-        # timestamps of the end of B clips
-        find_b_roll_of_clip.B_roll_ends_still_above = [] # it doesn't exist yet, so initialize it. [(index,lane), (index,lane), ....]
-    if not hasattr(find_b_roll_of_clip, "top_lane"):
-        find_b_roll_of_clip.top_lane = 0 # it doesn't exist yet, so initialize it
-    find_b_roll_of_clip.B_roll_ends_still_above = [e for e in find_b_roll_of_clip.B_roll_ends_still_above if e[0] > offset_A]
-    # see if B_roll_ends still affect this clip
-    lanes = [e[1] for e in find_b_roll_of_clip.B_roll_ends_still_above]
-    if len(lanes) != 0:
-        find_b_roll_of_clip.top_lane = max(lanes)
-    else:
-        find_b_roll_of_clip.top_lane = 0
-
     indexs = []
     index = -1
     for clipname_B, ref_id_B, offset_B, fcpx_record_in_B, duration_B, lane_B, subtitle_B in output_queue_B:
         index += 1
         if offset_A <= offset_B < (offset_A + duration_A):
             indexs.append(index)
-            find_b_roll_of_clip.B_roll_ends_still_above.append((offset_B+duration_B, find_b_roll_of_clip.top_lane + 1))
-    #find_b_roll_of_clip.B_roll_ends_still_above = [e for e in find_b_roll_of_clip.B_roll_ends_still_above if e[0] > offset_A + duration_A]
     return indexs
 
 def determine_filename_from_clipname(clipname):
@@ -275,7 +264,16 @@ if __name__ == "__main__":
                 continue
 
             if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
-                output_queue_B.append([ clipname, ref_id, offset, fcpx_record_in, duration, 1, subtitle ]) #1 stands for lane='1'
+                #determine lane
+                lanes_ends_dict = {1:0, 0:0} #{1:ends of this lane}
+                for i in range(100):
+                    lanes_ends_dict[i] = 0
+                lane = 1
+                for _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B, _subtitle_B in output_queue_B: #previous lanes
+                    lanes_ends_dict[_lane_B] = _offset_B + _duration_B
+                while offset < lanes_ends_dict[lane] :
+                    lane += 1
+                output_queue_B.append([ clipname, ref_id, offset, fcpx_record_in, duration, lane, subtitle ]) #1 stands for lane='1'
             else: #Normal lines
                 output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 0, subtitle ]) #0 can be ignored
                 offset += duration
@@ -303,7 +301,7 @@ if __name__ == "__main__":
     xmlhead += xmlheader3
     print(xmlhead)
 
-    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane, _subtitle in output_queue:
+    for _clipname, _ref_id, _offset, _fcpx_record_in, _duration, _lane, _subtitle in output_queue: #the start of A Clips, stitched.
         index_B = find_b_roll_of_clip(_offset, _duration, output_queue_B)
         if  len(index_B) != 0:  # B roll found
             if media_assets[_clipname][5] == 1: # A clip is Still Picture
@@ -319,26 +317,20 @@ if __name__ == "__main__":
                 xmlbody += '    <note>' + _subtitle + '</note>\n'
                 _tail = '</asset-clip>\n'
 
-            _lane_B_recalculated = 1 + find_b_roll_of_clip.top_lane # if last clip too long
-            #             [.......]  lane=2
-            # B: [...........]       lane=1
-            # A: [.......][........] lane=0
-
             for i in index_B: 
                 _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B, _subtitle_B = output_queue_B[i] #get B roll clip information
                 if media_assets[_clipname_B][5] == 1: # B roll clip is still picture
                     xmlbody += '    <video ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(
                             clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset,
-                            start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B_recalculated)  # B roll clip
+                            start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
                     xmlbody += '    <note>' + _subtitle_B + '</note>\n'
                     xmlbody += '    </video>\n'
                 else:
                     xmlbody += '    <asset-clip ref="{ref_id}" lane="{lane}" offset="{offset}/{fcpx_scale}s" name="{clipname}"  start="{start}/{fcpx_scale}s" duration="{duration}/{fcpx_scale}s">\n'.format(
                             clipname = _clipname_B, ref_id = _ref_id_B, offset = _offset_B + _fcpx_record_in - _offset,
-                            start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B_recalculated)  # B roll clip
+                            start = _fcpx_record_in_B, duration = _duration_B, fcpx_scale = FCPX_SCALE, lane = _lane_B)  # B roll clip
                     xmlbody += '    <note>' + _subtitle_B + '</note>\n'
                     xmlbody += '    </asset-clip>\n'
-                _lane_B_recalculated += 1
             output_queue_B = [e for i,e in enumerate(output_queue_B) if i not in index_B]   # remove used B clips
             xmlbody += _tail
         else:  # No B roll
