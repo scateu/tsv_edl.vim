@@ -204,6 +204,8 @@ if __name__ == "__main__":
     xmlbody = ""
     output_queue = []
     output_queue_B = []
+    lanes_ends_dict = {1:0, 0:0} #{1:ends of this lane}
+
     xmlhead += xmlheader1.format(fps=int(FCPX_SCALE/FPS), fcpx_scale = FCPX_SCALE)
     #xmlhead += xmlheader1.format(fps=3753.75)
     offset = 0
@@ -265,14 +267,16 @@ if __name__ == "__main__":
 
             if subtitle.startswith("[B]"): #B-roll, EDL 00:00:00,000    00:00:01,000    | somevideo |   [B] b-roll
                 #determine lane
-                lanes_ends_dict = {1:0, 0:0} #{1:ends of this lane}
-                for i in range(100):
-                    lanes_ends_dict[i] = 0
                 lane = 1
                 for _clipname_B, _ref_id_B, _offset_B, _fcpx_record_in_B, _duration_B, _lane_B, _subtitle_B in output_queue_B: #previous lanes
                     lanes_ends_dict[_lane_B] = _offset_B + _duration_B
-                while offset < lanes_ends_dict[lane] :
-                    lane += 1
+                lanes_in_use = list(lanes_ends_dict)
+                lanes_in_use.sort()
+                lanes_in_use.reverse()
+                for l in lanes_in_use:
+                    if offset < lanes_ends_dict[l]: #intersect
+                        lane = l + 1
+                        break
                 output_queue_B.append([ clipname, ref_id, offset, fcpx_record_in, duration, lane, subtitle ]) #1 stands for lane='1'
             else: #Normal lines
                 output_queue.append([ clipname, ref_id, offset, fcpx_record_in, duration, 0, subtitle ]) #0 can be ignored
