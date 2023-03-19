@@ -5,6 +5,7 @@ import os
 import subprocess
 import tempfile
 import platform
+import argparse
 
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
 audio_formats = ['wav', 'mp3', 'm4a', 'ogg']
@@ -301,6 +302,13 @@ def determine_roughcut_filename(roughcut_ext_name):
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("outfile", nargs='?', help="file name for output")
+    parser.add_argument("-u", "--user-input-newname", action="store_true", help="wait for user input then rename")
+    parser.add_argument("-p", "--play", action="store_true", help="play after generated")
+    parser.add_argument("-k", "--ask-before-delete-temp-files", action="store_true", help="ask before delete temp files")
+    args = parser.parse_args()
+
     output_queue = [] # [[filename, start_tc in secs, end_tc in secs], [...], [...], ...]
     B_buffer = [] # [filename, start_tc, end_tc]
     srt_queue = []
@@ -436,7 +444,8 @@ if __name__ == "__main__":
 
             try:  # in Shortcuts.app  OSError: [Errno 9] Bad file descriptor
                 sys.stdin = os.fdopen(1)
-                input("Press enter to destory tmp dir:  %s  > "%tempdirname)
+                if args.ask_before_delete_temp_files:
+                    input("Press enter to destory temp dir:  %s  > "%tempdirname)
             except OSError:
                 pass
 ########## 3.2 video project
@@ -484,22 +493,36 @@ if __name__ == "__main__":
 
             try:  # in Shortcuts.app  OSError: [Errno 9] Bad file descriptor
                 sys.stdin = os.fdopen(1)
-                input("Press enter to destory tmp dir:  %s  > "%tempdirname)
+                if args.ask_before_delete_temp_files:
+                    input("Press enter to destory temp dir:  %s  > "%tempdirname)
             except OSError:
                 pass
 
 ######### 4. combine into one
-    if len(sys.argv) > 1: #wait for user input then rename
-        if "--user-input-newname" in sys.argv:
-            newname = input("Input CLIPNAME to rename. ENTER to ignore > ").strip()
-            if len(newname) == 0:
-                eprint("ignored. keeping name [%s] [%s]"%(roughcut_filename, srt_filename))
-                sys.exit(0)
-        else:
-            newname = sys.argv[1]
+    # roughcut_filename, srt_filename is determined.
+    filename_change_needed = False
+    if args.user_input_newname:
+        newname = input("Input CLIPNAME to rename. ENTER to ignore > ").strip()
+        filename_change_needed = True
+        if len(newname) == 0:
+            eprint("ignored. keeping name [%s] [%s]"%(roughcut_filename, srt_filename))
+    else: #expect a user name from args.outfile
+        if args.outfile:  # has a positional file name given by user.
+            newname = args.outfile
+            filename_change_needed = True
+        else:  #use roughcut_x.xxx
+            pass
+    if filename_change_needed:
         eprint("[Rename] ", roughcut_filename, 'to', '[' + newname + roughcut_ext_name + ']')
         os.rename(roughcut_filename, newname + roughcut_ext_name)
+        roughcut_filename = newname + roughcut_ext_name  #for play
         eprint("[Rename] ", srt_filename, 'to', '[' + newname + '.srt' + ']')
         os.rename(srt_filename, newname + '.srt')
+        srt_filename = newname + '.srt'  #for play
+    else:
+        eprint("{filename} & {filename_srt} generated".format(filename=roughcut_filename, filename_srt=srt_filename))
 
+    if args.play:
+        subprocess.call("mpv {filename}".format(filename=roughcut_filename), shell=True)
         #FIXME: tsv2roughcut  缺最后一行的回车，可能会导致srt2tsv脚本失效
+
