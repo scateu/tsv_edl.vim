@@ -4,6 +4,7 @@ In the latest version of macOS, Workflow.app is deprecated and replaced by Short
 
 Since apple has to audit my code before this shortcut can be shared, you might add it manually.
 
+![](https://raw.githubusercontent.com/scateu/tsv_edl.vim/main/screenshots/shortcuts.png)
 
 ## srt2tsv
  - Click 'Quick Actions' on the left sidebar, then '+' to make a new one.
