@@ -179,7 +179,7 @@ echo 'colorscheme molokai-dark' >> ~/.vimrc
 make install-depends-on-mac-no-homebrew
 
 #test
-srt2tsv_all
+srt2tsv -a
 vim -p example.tsv example_never.tsv
 
 # you may want macvim for GUI https://github.com/macvim-dev/macvim/releases/tag/snapshot-172
@@ -193,10 +193,10 @@ see [utils/apple_automator/README.md](utils/apple_automator/README.md)
 ## .srt to .tsv
 
 ```bash
-cd /path/to/srt/; srt2tsv_all
+cd /path/to/srt/; srt2tsv -a
 ```
 
- - or: in vim, `:!srt2tsv_all`
+ - or: in vim, `:!srt2tsv -a`
  - or: in vim, `V` to mark a region, and press `:` then type `%!srt2tsv`, to filter this region through the corresponding util.
 
 - .tsv format is defined as: (see `utils/srt2tsv.sh`)

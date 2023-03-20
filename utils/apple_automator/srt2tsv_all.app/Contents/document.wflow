@@ -51,7 +51,7 @@
 				<key>ActionParameters</key>
 				<dict>
 					<key>source</key>
-					<string>tell application "Finder" to set currentDir to (target of front Finder window) as textdo shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " &amp; (quoted form of POSIX path of currentDir) &amp; ";/usr/local/bin/srt2tsv_all"# https://stackoverflow.com/questions/12129989/getting-finders-current-directory-in-applescript-stored-as-application</string>
+					<string>tell application "Finder" to set currentDir to (target of front Finder window) as textdo shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " &amp; (quoted form of POSIX path of currentDir) &amp; ";/usr/local/bin/srt2tsv -a"# https://stackoverflow.com/questions/12129989/getting-finders-current-directory-in-applescript-stored-as-application</string>
 				</dict>
 				<key>BundleIdentifier</key>
 				<string>com.apple.Automator.RunScript</string>

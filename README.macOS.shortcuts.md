@@ -13,18 +13,44 @@ Since apple has to audit my code before this shortcut can be shared, you might a
 
 ```applescript
 tell application "Finder" to set currentDir to (target of front Finder window) as text
-do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/srt2tsv_all"
+do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/srt2tsv -a"
 ```
 
  - Details:
     - [X] Pin in Menu Bar
-    - [X] Use as Quick Action
-      - [X] Finder
-
+    - [ ] Use as Quick Action
+      - [ ] Finder
 
 To use it:
  - Navigate to the Finder folder with `.srt` files
  - click the 'Shortcuts' button on the top menu of macOS, then click 'srt2tsv\_all'
+
+## srt2tsv
+
+ - Receive 'Files' input from 'Quick Actions'.  If there's no input: 'Continue'
+ - Run Shell Script
+
+```bash
+export LANG=en_US.UTF-8
+export PATH=/opt/homebrew/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+if [[ -d "$@" ]]; then
+	echo "Nein."
+elif [[ -f "$1" ]]; then
+    cd "$(dirname "$1")"
+	/usr/local/bin/srt2tsv "$@"
+fi
+```
+
+ - Shell: "bash"
+ - Input: "Shortcut Input"
+ - Pass Input: "as arguments"
+ - Details:
+  - [X] Use as Quick Action
+   - [X] Finder
+   - [X] Services Menu
+
+To use it:
+ - right click on one or multiple `.srt` file > quick actions > `srt2tsv`
 
 ## tsv2roughtcut from pasteboard
 

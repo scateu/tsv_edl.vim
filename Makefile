@@ -8,7 +8,6 @@ deploy:
 
 install-utils:
 	chmod +x ${CURDIR}/utils/tsv2edl.py
-	chmod +x ${CURDIR}/utils/srt2tsv_all.py
 	chmod +x ${CURDIR}/utils/tsv2srt.py
 	chmod +x ${CURDIR}/utils/tsv2srt_all.py
 	chmod +x ${CURDIR}/utils/audio2srtvideo.sh
@@ -18,13 +17,14 @@ install-utils:
 	chmod +x ${CURDIR}/utils/mkgap_10_mp4
 	chmod +x ${CURDIR}/utils/tsv2srt_reflow.py
 	chmod +x ${CURDIR}/utils/srt2tsv.sh
+	chmod +x ${CURDIR}/utils/srt2tsv.py #when no argument given, do all in the same directory
 	chmod +x ${CURDIR}/utils/scenecut_preview.sh
 	chmod +x ${CURDIR}/utils/audiocut.sh
 	chmod +x ${CURDIR}/utils/srt2txt.sh
 	chmod +x ${CURDIR}/utils/tsv2zh_cn.sh
 	chmod +x ${CURDIR}/utils/tsv2fcpxml.py
 	sudo ln -sf ${CURDIR}/utils/tsv2edl.py /usr/local/bin/tsv2edl
-	sudo ln -sf ${CURDIR}/utils/srt2tsv_all.py /usr/local/bin/srt2tsv_all
+	sudo ln -sf ${CURDIR}/utils/srt2tsv.py /usr/local/bin/srt2tsv
 	sudo ln -sf ${CURDIR}/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
 	sudo ln -sf ${CURDIR}/utils/audio2video /usr/local/bin/audio2video
 	sudo ln -sf ${CURDIR}/utils/tsv2srt.py /usr/local/bin/tsv2srt
@@ -33,7 +33,6 @@ install-utils:
 	sudo ln -sf ${CURDIR}/utils/mkgap_10_mp4 /usr/local/bin/mkgap_10_mp4
 	sudo ln -sf ${CURDIR}/utils/mkgap_10_mp3 /usr/local/bin/mkgap_10_mp3
 	sudo ln -sf ${CURDIR}/utils/tsv2srt_reflow.py /usr/local/bin/tsv2srt_reflow
-	sudo ln -sf ${CURDIR}/utils/srt2tsv.sh /usr/local/bin/srt2tsv
 	sudo ln -sf ${CURDIR}/utils/scenecut_preview.sh /usr/local/bin/scenecut_preview
 	sudo ln -sf ${CURDIR}/utils/audiocut.sh /usr/local/bin/audiocut
 	sudo ln -sf ${CURDIR}/utils/srt2txt.sh /usr/local/bin/srt2txt
@@ -41,7 +40,7 @@ install-utils:
 	sudo ln -sf ${CURDIR}/utils/tsv2fcpxml.py /usr/local/bin/tsv2fcpxml
 
 uninstall-utils:
-	cd /usr/local/bin; sudo rm -i audio2video audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv srt2tsv_all tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow scenecut_preview srt2txt tsv2zh_cn audiocut
+	cd /usr/local/bin; sudo rm -i audio2video audio2srtvideo mkgap_10_mp3 mkgap_10_mp4 srt2tsv tsv2edl tsv2roughcut tsv2srt tsv2srt_all tsv2srt_reflow scenecut_preview srt2txt tsv2zh_cn audiocut
 
 install-depends-on-mac-no-homebrew: install-ffmpeg-mac install-jq-mac install-mpv-mac install-socat-mac
 	rm -i ffmpeg-mac.zip mpv-latest.tar.gz socat_macOS.bin jq_macOS.bin

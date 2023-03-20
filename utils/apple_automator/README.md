@@ -47,7 +47,7 @@ Then, make a new 'srt2tsv_all' using the following line:
 
 ```applescript
 tell application "Finder" to set currentDir to (target of front Finder window) as text
-do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/srt2tsv_all"
+do shell script "export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/srt2tsv -a"
 ```
 
 (You may steal an icon with `Cmd-i`, `Cmd-i` on another application, `Cmd-C` `Cmd-V` on icons.) [[Ref]](https://developer.apple.com/library/archive/technotes/tn2065/_index.html)

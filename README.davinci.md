@@ -11,7 +11,7 @@
  - Find the slate position (👏/🎬). Trim off all audio before. 
  - Export, so that the audio starts with a slate sound. 
  - Transcribe it.
- - do `srt2tsv_all`
+ - do `srt2tsv -a`
  - paper edit
  - do `cat roughcut.tsv | sed 's/audiofile/multicam/' | tsv2fcpxml > multicam.fcpxml `
    - or: ` cat roughcut.tsv | tsv2fcpxml --fps=25 --nosrt --offsetonehour  > multicam.fcpxml`
