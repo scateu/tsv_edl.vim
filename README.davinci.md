@@ -87,3 +87,51 @@ ffmpeg -i 220701-T001.WAV -ac 2 -c copy B.wav
 1. import each
 1. copy one whole timeline, and paste on top of another
 1. Press `D` to disable the view angle you don't like.
+
+# sample of multicam.fcpxml
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE fcpxml>
+<fcpxml version="1.8">
+    <resources>
+        <format id="r0" frameDuration="1001/30000s" name="FFVideoFormat1080p2997" width="1920" height="1080"/>
+        <media id="r3" name="wwdc2022-10092 Multicam">
+            <multicam tcStart="18018/5s" format="r0" tcFormat="NDF">
+                <mc-angle name="Angle 2" angleID="2138e4ea-9aeb-4868-922a-11a9f9d072ec">
+                    <asset-clip offset="0/1s" format="r0" ref="r1" enabled="1" start="0/1s" name="wwdc2022-10092.mp4" tcFormat="NDF" duration="60197137/30000s">
+                        <adjust-transform position="0 0" anchor="0 0" scale="1 1"/>
+                    </asset-clip>
+                </mc-angle>
+                <mc-angle name="Angle 1" angleID="ed3a0aca-2865-4d64-9f26-6be657578be7">
+                    <asset-clip offset="0/1s" format="r0" ref="r2" enabled="1" start="0/1s" name="wwdc2022-10092的副本.mp4" tcFormat="NDF" duration="60197137/30000s">
+                        <adjust-transform position="0 0" anchor="0 0" scale="1 1"/>
+                    </asset-clip>
+                </mc-angle>
+            </multicam>
+        </media>
+        <asset id="r1" format="r0" src="file:///Users/k/CUT/infosec_cherrypick_tsvedl/WWDC_FIDO/wwdc2022-10092.mp4" hasVideo="1" start="0/1s" hasAudio="1" name="wwdc2022-10092.mp4" audioChannels="2" audioSources="1" duration="60197137/30000s"/>
+        <asset id="r2" format="r0" src="file:///Users/k/CUT/infosec_cherrypick_tsvedl/WWDC_FIDO/wwdc2022-10092%E7%9A%84%E5%89%AF%E6%9C%AC.mp4" hasVideo="1" start="0/1s" hasAudio="1" name="wwdc2022-10092的副本.mp4" audioChannels="2" audioSources="1" duration="60197137/30000s"/>
+    </resources>
+    <library>
+        <event name="Timeline 1 (Resolve)">
+            <project name="Timeline 1 (Resolve)">
+                <sequence tcStart="18018/5s" format="r0" tcFormat="NDF" duration="4637633/30000s">
+                    <spine>
+                        <mc-clip offset="18018/5s" ref="r3" start="126307181/30000s" name="wwdc2022-10092 Multicam" duration="122122/1875s">
+                            <mc-source angleID="ed3a0aca-2865-4d64-9f26-6be657578be7" srcEnable="all">
+                                <adjust-transform position="0 0" anchor="0 0" scale="1 1"/>
+                            </mc-source>
+                        </mc-clip>
+                        <mc-clip offset="6878872/1875s" ref="r3" start="42753711/10000s" name="wwdc2022-10092 Multicam" duration="2683681/30000s">
+                            <mc-source angleID="2138e4ea-9aeb-4868-922a-11a9f9d072ec" srcEnable="all">
+                                <adjust-transform position="0 0" anchor="0 0" scale="1 1"/>
+                            </mc-source>
+                        </mc-clip>
+                    </spine>
+                </sequence>
+            </project>
+        </event>
+    </library>
+</fcpxml>
+```
