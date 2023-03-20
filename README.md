@@ -1,7 +1,7 @@
 ![flow](tsv_edl_flow.png)
 ![screenshot](screenshots/h.png)
 ![screenshot](screenshots/fcpx.jpg)
-
+![shortcuts](screenshots/shortcuts.png)
 ## Keys
 
 ### PREVIEW
