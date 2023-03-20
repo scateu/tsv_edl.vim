@@ -6,7 +6,7 @@ Since apple has to audit my code before this shortcut can be shared, you might a
 
 
 ## srt2tsv
-
+ - Click 'Quick Actions' on the left sidebar, then '+' to make a new one.
  - Receive 'Files' input from 'Quick Actions'.  If there's no input: 'Continue'
  - Run Shell Script
 
@@ -29,9 +29,9 @@ done
  - Input: "Shortcut Input"
  - Pass Input: "as arguments"
  - Details:
-  - [X] Use as Quick Action
-   - [X] Finder
-   - [X] Services Menu
+   - [X] Use as Quick Action
+    - [X] Finder
+    - [X] Services Menu
 
 To use it:
  - right click on one or multiple `.srt` file > quick actions > `srt2tsv`
