@@ -6,6 +6,8 @@ python 3.x
 '''
 import glob
 import re
+import argparse
+import sys
 
 CLOSE_GAPS = True
 
@@ -13,6 +15,9 @@ SRT_BLOCK_REGEX = re.compile(
         r'(\d+)[^\S\r\n]*[\r\n]+'
         r'(\d{2}:\d{2}:\d{2},\d{3,4})[^\S\r\n]*-->[^\S\r\n]*(\d{2}:\d{2}:\d{2},\d{3,4})[^\S\r\n]*[\r\n]+'
         r'([\s\S]*)')
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 def srt_block_to_tsv(block, fname):
     match = SRT_BLOCK_REGEX.search(block)
@@ -31,11 +36,14 @@ def srt_tc_to_seconds(srt_tc): #00:03:04,020
     return digits[0] * 3600 + digits[1] * 60 + digits[2] + digits[3]/1000
 
 def srt_file_to_tsv(fname):
-    with open(fname, encoding='utf8') as file_in:
+    with open(fname, encoding='utf8') if fname != "-" else sys.stdin as file_in:
+        if fname == '-': #stdin. _CLIPNAME_ for placeholder in output
+            fname ="_CLIPNAME_"
+
         try:
             str_in = file_in.read()
         except:
-            with open(fname, encoding='gbk') as f:
+            with open(fname, encoding='gbk') if fname != "-" else sys.stdin as f:
                 str_in = f.read()
         blocks_in = str_in.replace('\r\n', '\n').split('\n\n')
         blocks_out = [srt_block_to_tsv(block, fname) for block in blocks_in]
@@ -45,8 +53,8 @@ def srt_file_to_tsv(fname):
         str_out = ''.join(blocks_out)
 
         if CLOSE_GAPS:
-            print("CLOSE_GAPS: will use the next In TC as current Out TC.")
-            print("CLOSE_GAPS: threshold 0.3sec")
+            eprint("CLOSE_GAPS: will use the next In TC as current Out TC.")
+            eprint("CLOSE_GAPS: threshold 0.3sec")
             str_out_gaps_closed = ''
             lines = str_out.split('\n')[:-1] #the last line is empty
             for i in range(len(lines)-1): #don't touch the final line
@@ -67,23 +75,34 @@ def srt_file_to_tsv(fname):
 
             str_out = str_out_gaps_closed
 
-        with open(fname.replace('.srt', '.tsv'), 'w', encoding='utf8') as file_out:
+        with open(fname.replace('.srt', '.tsv'), 'w', encoding='utf8') if fname != "_CLIPNAME_" else sys.stdout as file_out:
             file_out.write("EDL\tRecord In\tRecord Out\tClipname\tSubtitle\n")
             file_out.write(str_out)
 
 
 if __name__ == '__main__':
-    err_info = []
-    for file_name in glob.glob('*.srt'):
-        try:
-            srt_file_to_tsv(file_name)
-            print("%s converted."%file_name)
-        except:
-            print("%s failed, skip"%file_name)
-    if err_info:
-        print('success, but some exceptions are ignored:')
-        for file_name, blocks_num, context in err_info:
-            print('\tfile: %s, block num: %s, context: %s' % (file_name, blocks_num, context))
-    else:
-        print('success')
+    parser = argparse.ArgumentParser()
+    parser.add_argument("srtfile", nargs='*', help="file name for input. multiple supported. if none provided, use stdin")
+    parser.add_argument("-a", "--all", action="store_true", help="handle all srt file in current directory")
+    args = parser.parse_args()
 
+    err_info = []
+    if args.all: # handle all file 
+        file_name = glob.glob('*.srt')
+    elif args.srtfile:  #has file do 
+        file_name = args.srtfile
+    else: #stdin
+        file_name = ['-']
+
+    for f in file_name:
+        try:
+            srt_file_to_tsv(f)
+            eprint("%s converted."%f)
+        except:
+            eprint("%s failed, skip"%f)
+        if err_info:
+            eprint('success, but some exceptions are ignored:')
+            for file_name, blocks_num, context in err_info:
+                eprint('\tfile: %s, block num: %s, context: %s' % (file_name, blocks_num, context))
+        else:
+            eprint('success')
