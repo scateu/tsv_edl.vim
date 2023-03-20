@@ -189,7 +189,7 @@ vim -p example.tsv example_never.tsv
 ### macOS: Finder Integration with Shortcuts.app
 
  - <del> see [utils/apple_automator/README.md](utils/apple_automator/README.md) </del>
- - see <README.macOS.shortcuts.md>
+ - see [README.macOS.shortcuts.md](README.macOS.shortcuts.md)
 
 ![shortcuts](screenshots/shortcuts.png)
 
