@@ -1,8 +1,8 @@
 ![flow](tsv_edl_flow.png)
 ![screenshot](screenshots/h.png)
 ![screenshot](screenshots/fcpx.jpg)
-![shortcuts](screenshots/shortcuts.png)
-## Keys
+
+## Key-bindings
 
 ### PREVIEW
 
@@ -133,9 +133,9 @@ Press `g9` will:
 ![screenshot](screenshots/g.jpg)
 
 
-## Install
+# Install
 
-### Install on macOS with homebrew
+## on macOS with homebrew
 
 ```bash
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
@@ -160,7 +160,7 @@ let g:airline#extensions#tabline#enabled = 1
 colorscheme molokai-dark
 ```
 
-### Install on macOS without homebrew
+## on macOS without homebrew
 
 ```bash
 #sudo mkdir /usr/local/bin
@@ -186,14 +186,43 @@ vim -p example.tsv example_never.tsv
 ```
 
 
-### macOS: Finder Integration
+### macOS: Finder Integration with Shortcuts.app
 
-see [utils/apple_automator/README.md](utils/apple_automator/README.md)
+ - <del> see [utils/apple_automator/README.md](utils/apple_automator/README.md) </del>
+ - see <README.macOS.shortcuts.md>
 
-## .srt to .tsv
+![shortcuts](screenshots/shortcuts.png)
+
+
+# Syntax
+
+```
+* Title
+Any line without EDL at the beginning is a comment.
+
+## SubSection
+EDL⇥00:00:01,000⇥00:00:05,000⇥|⎵image⎵|⇥subtitles….
+EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥[B]this is B-Roll
+EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥subtitles…. 
+
+*** SubSubSection
+Asterisk and sharp sign is equal treated.
+```
+
+Even `sed` is enough to do the transformation from `srt` to `tsv`.
+```bash
+cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p' > some.tsv
+# you may remember this dig TXT srt2tsv.scateu.me
+sed -i "" 's/_CLIPNAME_/some/' some.tsv
+```
+
+# 1. Utils
+
+## 1.1 srt2tsv
 
 ```bash
 cd /path/to/srt/; srt2tsv -a
+srt2tsv a.srt  #generates a.tsv
 ```
 
  - or: in vim, `:!srt2tsv -a`
@@ -201,23 +230,18 @@ cd /path/to/srt/; srt2tsv -a
 
 - .tsv format is defined as: (see `utils/srt2tsv.sh`)
 
-```bash
-cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p' > some.tsv
-# you may remember this dig TXT srt2tsv.scateu.me
-sed -i "" 's/_CLIPNAME_/some/' some.tsv
-```
 
  - *TIPS* for European subtitles: `for i in *.srt; do iconv -f CP1251 -t UTF-8 "$i" > converted/"$i";done`
  - *TIPS* to count lines: `cat *.srt | dos2unix |grep .  |sed  -r '/^[0-9]+$/{N;d;}' | grep -v Downloaded |wc -l`
  - See also: [VideoSubFinder](https://sourceforge.net/projects/videosubfinder/), [roybaer/burnt-in-subtitle-extractor: Set of basic extraction tools for burnt-in subtitles, i.e. subtitles that are part of the picture itself](https://github.com/roybaer/burnt-in-subtitle-extractor), [SubRip](http://zuggy.wz.cz/), [ocr 1](https://github.com/shenbo/video-subtitles-ocr), [ocr 2](https://github.com/broija/subdetection)
 
-## tsv2srt
+## 1.2 tsv2srt
 
 `tsv2srt` `tsv2srt_all`
 
 tips: you may `s/，/, /g`, to make Chinese lines wrap. Otherwise ,`mpv` treat those as a bloody long line.
 
-## tsv2roughcut: Assemble a rough cut with ffmpeg
+## 1.3 tsv2roughcut: Assemble a rough cut with ffmpeg
 
 ```bash
 cat selection.tsv | tsv2roughcut  #will generate roughtcut.mp3/mp4, srt. auto increase filename
@@ -230,14 +254,30 @@ cat selection.tsv | tail -n 30 | tsv2roughcut test/good\ two
 cat selection.tsv | grep good | tsv2roughcut "test/good three"
 cat *.tsv | grep -C3 -i beep | tsv2roughcut #context 3 lines, ignore case
 ```
-## tsv2edl, tsv2fcpxml
+## 1.4 tsv2fcpxml
+
+NOTE: `tsv2edl` is not well-maintained.
 
 ```bash
 cat selection.tsv | tsv2edl > sel.edl #then import in DaVinci Resolve
 cat selection.tsv | tsv2fcpxml > sel.fcpxml  #24FPS, 48000Hz, change it accordingly
 ```
+## 1.5 auto2srtvideo: Convert MP3/Audio to a dummy video from .srt
 
-## Cherrypick
+Due to the limitation of Davinci Resolve that EDL file cannot be reconstructed into a timeline refering to pure audio file, 
+a helper bash script is prepared in `utils/audio2srtvideo.sh`
+
+```bash
+audio2srtvideo "Some podcast E01.mp3"
+```
+
+will yield a `Some podcast E01.mkv`
+
+*NOTE*: You may want to move those mkv files into a subdirectory named, for example, `mkvs`, so that `Tab` key `ffplay` will not be confused.
+
+# 2. Modes / Use cases
+
+## 2.1 Cherrypick
 
 ```bash
 vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target has to be the first tab
@@ -246,13 +286,13 @@ vim -p selection1.tsv movie1.tsv podcast1.tsv podcast2.tsv movie2.tsv  #target h
 *NOTE*: `:mksession` to save a `Session.vim` to the current folder may be very useful before reloading this session with `vim -S`.
 
 
-## preview / IPC control
+## 2.2 preview / IPC control
 
 *TIPS* tsv file can be place separatedly from media file. 1) You can do `ln -s` soft link. 2) You may change working directory inside `vim` by `:cd /Volumes/usbshare2-2/nas/TVSeries/Yes.Prime.Minister`
 
 Press `\\` twice to init mpv ipc control and bring up mpv. Will try best to reuse existing mpv ipc control channel `/tmp/mpvsocket`
 
-## mark in/out style
+## 2.3 mark in/out style
 
 ```
 EDL     00:24:00,000    00:30:00,000    | clipname |   ......;
@@ -269,7 +309,7 @@ You can draw a progress bar on the fly. Isn't that cool, huh?
 
 Then `gi`, `go`.
 
-## \c Vim Conceal: Hide the first 4 columns
+## 2.4 \c Vim Conceal: Hide the first 4 columns
 
 ... to stay more focused when listening to tape.
 
@@ -280,50 +320,6 @@ Then `gi`, `go`.
 ![screenshot: conceal](screenshots/b.png)
 
 It's mapped to `\ c` for your convenience.
-
-## tsv2edl: Assemble an EDL timeline
-
-(You may want to change the `FPS` value in `utils/tsv2edl.py`)
-
-```bash
-grep EDL selection.tsv | tsv2edl > selection.edl
-```
-
-or with Makefile, you can do `:make` or `:make selection2.edl` or `:make %[Tab Key] [backspace..].edl` within vim.
-
-```makefile
-selection.edl: selection.tsv
-	grep EDL $< | tsv2edl > $@
-```
-
-```makefile
-%.edl: %.tsv
-	grep EDL $< | tsv2edl > $@
-```
-
-Then import the .edl file into Davinci Resolve (Cmd-Shift-i) / Adobe Premiere. 
-Or find your way to convert it to .fcpxml
-
-*NOTE*: the starting TC of a source clip needs to be '01:00:00:00'. You may shift the clips in Davinci Resolve, or you change the `utils/tsv2edl.py` accordingly.
-
-*NOTE*: If Davinci Resolve matches a wrong clip, you may create a new bin contains the only clip. Then you import EDL, click done, and in the next window, choose the only new bin.
-
-*NOTE*: If the source slip is a pure audio file, you may create a timeline, lay down the audio file and rename the timeline exactly the same as the clipname. Starting timecode must match.
-
-Or ...
-
-## auto2srtvideo: Convert MP3/Audio to a dummy video from .srt
-
-Due to the limitation of Davinci Resolve that EDL file cannot be reconstructed into a timeline refering to pure audio file, 
-a helper bash script is prepared in `utils/audio2srtvideo.sh`
-
-```bash
-audio2srtvideo "Some podcast E01.mp3"
-```
-
-will yield a `Some podcast E01.mkv`
-
-*NOTE*: You may want to move those mkv files into a subdirectory named, for example, `mkvs`, so that `Tab` key `ffplay` will not be confused.
 
 ## See Also
 
@@ -342,3 +338,5 @@ will yield a `Some podcast E01.mkv`
  - `cat V Dont.Look.Up Inglourious No.Country.for.Old.Men The.Bourne.Supremacy 谍影重重3 Notting.Hill | grep -e god -e love -e beep -e shit | sort` [B](https://www.bilibili.com/video/BV1RZ4y1S7JA/)
 
 ![No Thanks.](screenshots/NoThanks.png)
+
+[中文介绍](http://scateu.me/2023/03/19/tsv_edl.vim.html)
