@@ -430,6 +430,7 @@ if __name__ == "__main__":
             with open("%s/roughcut.txt"%tempdirname,"w") as output_file:
                 for f,r_in,r_out, f_B in output_queue:
                     output_file.write(handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ext_name))
+                    output_file.write('\r\n')
                     counter += 1
                 eprint("")
 
@@ -506,6 +507,7 @@ if __name__ == "__main__":
         filename_change_needed = True
         if len(newname) == 0:
             eprint("ignored. keeping name [%s] [%s]"%(roughcut_filename, srt_filename))
+            filename_change_needed = False
     else: #expect a user name from args.outfile
         if args.outfile:  # has a positional file name given by user.
             newname = args.outfile
