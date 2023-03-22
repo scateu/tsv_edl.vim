@@ -94,8 +94,9 @@ export PATH=/opt/homebrew/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 if [[ -d "$@" ]]; then
 	echo "Nein."
 elif [[ -f "$@" ]]; then
+    item_name=$(basename "$@")
     cd "$(dirname "$@")"
-	cat "$(basename "$@")"  | /usr/local/bin/tsv2fcpxml > a.fcpxml
+	cat "${item_name}" | /usr/local/bin/tsv2fcpxml > "${item_name%.*}.fcpxml"
 fi
 ```
 
@@ -146,3 +147,31 @@ To use it:
  - Navigate to the Finder folder that contains footages
  - Click the 'Shortcuts' button on the top menu of macOS, then click 'tsv2roughtcut'
 
+## tsv2srt
+
+ - Receive 'Files' input from 'Quick Actions'.  If there's no input: 'Continue'
+ - Run Shell Script
+
+```bash
+export LANG=en_US.UTF-8
+export PATH=/opt/homebrew/bin/:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+
+for item in "$@"
+do
+    if [[ -d "$item" ]]; then
+	echo "Nein."
+elif [[ -f "$item" ]]; then
+    item_name=$(basename "$item")
+    cd "$(dirname "$item")"
+	 cat "${item_name}" | /usr/local/bin/tsv2srt > "${item_name%.*}.srt"
+fi
+done
+```
+
+ - Shell: "bash"
+ - Input: "Shortcut Input"
+ - Pass Input: "as arguments"
+ - Details:
+  - [X] Use as Quick Action
+   - [X] Finder
+   - [X] Services Menu
