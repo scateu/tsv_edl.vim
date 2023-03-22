@@ -190,8 +190,11 @@ def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
     # in a video project
     fragment_ext = "ts"
     codec_a = 's302m'  # wav for high time precision. other wise audio will have some annoying gaps.
+    # FIXME maybe only B roll as audio involved. use s302m?
+    # FIXME some error complained. 
     # https://stackoverflow.com/questions/10051250/muxing-into-mpeg-ts-wrong-parameters-for-audio-stream
-    # pcm_s16be, s302m 
+    # pcm_s16be, s302m , pcm_bluray
+    # opus. not precise
 
     t2, t3, to, duration = accurate_and_fast_time_for_ffmpeg(r_in, r_out)
     #eprint("fps=24, scale=1920:1080")
