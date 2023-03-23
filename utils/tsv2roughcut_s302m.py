@@ -208,7 +208,7 @@ def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
     elif ext in audio_formats:  #audio clip in a video project. generate a black screen
         subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i color=size=1920x1080:rate=24:color=black -ss %s -i \"%s\" -ss %s -to %s -c:v %s -b:v 2M -shortest %s/%05d.%s"%(t2, f, t3, to, codec_v, tempdirname,counter, fragment_ext), shell=True)
     else: #still image
-        command = "ffmpeg -hide_banner -loglevel error -f lavfi -t %s -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -t %s -i \"%s\" -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -strict -2 -c:a %s -c:v %s -b:v 2M -shortest %s/%05d.%s"%(to-t3, to-t3, f, codec_a, codec_v, tempdirname,counter, fragment_ext)
+        command = "ffmpeg -hide_banner -loglevel error -f lavfi -t %s -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -t %s -i \"%s\" -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -strict -2 -ar 48000 -c:a %s -c:v %s -b:v 2M -shortest %s/%05d.%s"%(to-t3, to-t3, f, codec_a, codec_v, tempdirname,counter, fragment_ext)
         # has to use wav as intermediate format to get precision
         # https://stackoverflow.com/questions/42410479/ffmpeg-wrong-audio-file-after-conversion-in-aac/42415886#42415886
         subprocess.call(command, shell=True)
@@ -253,7 +253,7 @@ def handle_b_roll(f_B, tempdirname, counter, extname, codec_v, codec_a):
             # Apply the following filter to the bg video: tpad=stop=-1:stop_mode=clone and use eof_action=endall in overlay.
             #https://stackoverflow.com/questions/73504860/end-the-video-when-the-overlay-video-is-finished
         elif ext in audio_formats: # B roll is pure audio
-            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -to %s -i \"%s\" -i %s -strict -2 -filter_complex \" [1][0] amix=duration=first:dropout_transition=0 [aout]\" -map 1:v -map [aout] -c:a %s -shortest %s"%(b_t2+b_t3, b_t2+b_to, b_filename, _ts_filename, codec_a, ts_filename), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -to %s -i \"%s\" -i %s -strict -2 -filter_complex \" [1][0] amix [aout]\" -map 1:v -map [aout] -c:a %s -shortest %s"%(b_t2+b_t3, b_t2+b_to, b_filename, _ts_filename, codec_a, ts_filename), shell=True)
             # mpegts+PCM(s302m) https://trac.ffmpeg.org/ticket/8131
 
             # audio need to be resampled to 48kHz. otherwise it will not synced up at the edge of clips.  Wed Mar 22 22:57:54 CST 2023
@@ -409,7 +409,8 @@ if __name__ == "__main__":
                     else:
                         # B roll longer than A clip
                         # B.start = A.end; next
-                        output_queue[-1][3] = [f_b, s_b,  s_b + duration_a + 1.0/24.0]# [f,in,out, B_ROLL]
+                        output_queue[-1][3] = [f_b, s_b,  s_b + duration_a]# [f,in,out, B_ROLL]
+                        #output_queue[-1][3] = [f_b, s_b,  s_b + duration_a + 1.0/24.0]# [f,in,out, B_ROLL]
                         # make sure B roll covers the end of A clip. Padding one frame for B roll. don't worry, the next start timecode isn't affected.
                         B_buffer = [f_b, s_b + duration_a , e_b]
                         # MAYBE DONE: B Roll may be cut into pieces. Due to uncompleted stitching of A clips.
