@@ -82,6 +82,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | ns          | [mpv ipc] search next (`n`), and seek                                                |
 | S           | [mpv ipc] sync playhead: seek vim cursor to nearest of mpv timecode, wrap end        |
 | \ S         | backwards of sync playhead                                                           |
+| gS          | playhead sync periodically, every 1s. call again to dismiss. ⎵ will pause and restore status |
 | ⇥           | seek to cursor, [mpv ipc] always play. if in comment region, jump to next 'EDL'      |
 | ⇧⇥          | seek to line head, then ⇥                                                            |
 | gi          | [mpv ipc] get current timecode, write record_in. overwrite existing.                 |

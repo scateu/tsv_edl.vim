@@ -132,6 +132,24 @@ nnoremap <silent> g0 02f\|2l
 nnoremap <silent> gO oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
 nnoremap <silent> gN oEDL	00:00:00,000	00:10:00,000	\|  \|	[ VIDEO 10*60 secs  ]<esc>0f\|la
 
+" periodically playhead seek from mpv
+nnoremap <silent> gS :call DoTogglePlayheadSeekTimer()<cr>
+
+let g:PlayheadSeekTimerId = -1
+let g:PlayheadSeekTimerNeedToBeRestarted = v:false 
+func! DoTogglePlayheadSeekTimer()
+	if g:PlayheadSeekTimerId == -1
+		let g:PlayheadSeekTimerId = timer_start(1000, function('tsv_edl#ipc_sync_playhead'), {'repeat':-1})
+		echohl WarningMsg
+		echo "Periodically seeking playhead from mpv"
+		echohl None
+	else
+		call timer_stop(g:PlayheadSeekTimerId)
+		let g:PlayheadSeekTimerId = -1
+		echo "Stop periodically seeking playhead from mpv"
+	endif
+endfunc
+
 "toggle this line as [B]roll
 nnoremap <silent> gB :call DoToggleBroll()<CR>
 nnoremap <silent> gb :call DoToggleBroll()<CR>
