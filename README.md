@@ -6,7 +6,7 @@
 
 ```
 * Title
-Any line without EDL at the beginning is a comment.
+Any line without EDL in the beginning is a comment.
 
 ## SubSection
 EDL⇥00:00:01,000⇥00:00:05,000⇥|⎵image⎵|⇥subtitles….
@@ -14,10 +14,11 @@ EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥[B]this is B-Roll
 EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥subtitles…. 
 
 *** SubSubSection
-Asterisk and sharp sign is equal treated.
+Asterisk and sharp sign is equally treated.
 ```
 
-Even `sed` is enough to do the transformation from `srt` to `tsv`.
+Even `sed` is enough to do the transformation from `srt` to `tsv`. (However, sed doesn't stitch the gap of srt files. You still may want to use `srt2tsv.py`)
+
 ```bash
 cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p' > some.tsv
 # you may remember this dig TXT srt2tsv.scateu.me
