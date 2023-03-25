@@ -140,9 +140,7 @@ let g:PlayheadSeekTimerNeedToBeRestarted = v:false
 func! DoTogglePlayheadSeekTimer()
 	if g:PlayheadSeekTimerId == -1
 		let g:PlayheadSeekTimerId = timer_start(1000, function('tsv_edl#ipc_sync_playhead'), {'repeat':-1})
-		echohl WarningMsg
 		echo "Periodically seeking playhead from mpv"
-		echohl None
 	else
 		call timer_stop(g:PlayheadSeekTimerId)
 		let g:PlayheadSeekTimerId = -1
