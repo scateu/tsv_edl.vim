@@ -458,23 +458,15 @@ function! tsv_edl#ipc_toggle_play()
 
 	if result ==? "true"
 		call tsv_edl#ipc_always_play()
-		if g:PlayheadSeekTimerNeedToBeRestarted
-			let g:PlayheadSeekTimerId = timer_start(1000, function('tsv_edl#ipc_sync_playhead'), {'repeat':-1})
+		if g:PlayheadSeekTimerId != -1  "has a running seek timer, stop it.
+			call timer_pause(g:PlayheadSeekTimerId, 0) " resume timer
 		endif
-
 	elseif result ==? "false"
 		call tsv_edl#ipc_always_pause()
-
-		"save the status of playhead seek timer
 		if g:PlayheadSeekTimerId != -1  "has a running seek timer, stop it.
-			let g:PlayheadSeekTimerNeedToBeRestarted = v:true
-			call timer_stop(g:PlayheadSeekTimerId)
-			let g:PlayheadSeekTimerId = -1
-		else " no running playhead seeking timer, no need to restart one
-			let g:PlayheadSeekTimerNeedToBeRestarted = v:false
+			call timer_pause(g:PlayheadSeekTimerId, 1) " resume timer
 		endif
 	endif
-
 endfunction
 
 function! tsv_edl#ipc_always_pause()
