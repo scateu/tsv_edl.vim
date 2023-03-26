@@ -729,6 +729,8 @@ function! tsv_edl#ipc_sync_playhead(...) "backwards=v:false)
 	let playback_time=tsv_edl#ipc_get_playback_time()
 	let playback_time_in_timecode = tsv_edl#sec_to_timecode(str2float(playback_time))
 	let g:ipc_timecode = "[" . playback_time_in_timecode . "]"
+	echon "\r\r"
+	echon ''
 	echon "[mpv ipc] sync playhead to nearest " . g:ipc_timecode . ' '
 
 	call cursor(0,1) " current line, first column
