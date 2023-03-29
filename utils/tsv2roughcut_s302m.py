@@ -7,7 +7,7 @@ import tempfile
 import platform
 import argparse
 
-video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
+video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi', 'webm']
 audio_formats = ['wav', 'mp3', 'm4a', 'ogg']
 image_formats = ['png', 'jpg', 'jpeg', 'bmp']
 
@@ -189,7 +189,7 @@ def handle_http_clip(url, r_in, r_out, f_B, counter, tempdirname): #youtube, twi
 def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
     # in a video project
     fragment_ext = "ts"
-    codec_a = 's302m'  # wav for high time precision. other wise audio will have some annoying gaps.
+    codec_a = 'mlp'  # wav for high time precision. other wise audio will have some annoying gaps.
     # FIXME maybe only B roll as audio involved. use s302m?
     # FIXME some error complained. 
     # https://stackoverflow.com/questions/10051250/muxing-into-mpeg-ts-wrong-parameters-for-audio-stream
