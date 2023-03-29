@@ -12,7 +12,7 @@ import math
 
 FCPX_SCALE = 90000 * 4
 #FPS = 24
-video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
+video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi', 'webm']
 audio_formats = ['wav', 'mp3', 'm4a']
 image_formats = ['png', 'jpg', 'jpeg', 'bmp']
 
