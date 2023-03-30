@@ -14,7 +14,7 @@ EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥[B]this is B-Roll
 EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥subtitles…. 
 
 *** SubSubSection
-Asterisk and sharp sign is equally treated.
+Asterisk and sharp sign are equally treated.
 ```
 
 Even `sed` is enough to do the transformation from `srt` to `tsv`. (However, sed doesn't stitch the gap of srt files. You still may want to use `srt2tsv.py`)
@@ -26,6 +26,8 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 ```
 
 ## Key-bindings
+
+[Cheatsheet / Reference Card](https://github.com/scateu/tsv_edl.vim/raw/main/tsv_edl_refcard.pdf)
 
 ### PREVIEW
 
@@ -99,53 +101,6 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | ]]  | go to next heading                                                     |
 | [[  | go to previous heading                                                 |
 
-### Details 
-<details markdown="1"><summary>Click here to see full description of those keys</summary>
-On media files tab, 
-
-Press 'Enter' will:
- - Copy this line to the end of `tab 1`
- - Mark this line as used `---`
- - Move to the next line 
-
-Press `Backspace` or `Delete` will:
- - Mark this line as rejected, mark `xxx` at the head of this line
- - Move to the next line
-
-Press `Space` will:
- - Continous play lines start with `EDL`
-
-<del>
- - Add a newline at the end of `tab 1`
- - Go back to current position
-</del>
-
-Press `Tab` will:
- - Invoke `mpv`/`ffplay` the `*clipname*.!(tsv|srt|txt)'` in current directory, starting from time `record_in`
- - Press `q` to stop
- - Will try to infer a playback timecode according to cursor position
-    - `Shift-Tab` will bypass position guessing
-
-Press `J` will:
- - Merge with next line, join those two timecode
-
-Press `|` on a character will:
- - Split this line into two. 
- - Will guess out a new timecode in break point, by words length
-
-Press `Shift-Left` or `Shift-Right` will:
- - Shift `Record In` timecode of this line to 1 sec left
- - Shift `Record Out` timecode of previous line to 1 sec left
- - This function is pretty much like 'Roll' operation in Davinci Resolve
-
-Press `g0` will:
- - Go to the head of subtities.
-
-Press `g9` will:
- - Go to `record_in` timecode. You may like this keybinding with `C-a` `C-x` to increase/decrease number.
-
-</details>
-
 
 ## Screenshots
 
@@ -169,9 +124,11 @@ git clone https://github.com/scateu/tsv_edl.vim
 make install-utils 
 brew install mpv ffmpeg  #sudo apt install mpv ffmpeg jq socat
 brew install jq socat   #for mpv IPC support
+
+#brew install macvim
 ```
 
-put the following lines to `~/.vimrc`
+then, put the following lines to `~/.vimrc`
 
 ```vim
 "set fencs=utf-8,gbk
@@ -185,6 +142,8 @@ colorscheme molokai-dark
 ```
 
 ## on macOS without homebrew
+
+<details markdown="1"><summary>Click here to see full instructions</summary>
 
 ```bash
 #sudo mkdir /usr/local/bin
@@ -201,7 +160,11 @@ echo 'set laststatus=2' >> ~/.vimrc
 echo 'let g:airline#extensions#tabline#enabled = 1' >> ~/.vimrc
 echo 'colorscheme molokai-dark' >> ~/.vimrc
 make install-depends-on-mac-no-homebrew
+```
+</details>
 
+
+```bash
 #test
 srt2tsv -a
 vim -p example.tsv example_never.tsv
@@ -216,7 +179,6 @@ vim -p example.tsv example_never.tsv
  - see [README.macOS.shortcuts.md](README.macOS.shortcuts.md)
 
 ![shortcuts](screenshots/shortcuts.png)
-
 
 
 # 1. Utils
