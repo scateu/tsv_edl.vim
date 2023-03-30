@@ -8,7 +8,7 @@
 * Title
 Any line without EDL in the beginning is a comment.
 
-## SubSection
+## Including this SubSection
 EDL⇥00:00:01,000⇥00:00:05,000⇥|⎵image⎵|⇥subtitles….
 EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥[B]this is B-Roll
 EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥subtitles…. 
