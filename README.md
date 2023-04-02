@@ -269,8 +269,8 @@ EDL     00:24:00,000    00:30:00,000    | clipname |   ......;
 EDL	00:00:00,000	01:00:00,000	| clipname |	......;
 ```
 
-For example, use ←/→ on the dots, to seek by 1 minute. 
-You can draw a progress bar on the fly. Isn't that cool, huh?
+For example, use ←/→ on the dots, to seek by 10 minutes. 
+You can draw a progress bar on the fly. Isn't that cool?
 
 Then `gi`, `go`.
 
