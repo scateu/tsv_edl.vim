@@ -8,4 +8,5 @@ or
 
 ```
 :nmap <silent> g] /^[^E*#][^D][^L]<cr>
+:nmap <silent> g[ /^[^E*#][^D][^L]<cr>
 ```
