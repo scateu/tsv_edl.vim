@@ -213,6 +213,11 @@ nmap <silent> <S-Right> 02f:l<C-A>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-A>:.,/^
 
 " }}}
 
+
+" search for non EDL line, a.k.a. comments line
+nmap <silent> g] /^[^E*#][^D][^L]<cr>
+nmap <silent> g[ /^[^E*#][^D][^L]<cr>
+
 "====================
 " Export & Render
 "====================
