@@ -100,6 +100,8 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 |     | if on a EDL line, you have to use `za` `zm` `zr` `zo` `zO` `zM` `zR`   |
 | ]]  | go to next heading                                                     |
 | [[  | go to previous heading                                                 |
+| g]  | go to next comment line (not start with EDL)                           |
+| g[  | go to previous comment line (not start with EDL)                       |
 
 
 ## Screenshots
