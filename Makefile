@@ -26,7 +26,7 @@ install-utils:
 	sudo ln -sf ${CURDIR}/utils/tsv2edl.py /usr/local/bin/tsv2edl
 	sudo ln -sf ${CURDIR}/utils/srt2tsv.py /usr/local/bin/srt2tsv
 	sudo ln -sf ${CURDIR}/utils/audio2srtvideo.sh /usr/local/bin/audio2srtvideo
-	sudo ln -sf ${CURDIR}/utils/audio2video /usr/local/bin/audio2video
+	sudo ln -sf ${CURDIR}/utils/audio2video.sh /usr/local/bin/audio2video
 	sudo ln -sf ${CURDIR}/utils/tsv2srt.py /usr/local/bin/tsv2srt
 	sudo ln -sf ${CURDIR}/utils/tsv2srt_all.py /usr/local/bin/tsv2srt_all
 	sudo ln -sf ${CURDIR}/utils/tsv2roughcut.py /usr/local/bin/tsv2roughcut
