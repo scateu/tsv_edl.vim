@@ -37,4 +37,8 @@ Press `Enter` when this sentence is read. It will update the out time and move c
 You just need to press 'Enter' on and on.
 
 
+Finally, you may import the `srt` file into Davinci Resolve or other software to do fine-tuning.
+
+
  - [ ] FIXME: the time is not continuous. Maybe a function is needed.
+
