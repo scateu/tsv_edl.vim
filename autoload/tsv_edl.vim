@@ -842,9 +842,14 @@ function! tsv_edl#try_open_fold()
 	endtry
 endfunction
 
-function! tsv_edl#write_record_in()
+function! tsv_edl#write_record_in(...)
+	if a:0 > 0
+		let playback_time=a:1 
+	else
+		let playback_time=tsv_edl#ipc_get_playback_time()
+	endif
+
 	set conceallevel=0 wrap
-	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_in = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
 	if (getline(".")  !~# g:edl_line_pattern) "not a valid edl/---/xxx line
 		"if len(getline(".")) != 0
@@ -858,12 +863,16 @@ function! tsv_edl#write_record_in()
 		exec "normal! wcW" . rec_in
 		echon "Overwrite record_in ... "
 	endif
-
+	return playback_time
 endfunction
 
-function! tsv_edl#write_record_out()
+function! tsv_edl#write_record_out(...)
+	if a:0 > 0
+		let playback_time=a:1  "optional variable, input as timecode-to-write
+	else
+		let playback_time=tsv_edl#ipc_get_playback_time()
+	endif
 	set conceallevel=0 wrap
-	let playback_time=tsv_edl#ipc_get_playback_time()
 	let rec_out = substitute(tsv_edl#sec_to_timecode(str2float(playback_time)), '\.', ',', '')
 
 	let pattern_1 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t$"
@@ -889,6 +898,7 @@ function! tsv_edl#write_record_out()
 	endif
 	call cursor(0,col('$'))
 	"startinsert!
+	return playback_time
 endfunction
 
 function! tsv_edl#calculate_duration_of_one_line()
@@ -899,6 +909,12 @@ function! tsv_edl#calculate_duration_of_one_line()
 	if (getline(".") =~# pattern_2) "full line overwrite
 		call setline('.', getline('.') . '; ' . line_duration . 's')
 	endif
+endfunction
+
+function! tsv_edl#update_timeline_for_transcription()
+	let playback_time = tsv_edl#write_record_out()
+	normal! j
+	call tsv_edl#write_record_in(playback_time)
 endfunction
 
 function! tsv_edl#ipc_get_playback_time()

@@ -19,10 +19,18 @@ SIMON: You’d go that far?
 first, you remap `Enter` key to 
 
 ```
-:nmap <enter> <space>gojgi<space>
+:nmap <enter> :call tsv_edl#update_timeline_for_transcription()<cr>
 ```
 
-then, you manually add `EDL` head to the first sentence, and restart vim.
+You may also 
+
+```
+:set so=999
+```
+
+so that your working line stays in the middle of the screen.
+
+Then, you manually add `EDL` head to the first sentence, and restart vim.
 
 ```
 EDL 00:00:00,000    00:00:00,000    | filename |    JAD: Yeah.
