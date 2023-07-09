@@ -48,5 +48,6 @@ You just need to press 'Enter' on and on.
 Finally, you may import the `srt` file into Davinci Resolve or other software to do fine-tuning. (caution: if the first srt line is not started at 00:00:00, you may add one. otherwise, it's not easy to import into Davinci Resolve timeline)
 
 
- - [ ] FIXME: the time is not continuous. Maybe a function is needed.
+ - [X] FIXME: the time is not continuous. Maybe a function is needed.
+ - [ ] FIXME: come up with a good key to bind.
 
