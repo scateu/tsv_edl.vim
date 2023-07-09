@@ -851,7 +851,7 @@ function! tsv_edl#write_record_in()
 		"	normal! o
 		"endif
 		call cursor(0,1)
-		call setline(".", "EDL\t" . rec_in . "\t" . getline('.'))  "insert at head
+		call setline(".", "EDL\t" . rec_in . "\t" . rec_in . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t" . getline('.'))  "insert at head
 		call cursor(0,col('$'))
 	else  "overwrite
 		call cursor(0,1) "this line head
@@ -878,7 +878,10 @@ function! tsv_edl#write_record_out()
 		exec "normal! 0WWcW" . rec_out
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
-		call setline('.', getline('.') . '; ' . line_duration . 's')
+		call setline('.', getline('.'))
+
+		let g:ipc_timecode = "[" . line_duration . "s ]"
+		"call setline('.', getline('.') . '; ' . line_duration . 's')
 	else  " for raw txt. especially useful when add timecode for raw transcription. 
 		let origin_line_first_part = getline('.')[:16]
 		let origin_line_second_part = getline('.')[17:]  " drop leading \t
@@ -886,6 +889,16 @@ function! tsv_edl#write_record_out()
 	endif
 	call cursor(0,col('$'))
 	"startinsert!
+endfunction
+
+function! tsv_edl#calculate_duration_of_one_line()
+	let pattern_2 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
+	let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
+	let _rec_out_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[2], ',' , '.', 'g') )
+	let line_duration = _rec_out_secs - _rec_in_secs
+	if (getline(".") =~# pattern_2) "full line overwrite
+		call setline('.', getline('.') . '; ' . line_duration . 's')
+	endif
 endfunction
 
 function! tsv_edl#ipc_get_playback_time()

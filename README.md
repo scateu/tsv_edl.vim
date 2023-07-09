@@ -55,6 +55,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | gN    | append a line for 10 minutes below current line, place cursor to input clipname                              |
 | gB    | toggle a line between '[B]' or not.                                                                          |
 | gb    | the same as gB                                                                                               |
+| gc    | Calcualte duration of this line in secs. add to the end of line.                                             |
 | \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
 
 ### EDITORIAL DECISION / BBC Paper Edit

@@ -132,6 +132,9 @@ nnoremap <silent> g0 02f\|2l
 nnoremap <silent> gO oEDL	00:00:00,000	00:00:05,000	\| GAP \|	[ SPACE 5.0 secs ]<esc>
 nnoremap <silent> gN oEDL	00:00:00,000	00:10:00,000	\|  \|	[ VIDEO 10*60 secs  ]<esc>0f\|la
 
+" Calcualte duration of this line in secs. add to the end of line.
+nmap <silent> gc :call tsv_edl#calculate_duration_of_one_line()<CR>
+
 " periodically playhead seek from mpv
 nnoremap <silent> gS :call DoTogglePlayheadSeekTimer()<cr>
 
