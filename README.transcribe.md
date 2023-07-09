@@ -22,7 +22,7 @@ first, you remap `Enter` key to
 :nmap <enter> <space>gojgi<space>
 ```
 
-then, you manually add to the first sentence.
+then, you manually add `EDL` head to the first sentence, and restart vim.
 
 ```
 EDL 00:00:00,000    00:00:00,000    | filename |    JAD: Yeah.
@@ -37,7 +37,7 @@ Press `Enter` when this sentence is read. It will update the out time and move c
 You just need to press 'Enter' on and on.
 
 
-Finally, you may import the `srt` file into Davinci Resolve or other software to do fine-tuning.
+Finally, you may import the `srt` file into Davinci Resolve or other software to do fine-tuning. (caution: if the first srt line is not started at 00:00:00, you may add one. otherwise, it's not easy to import into Davinci Resolve timeline)
 
 
  - [ ] FIXME: the time is not continuous. Maybe a function is needed.
