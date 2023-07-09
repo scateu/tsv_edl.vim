@@ -12,6 +12,7 @@ Any line without EDL in the beginning is a comment.
 EDL⇥00:00:01,000⇥00:00:05,000⇥|⎵image⎵|⇥subtitles….
 EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥[B]this is B-Roll
 EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥subtitles…. 
+EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥subtitles and\Nnewline
 
 *** SubSubSection
 Asterisk and sharp sign are equally treated.
