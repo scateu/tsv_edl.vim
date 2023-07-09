@@ -869,7 +869,7 @@ function! tsv_edl#write_record_out()
 	let pattern_1 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t$"
 	let pattern_2 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
 	if (getline(".")  =~# pattern_1) " has a record_in
-		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
+		call setline('.', getline(".") . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
 		call setline('.', getline('.') . line_duration . 's')
@@ -879,11 +879,13 @@ function! tsv_edl#write_record_out()
 		let _rec_in_secs = tsv_edl#timecode_to_secs( substitute(split(getline('.'), '\t')[1], ',' , '.', 'g') )
 		let line_duration = printf("%.2f", str2float(playback_time) - _rec_in_secs)
 		call setline('.', getline('.') . '; ' . line_duration . 's')
-	else
-		call setline('.', getline('.') . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t")
+	else  " for raw txt. especially useful when add timecode for raw transcription. 
+		let origin_line_first_part = getline('.')[:16]
+		let origin_line_second_part = getline('.')[17:]  " drop leading \t
+		call setline('.', origin_line_first_part . rec_out . "\t" . '| ' . g:ipc_loaded_media_name . ' |' . "\t" . origin_line_second_part)
 	endif
 	call cursor(0,col('$'))
-	startinsert!
+	"startinsert!
 endfunction
 
 function! tsv_edl#ipc_get_playback_time()
