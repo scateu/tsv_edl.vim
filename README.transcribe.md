@@ -35,3 +35,6 @@ Press spacebar to play.
 Press `Enter` when this sentence is read. It will update the out time and move cursor to the next line, and insert 'in' time.
 
 You just need to press 'Enter' on and on.
+
+
+ - [ ] FIXME: the time is not continuous. Maybe a function is needed.
