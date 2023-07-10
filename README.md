@@ -76,7 +76,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | Key         | Function                                                                             |
 |-------------|--------------------------------------------------------------------------------------|
 | \ \         | init. `mpv --input-ipc-server=/tmp/mpvsocket --pause clipname.mp4`                   |
-|             | and enter IPC Control mode. `s ← → ↑ ↓ ⎵ ⏎` is redefined, and restored at quit       |
+|             | and enter IPC Control mode. `s ← → ↑ ↓ ⎵ ⏎` are redefined, and restored at quit      |
 | \ \ (again) | send quit signal via ipc socket to mpv                                               |
 | ⎵           | [mpv ipc] toggle play                                                                |
 | ←  →        | move, then [mpv ipc] seek to cursor                                                  |
@@ -91,6 +91,8 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | ⇧⇥          | seek to line head, then ⇥                                                            |
 | gi          | [mpv ipc] get current timecode, write record_in. overwrite existing.                 |
 | go          | [mpv ipc] get current timecode, write record_out and clipname. overwrite existing    |
+| -           | get current timecode from mpv, write to the 'out' of this line. move down, write the same as 'in' |
+|             | very useful when add timecode to a plain text transcription.                         |
 
 
 ### Orgmode/Markdown Folding

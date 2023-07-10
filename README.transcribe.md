@@ -16,10 +16,10 @@ JAD: This was like that, times 1,000.
 SIMON: You’d go that far?
 ```
 
-first, you remap `Enter` key to 
+first, you remap `-` key to 
 
 ```
-:nmap <enter> :call tsv_edl#update_timeline_for_transcription()<cr>
+:nmap - :call tsv_edl#update_timeline_for_transcription()<cr>
 ```
 
 You may also 
@@ -49,5 +49,5 @@ Finally, you may import the `srt` file into Davinci Resolve or other software to
 
 
  - [X] FIXME: the time is not continuous. Maybe a function is needed.
- - [ ] FIXME: come up with a good key to bind.
+ - [X] FIXME: come up with a good key to bind. `-`
 

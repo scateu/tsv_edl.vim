@@ -10,3 +10,4 @@ ffmpeg-mac.zip
 mpv-latest.tar.gz
 socat_macOS.bin
 documentation
+utils/_tsv2roughcut.py

@@ -198,6 +198,11 @@ func! DoJoin()
 endfunc
 nmap <silent> J :call DoJoin()<CR>
 
+" set the out timecode of this line to current playhead of mpv; then move to
+" the next line, set the 'in' timecode as the same. If the next line is
+" plaintext, add 'EDL' head, and make 'in' 'out' timecode the same.
+nmap - :call tsv_edl#update_timeline_for_transcription()<cr>
+
 " shift the record_in timecode by 1 sec  {{{
 nmap <silent> <S-Left> 02f:l<C-X>0?^EDL\\|\\---\\|xxx<CR>02f<Tab>2f:l<C-X>:.,/^EDL\\|---\\|xxx/s/[:\t]\zs\ze\d[,:]/0/ge<CR>/^EDL\\|xxx\\|---/<CR>02f:l
 "                                                   ^^ this line and prev EDL line
