@@ -92,7 +92,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | gi          | [mpv ipc] get current timecode, write record_in. overwrite existing.                 |
 | go          | [mpv ipc] get current timecode, write record_out and clipname. overwrite existing    |
 | -           | get current timecode from mpv, write to the 'out' of this line. move down, write the same as 'in' |
-|             | very useful when add timecode to a plain text transcription.                         |
+|             | very useful when adding timecode to a plain text transcription.                         |
 
 
 ### Orgmode/Markdown Folding
