@@ -51,3 +51,9 @@ Finally, you may import the `srt` file into Davinci Resolve or other software to
  - [X] FIXME: the time is not continuous. Maybe a function is needed.
  - [X] FIXME: come up with a good key to bind. `-`
 
+
+## TIPS: break long sentence by the period sign
+
+```
+:g/\. /normal f.ll|
+```
