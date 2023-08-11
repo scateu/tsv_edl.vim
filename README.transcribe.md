@@ -17,13 +17,15 @@ SIMON: You’d go that far?
 ```
 
 <del>
-first, you remap `-` key to 
+
+ first, you remap `-` key to 
 
 ```
 :nmap - :call tsv_edl#update_timeline_for_transcription()<cr>
 ```
 
 ALREADY DONE.
+
 </del>
 
 You may also 
