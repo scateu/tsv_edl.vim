@@ -38,3 +38,15 @@ call plug#end()
 mkdir -p ~/.config/nvim/colors
 wget https://github.com/pR0Ps/molokai-dark/raw/master/colors/molokai-dark.vim
 ```
+
+## Or reuse vim's configuration and plugin directory
+
+<https://neovim.io/doc/user/nvim.html#nvim-from-vim>
+
+add the following to `~/.config/nvim/init.vim`
+
+```vim
+set runtimepath^=~/.vim runtimepath+=~/.vim/after
+let &packpath = &runtimepath
+source ~/.vimrc
+```
