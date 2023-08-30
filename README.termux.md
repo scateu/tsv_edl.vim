@@ -15,6 +15,7 @@ Patch some:
 	$ cd ~/.vim/pack/plugins/start/tsv_edl.vim/
 	$ find ./ -name *.vim -exec sed -i 's,/tmp/mpvsocket,~/mpvsocket,g' {} \;
 	$ sed -i 's,/usr/local/bin/,/data/data/com.termux/files/usr/bin/,g' Makefile
+	$ sed -i 's,sudo,,g' Makefile
 	$ make install-utils
 
 The first time you run `mpv` may use some patience. If "[ao/audiotrack] No Java virtual machine has been registered" occurs, 
