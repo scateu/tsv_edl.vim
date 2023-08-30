@@ -8,7 +8,7 @@ Install [termux](https://mirrors.tuna.tsinghua.edu.cn/help/termux/) from [fdroid
  
 Install packages:
 
-	$ pkg install vim jq socat make git mpv bc
+	$ pkg install vim jq socat make git mpv bc python
 
 Patch some:
 
