@@ -175,3 +175,19 @@ done
   - [X] Use as Quick Action
    - [X] Finder
    - [X] Services Menu
+
+
+
+
+## (Experiemental) iCloud shared version
+top.key8785@fastmail.com
+
+ - srt2tsv_all: https://www.icloud.com/shortcuts/28decb1d27d941bb9d0507827f7ad82e
+ - tsv2roughtcut from pasteboard:  https://www.icloud.com/shortcuts/21cdd652f92c436b94bb328358dd9aa0
+ - scenecut_preview: https://www.icloud.com/shortcuts/c7f40e4dce5349a39f7fde777ba976d8
+ - tsv2srt:  https://www.icloud.com/shortcuts/2abc8459ce7b406dac0982fa558e0fb9
+ - srt2tsv:  https://www.icloud.com/shortcuts/e9b149fb877443ccb8cae97af5d55759
+ - tsv2fcpxml:   https://www.icloud.com/shortcuts/47af4a0500ce4e1fbaa47b5553f7f4b3
+ - tsv2roughtcut: https://www.icloud.com/shortcuts/8c2d53aacfa348bb84c579a282db4942
+
+
