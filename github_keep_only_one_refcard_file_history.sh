@@ -37,4 +37,4 @@ git add tsv_edl_flow.png
 
 git commit -m 'erase history of some large files' 
 
-git push --force -u origin master
+git push --force -u origin main
