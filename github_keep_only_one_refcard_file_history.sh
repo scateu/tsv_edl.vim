@@ -24,8 +24,8 @@ mv tsv_edl_flow.png _tmp_for_refcard_git_history_clean/
 
 git filter-repo --force --invert-paths --path tsv_edl_refcard.pdf
 git filter-repo --force --invert-paths --path tsv_edl_refcard.pages
-git filter-repo --force --invert-paths --path tsv_edl_refcard.graffle
-git filter-repo --force --invert-paths --path tsv_edl_refcard.png
+git filter-repo --force --invert-paths --path tsv_edl_flow.graffle
+git filter-repo --force --invert-paths --path tsv_edl_flow.png
 
 mv _tmp_for_refcard_git_history_clean/* .
 rmdir _tmp_for_refcard_git_history_clean
