@@ -37,4 +37,7 @@ git add tsv_edl_flow.png
 
 git commit -m 'erase history of some large files' 
 
+git remote add origin https://github.com/scateu/tsv_edl.vim.git
+git config remote.origin.url git@github.com:scateu/tsv_edl.vim.git
+
 git push --force -u origin main
