@@ -176,11 +176,7 @@ done
    - [X] Finder
    - [X] Services Menu
 
-
-
-
 ## (Experiemental) iCloud shared version
-top.key8785@fastmail.com
 
  - srt2tsv_all: https://www.icloud.com/shortcuts/28decb1d27d941bb9d0507827f7ad82e
  - tsv2roughtcut from pasteboard:  https://www.icloud.com/shortcuts/21cdd652f92c436b94bb328358dd9aa0
