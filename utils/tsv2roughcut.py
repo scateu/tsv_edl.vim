@@ -525,6 +525,6 @@ if __name__ == "__main__":
         eprint("{filename} & {filename_srt} generated".format(filename=roughcut_filename, filename_srt=srt_filename))
 
     if args.play:
-        subprocess.call("mpv {filename}".format(filename=roughcut_filename), shell=True)
+        subprocess.call("mpv \"{filename}\"".format(filename=roughcut_filename), shell=True)
         #FIXME: tsv2roughcut  缺最后一行的回车，可能会导致srt2tsv脚本失效
 
