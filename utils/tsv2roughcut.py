@@ -7,7 +7,7 @@ import tempfile
 import platform
 import argparse
 
-video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
+video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi', 'webm']
 audio_formats = ['wav', 'mp3', 'm4a', 'ogg']
 image_formats = ['png', 'jpg', 'jpeg', 'bmp']
 
