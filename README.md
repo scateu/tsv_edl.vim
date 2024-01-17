@@ -1,8 +1,9 @@
+[Youtube Demo](https://youtu.be/hoAP-0k22zc)
+
 ![screenshot](screenshots/fcpx.jpg)
 ![screenshot](screenshots/h.png)
 ![flow](tsv_edl_flow.png)
 
-[<img src="https://img.youtube.com/vi/hoAP-0k22zc/maxresdefault.jpg" width="50%">](https://youtu.be/hoAP-0k22zc)
 
 # Syntax
 
