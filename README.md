@@ -122,8 +122,6 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 ![screenshot](screenshots/d.jpg)
 ![screenshot](screenshots/e.jpg)
 ![screenshot](screenshots/f.jpg)
-![screenshot](screenshots/g.jpg)
-
 
 # Install
 
