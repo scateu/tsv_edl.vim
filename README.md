@@ -132,12 +132,11 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 ```bash
 mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
-#git clone https://github.com/vim-airline/vim-airline
-#git clone https://github.com/pR0Ps/molokai-dark
+git clone https://github.com/vim-airline/vim-airline
+git clone https://github.com/pR0Ps/molokai-dark
 make install-utils 
-brew install mpv ffmpeg  #sudo apt install mpv ffmpeg jq socat
-brew install jq socat   #for mpv IPC support
-
+brew install mpv ffmpeg jq socat dos2unix
+#sudo apt install mpv ffmpeg jq socat
 #brew install macvim
 ```
 
