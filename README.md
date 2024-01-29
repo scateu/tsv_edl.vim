@@ -134,6 +134,7 @@ mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
 git clone https://github.com/scateu/tsv_edl.vim
 git clone https://github.com/vim-airline/vim-airline
 git clone https://github.com/pR0Ps/molokai-dark
+cd ~/.vim/pack/plugins/start/tsv_edl.vim
 make install-utils 
 brew install mpv ffmpeg jq socat dos2unix
 #sudo apt install mpv ffmpeg jq socat
