@@ -8,6 +8,8 @@ Since apple has to audit my code before this shortcut can be shared, you might a
 
 ## CAUTION: if srt2tsv doesn't work on Shortcuts but works from Terminal
 
+(Mostly happens on macOS Sonoma.)
+
 Probably you need to do the [following thing](https://discussions.apple.com/thread/255210852?sortBy=best):
 
 >    Open Settings > Privacy & Security > Full Disk Access (or files and folders)
