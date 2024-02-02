@@ -98,8 +98,8 @@ if __name__ == '__main__':
         try:
             srt_file_to_tsv(f)
             eprint("%s converted."%f)
-        except:
-            eprint("%s failed, skip"%f)
+        except Exception as e:
+            eprint("%s failed, skip. reason: %s"%(f,e))
         if err_info:
             eprint('success, but some exceptions are ignored:')
             for file_name, blocks_num, context in err_info:
