@@ -318,3 +318,7 @@ It's mapped to `\ c` for your convenience.
 ![No Thanks.](screenshots/NoThanks.png)
 
 [中文介绍](http://scateu.me/2023/03/19/tsv_edl.vim.html)
+
+## 中文项目名
+
+ - 糙音速剪辑
