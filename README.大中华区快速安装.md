@@ -42,6 +42,11 @@ https://brew.idayer.com/
 
 ## macvim 去网站上下载dmg好了
 
+<https://macvim.org/>
+
+
+如果用homebrew来装
+
 	brew install --cask macvim
 
-这个略慢
+略慢
