@@ -6,6 +6,9 @@ tsv_edl.tar.gz:
 deploy:
 	rsync --exclude '*.sw?' -av autoload ftdetect ftplugin syntax $(HOME)/.vim
 
+install-micro:
+	ln -sf  ${CURDIR}/micro/syntax/tsv_edl.yaml ~/.config/micro/syntax/
+
 install-utils:
 	chmod +x ${CURDIR}/utils/tsv2edl.py
 	chmod +x ${CURDIR}/utils/tsv2srt.py
