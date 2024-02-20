@@ -37,6 +37,7 @@ https://brew.idayer.com/
     git clone https://gh.idayer.com/https://github.com/scateu/tsv_edl.vim
     git clone https://gh.idayer.com/https://github.com/vim-airline/vim-airline
     git clone https://gh.idayer.com/https://github.com/pR0Ps/molokai-dark
+    cd tsv_edl.vim
     make install-utils
     brew install ffmpeg mpv socat jq dos2unix yt-dlp 
 
