@@ -1,6 +1,7 @@
 # | SonicCut >
 
  - [Youtube Demo](https://youtu.be/hoAP-0k22zc)
+ - [FOSDEM 2024 Talk](https://fosdem.org/2024/schedule/event/fosdem-2024-2804-edit-video-audio-with-or-without-vim/)
 
 ![screenshot](screenshots/fcpx.jpg)
 ![screenshot](screenshots/h.png)
