@@ -43,22 +43,28 @@ function ipc_always_pause()
 end
 
 function ipc_load_media(filename)
+	local filename_with_ext = filename
+	if string.match(filename, "^http") == nil then
+		filename_with_ext = os_capture('ls *"' .. filename .. '"* | ' .. " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1 | tr -d '\n'")
+	end
+	os.execute('echo "{ \\"command\\": [\\"loadfile\\", \\"' .. filename_with_ext .. '\\", \\"replace\\", \\"start=' .. 0 .. '\\" ] }" >> /tmp/mpvsocket &')
+	ipc_loaded_media_name = filename
 	return 0
 end
 
 function ipc_seek(line)
 	-- assume it's already loaded
-	type = line:sub(1,4)
+	local type = line:sub(1,4)
 	if type ~= "EDL\t" and type ~= "xxx\t" and type ~= '---\t' then
 		-- TODO: move cursor to first EDL line?
 		return 0
 	end
-	record_in = line:sub(5,16):gsub(',','.')
+	local record_in = line:sub(5,16):gsub(',','.')
 	if record_in ~= string.match(record_in, "[0-9][0-9]:[0-9][0-9]:[0-9][0-9][,.][0-9][0-9][0-9]") then
 		return 0
 	end
-	record_out = line:sub(18,29):gsub(',','.')
-	filename = string.match(line:sub(31), "| *([^|\t]*) *|\t")
+	local record_out = line:sub(18,29):gsub(',','.')
+	local filename = string.match(line:sub(31), "| *([^|\t]*[^ ]) *|\t")
 	if filename == nil then
 		return 0
 	end
@@ -69,10 +75,17 @@ function ipc_seek(line)
 
 	-- TODO: start at cursor position?
 	-- let cursor_pos_percentage = tsv_edl#infer_time_pos(line)
-	_rec_in_secs = timecode_to_secs(record_in)
-	_rec_out_secs = timecode_to_secs(record_out)
+	local _rec_in_secs = timecode_to_secs(record_in)
+	local _rec_out_secs = timecode_to_secs(record_out)
 
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"playback-time\\", ' .. _rec_in_secs .. ' ] }" >> /tmp/mpvsocket &')
+end
+
+function os_capture(cmd, raw)
+	local f = assert(io.popen(cmd, 'r'))
+	local s = assert(f:read('*a'))
+	f:close()
+	return s
 end
 
 function timecode_to_secs(timecode)
