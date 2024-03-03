@@ -5,6 +5,7 @@ local config = import("micro/config")
 local buffer = import("micro/buffer")
 
 local ipc_loaded_media_name = ""
+local sleep = 0
 
 
 function edl_break_line()
@@ -37,23 +38,55 @@ function edl_play_current_range()
 	ipc_sleep_pause(length)
 end
 
+function edl_toggle_play()
+	local v = micro.CurPane()
+	local cs = v.Buf:GetCursors()
+	if #cs ~= 1 then
+		-- It doesn't make sense to use this with multicursors
+		return
+	end
+	local length = ipc_seek(v.Buf:Line(cs[1].Y))
+	if length == 0 then
+		return
+	end
+	ipc_toggle_play()
+end
+
 function ipc_init(filename)
-	code = os.execute("pgrep -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
-	if exists ~= 0 then
+	local code = os.execute("pgrep -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
+	if code == 1 then
 		os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause "' .. filename .. '" &')
 		os.execute('sleep .2')
 	end
 end
 
+
 function ipc_always_play()
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", false ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
 function ipc_sleep_pause(time)
+	kill_pause_sleeper()
+	sleep = time
 	os.execute('sleep "' .. time .. '" && echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
+end
+function kill_pause_sleeper()
+	-- Note: this could be problematic if you have a lot of scripts that use 'sleep' in them.
+	os.execute('pkill -xf "sleep ' .. sleep ..'"')
 end
 function ipc_always_pause()
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
+function ipc_toggle_play()
+	local result=os_capture('echo "{ \\"command\\": [\\"get_property\\", \\"pause\\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data | tr -d "\n"')
+
+	if result == "true" then
+		ipc_always_play()
+		kill_pause_sleeper()
+	elseif result == "false" then
+		ipc_always_pause()
+	end
+end
+
 
 function ipc_load_media(filename, start)
 	local filename_with_ext = filename
@@ -113,6 +146,7 @@ end
 function init()
 	-- [mpv] play this line (guessing start pos at cursor), stop at end
 	config.MakeCommand("edl_play_current_range", edl_play_current_range, config.NoComplete)
+	config.MakeCommand("edl_toggle_play", edl_toggle_play, config.NoComplete)
 	-- [split] this line into two, guessing a new timecode
 	config.MakeCommand("edl_break_line", edl_break_line, config.NoComplete)
 end

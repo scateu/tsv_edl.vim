@@ -5,6 +5,7 @@ This plugin provides helpful commands for editing a TSV EDL file, and allows you
 ## Commands
 
 * `edl_play_current_line`
+* `edl_toggle_play`
 
 ## Keybindings
 
@@ -13,5 +14,6 @@ This plugin doesn't define keybindings. It's recommended to put something simila
 ```json
 {
 	"Alt-Tab": "command:edl_play_current_line",
+	"Alt- ": "command:edl_toggle_play",
 }
 ```
