@@ -29,10 +29,12 @@ function edl_play_current_range()
 		-- It doesn't make sense to use this with multicursors
 		return
 	end
-	if ipc_seek(v.Buf:Line(cs[1].Y)) == 0 then
+	local length = ipc_seek(v.Buf:Line(cs[1].Y))
+	if length == 0 then
 		return
 	end
 	ipc_always_play()
+	ipc_sleep_pause(length)
 end
 
 function ipc_init(filename)
@@ -46,21 +48,26 @@ end
 function ipc_always_play()
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", false ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
+function ipc_sleep_pause(time)
+	os.execute('sleep "' .. time .. '" && echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
+end
 function ipc_always_pause()
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
 
-function ipc_load_media(filename)
+function ipc_load_media(filename, start)
 	local filename_with_ext = filename
 	if string.match(filename, "^http") == nil then
 		filename_with_ext = os_capture('ls *"' .. filename .. '"* | ' .. " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1 | tr -d '\n'")
 	end
 	ipc_init(filename_with_ext)
-	os.execute('echo "{ \\"command\\": [\\"loadfile\\", \\"' .. filename_with_ext .. '\\", \\"replace\\", \\"start=' .. 0 .. '\\" ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	os.execute('echo "{ \\"command\\": [\\"loadfile\\", \\"' .. filename_with_ext .. '\\", \\"replace\\", \\"start=' .. start .. '\\" ] }" | socat - /tmp/mpvsocket > /dev/null &')
 	ipc_loaded_media_name = filename
 	return 0
 end
 
+-- Seek to the file at the position indicated by line, and
+-- return the duration of the clip, or 0 if failed.
 function ipc_seek(line)
 	-- assume it's already loaded
 	local type = line:sub(1,4)
@@ -77,17 +84,19 @@ function ipc_seek(line)
 	if filename == nil then
 		return 0
 	end
-	if filename ~= ipc_loaded_media_name then
-		-- different media, load new.
-		ipc_load_media(filename)
-	end
 
 	-- TODO: start at cursor position?
 	-- let cursor_pos_percentage = tsv_edl#infer_time_pos(line)
 	local _rec_in_secs = timecode_to_secs(record_in)
 	local _rec_out_secs = timecode_to_secs(record_out)
 
+	if filename ~= ipc_loaded_media_name then
+		-- different media, load new.
+		ipc_load_media(filename, record_in)
+	end
+
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"playback-time\\", ' .. _rec_in_secs .. ' ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	return _rec_out_secs - _rec_in_secs
 end
 
 function os_capture(cmd, raw)
