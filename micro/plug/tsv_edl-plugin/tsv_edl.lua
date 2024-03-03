@@ -35,11 +35,19 @@ function edl_play_current_range()
 	ipc_always_play()
 end
 
+function ipc_init(filename)
+	code = os.execute("pgrep -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
+	if exists ~= 0 then
+		os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause "' .. filename .. '" &')
+		os.execute('sleep .2')
+	end
+end
+
 function ipc_always_play()
-	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", false ] }" >> /tmp/mpvsocket &')
+	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", false ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
 function ipc_always_pause()
-	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" >> /tmp/mpvsocket &')
+	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
 
 function ipc_load_media(filename)
@@ -47,7 +55,8 @@ function ipc_load_media(filename)
 	if string.match(filename, "^http") == nil then
 		filename_with_ext = os_capture('ls *"' .. filename .. '"* | ' .. " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1 | tr -d '\n'")
 	end
-	os.execute('echo "{ \\"command\\": [\\"loadfile\\", \\"' .. filename_with_ext .. '\\", \\"replace\\", \\"start=' .. 0 .. '\\" ] }" >> /tmp/mpvsocket &')
+	ipc_init(filename_with_ext)
+	os.execute('echo "{ \\"command\\": [\\"loadfile\\", \\"' .. filename_with_ext .. '\\", \\"replace\\", \\"start=' .. 0 .. '\\" ] }" | socat - /tmp/mpvsocket > /dev/null &')
 	ipc_loaded_media_name = filename
 	return 0
 end
@@ -78,7 +87,7 @@ function ipc_seek(line)
 	local _rec_in_secs = timecode_to_secs(record_in)
 	local _rec_out_secs = timecode_to_secs(record_out)
 
-	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"playback-time\\", ' .. _rec_in_secs .. ' ] }" >> /tmp/mpvsocket &')
+	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"playback-time\\", ' .. _rec_in_secs .. ' ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
 
 function os_capture(cmd, raw)
