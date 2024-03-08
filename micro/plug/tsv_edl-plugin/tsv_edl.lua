@@ -30,7 +30,7 @@ function edl_play_current_range()
 		-- It doesn't make sense to use this with multicursors
 		return
 	end
-	local length = ipc_seek(v.Buf:Line(cs[1].Y))
+	local length = ipc_seek(v.Buf:Line(cs[1].Y), cs[1].X)
 	if length == 0 then
 		return
 	end
@@ -45,7 +45,7 @@ function edl_toggle_play()
 		-- It doesn't make sense to use this with multicursors
 		return
 	end
-	local length = ipc_seek(v.Buf:Line(cs[1].Y))
+	local length = ipc_seek(v.Buf:Line(cs[1].Y), cs[1].X)
 	if length == 0 then
 		return
 	end
@@ -101,7 +101,7 @@ end
 
 -- Seek to the file at the position indicated by line, and
 -- return the duration of the clip, or 0 if failed.
-function ipc_seek(line)
+function ipc_seek(line, X)
 	-- assume it's already loaded
 	local type = line:sub(1,4)
 	if type ~= "EDL\t" and type ~= "xxx\t" and type ~= '---\t' then
@@ -118,18 +118,21 @@ function ipc_seek(line)
 		return 0
 	end
 
-	-- TODO: start at cursor position?
-	-- let cursor_pos_percentage = tsv_edl#infer_time_pos(line)
-	local _rec_in_secs = timecode_to_secs(record_in)
+	local start_secs = timecode_to_secs(record_in)
 	local _rec_out_secs = timecode_to_secs(record_out)
+	-- start at cursor position
+	local cursor_pos_percentage = infer_time_pos(line, X)
+	if cursor_pos_percentage > 0 then
+		start_secs = start_secs + ((_rec_out_secs - start_secs) * cursor_pos_percentage)
+	end
 
 	if filename ~= ipc_loaded_media_name then
 		-- different media, load new.
 		ipc_load_media(filename, record_in)
 	end
 
-	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"playback-time\\", ' .. _rec_in_secs .. ' ] }" | socat - /tmp/mpvsocket > /dev/null &')
-	return _rec_out_secs - _rec_in_secs
+	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"playback-time\\", ' .. start_secs .. ' ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	return _rec_out_secs - start_secs
 end
 
 function os_capture(cmd, raw)
@@ -137,6 +140,14 @@ function os_capture(cmd, raw)
 	local s = assert(f:read('*a'))
 	f:close()
 	return s
+end
+
+function infer_time_pos(line, X)
+	local non_text_len = line:match("[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t"):len()
+	if X < non_text_len then
+		return 0
+	end
+	return (X - non_text_len) / (line:len() - non_text_len)
 end
 
 function timecode_to_secs(timecode)
