@@ -21,6 +21,7 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 def srttime_to_sec(srttime):
+    srttime = srttime.replace('.',',')
     assert(srttime.count(":") == 2)
     assert(srttime.count(",") == 1)
     HH, MM, SS, MS = [int(d) for d in srttime.replace(",",":").split(":")]
