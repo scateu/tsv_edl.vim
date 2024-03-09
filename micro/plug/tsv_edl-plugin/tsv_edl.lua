@@ -93,7 +93,7 @@ end
 function ipc_sleep_pause(time)
 	kill_pause_sleeper()
 	sleep = time
-	os.execute('sleep "' .. time .. '" && echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	os.execute('sleep "' .. time .. '" 2>/dev/null && echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
 function kill_pause_sleeper()
 	-- Note: this could be problematic if you have a lot of scripts that use 'sleep' in them.
