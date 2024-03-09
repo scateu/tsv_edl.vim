@@ -15,5 +15,6 @@ This plugin doesn't define keybindings. It's recommended to put something simila
 {
 	"Alt-Tab": "command:edl_play_current_line",
 	"Alt- ": "command:edl_toggle_play",
+	"Alt-\\": "command:edl_break_line",
 }
 ```

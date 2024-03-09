@@ -14,13 +14,39 @@ function edl_break_line()
 	for i = 1, #cs do
 		local c = cs[i]
 		if c:HasSelection() then
-			-- continue
-			-- TODO: do multiple splits when something is selected
+			-- TODO: Do a multisplit and maintain the selection
 		else
-			-- c.Loc
+			line = v.Buf:Line(c.Y)
+			lines = line_split(line, c.X)
+			if lines then
+				local a = buffer.Loc(0, c.Y)
+				local b = buffer.Loc(c.X, c.Y)
+			    v.Buf:Replace(buffer.Loc(0, c.Y), buffer.Loc(#line, c.Y), lines)
+			end
 		end
-		-- TODO: do the thing
 	end
+end
+
+function line_split(line, X)
+	local cursor_pos_percentage = infer_time_pos(line, X)
+	local record_in = line:sub(5,16)
+	if record_in ~= string.match(record_in, "[0-9][0-9]:[0-9][0-9]:[0-9][0-9][,.][0-9][0-9][0-9]") then
+		return nil
+	end
+	local record_out = line:sub(18,29)
+
+	local start_secs = timecode_to_secs(record_in)
+	local end_secs = timecode_to_secs(record_out)
+	if cursor_pos_percentage <= 0 then return nil end
+	local midpoint_secs = start_secs + ((end_secs - start_secs) * cursor_pos_percentage)
+	record_midpoint = secs_to_timecode(midpoint_secs)
+	edlpart = line:sub(1,3)
+	filepart = line:match("\t|[^|\t]*|\t")
+	text = line:match("[^\t]*$")
+	text_midpoint = text:len()*cursor_pos_percentage
+	return string.format("%s\t%s\t%s%s%s\n%s\t%s\t%s%s%s",
+		edlpart, record_in, record_midpoint, filepart, text:sub(1,text_midpoint),
+		edlpart, record_midpoint, record_out, filepart, text:sub(text_midpoint+1))
 end
 
 function edl_play_current_range()
@@ -112,7 +138,7 @@ function ipc_seek(line, X)
 	if record_in ~= string.match(record_in, "[0-9][0-9]:[0-9][0-9]:[0-9][0-9][,.][0-9][0-9][0-9]") then
 		return 0
 	end
-	local record_out = line:sub(18,29):gsub(',','.')
+	local record_out = line:sub(18,29)
 	local filename = string.match(line:sub(31), "| *([^|\t]*[^ ]) *|\t")
 	if filename == nil then
 		return 0
@@ -151,7 +177,11 @@ function infer_time_pos(line, X)
 end
 
 function timecode_to_secs(timecode)
+	timecode = timecode:gsub(',','.')
 	return timecode:sub(1,2)*3600 + timecode:sub(4,5)*60 + timecode:sub(7)
+end
+function secs_to_timecode(secs)
+	return string.format("%02d:%02d:%06.3f", math.floor(secs/3600), math.floor(secs/60), secs%60)
 end
 
 function init()
