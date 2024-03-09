@@ -10,7 +10,7 @@ DEFAULT_CLIPNAME = "multicam" #以英文为好，Davinci里中文有可能识别
 RECORD_START_FROM_HOUR = 0  # or 1
 
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi']
-audio_formats = ['wav', 'mp3', 'm4a']
+audio_formats = ['wav', 'mp3', 'm4a', 'ogg', 'flac']
 
 '''
 Usage:

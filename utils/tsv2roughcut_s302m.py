@@ -8,7 +8,7 @@ import platform
 import argparse
 
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi', 'webm']
-audio_formats = ['wav', 'mp3', 'm4a', 'ogg']
+audio_formats = ['wav', 'mp3', 'm4a', 'ogg', 'flac']
 image_formats = ['png', 'jpg', 'jpeg', 'bmp']
 
 is_pure_audio_project = True

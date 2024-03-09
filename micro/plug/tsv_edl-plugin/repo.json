@@ -1,0 +1,5 @@
+[{
+	"Name": "tsv_edl",
+	"Description": "Plugin to edit tsv_edl files",
+	"Website": "https://github.com/scateu/tsv_edl.vim"
+}]

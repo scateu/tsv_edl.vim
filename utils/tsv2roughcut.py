@@ -8,7 +8,7 @@ import platform
 import argparse
 
 video_formats = ['mkv', 'mp4', 'mov', 'mpeg', 'ts', 'avi', 'webm']
-audio_formats = ['wav', 'mp3', 'm4a', 'ogg']
+audio_formats = ['wav', 'mp3', 'm4a', 'ogg', 'flac']
 image_formats = ['png', 'jpg', 'jpeg', 'bmp']
 
 is_pure_audio_project = True
@@ -21,6 +21,7 @@ def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 def srttime_to_sec(srttime):
+    srttime = srttime.replace('.',',')
     assert(srttime.count(":") == 2)
     assert(srttime.count(",") == 1)
     HH, MM, SS, MS = [int(d) for d in srttime.replace(",",":").split(":")]
