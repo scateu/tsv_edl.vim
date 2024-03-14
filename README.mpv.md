@@ -7,6 +7,7 @@ screen=1
 fs-screen=1
 window-maximized=yes
 geometry=100%
+# autofit=70% # useful in single screen
 #profile=low-latency
 #no-focus-on-open
 #keep-open=always
