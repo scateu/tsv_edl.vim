@@ -65,6 +65,13 @@ function edl_play_current_range()
 end
 
 function edl_toggle_play()
+	is_playing = ipc_is_playing()
+	if is_playing == nil then return end
+	if is_playing then
+		ipc_always_pause()
+		return
+	end
+	-- Otherwise, seek and start playing
 	local v = micro.CurPane()
 	local cs = v.Buf:GetCursors()
 	if #cs ~= 1 then
@@ -73,9 +80,11 @@ function edl_toggle_play()
 	end
 	local length = ipc_seek(v.Buf:Line(cs[1].Y), cs[1].X)
 	if length == 0 then
+		-- Failed to seek, don't play.
 		return
 	end
-	ipc_toggle_play()
+	kill_pause_sleeper()
+	ipc_always_play()
 end
 
 function ipc_init(filename)
@@ -102,17 +111,15 @@ end
 function ipc_always_pause()
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
-function ipc_toggle_play()
-	local result=os_capture('echo "{ \\"command\\": [\\"get_property\\", \\"pause\\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data | tr -d "\n"')
-
-	if result == "true" then
-		ipc_always_play()
-		kill_pause_sleeper()
-	elseif result == "false" then
-		ipc_always_pause()
+function ipc_is_playing()
+	local pause_status=os_capture('echo "{ \\"command\\": [\\"get_property\\", \\"pause\\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data | tr -d "\n"')
+	if pause_status == "true" then
+		return false
+	elseif pause_status == "false" then
+		return true
 	end
+	return nil
 end
-
 
 function ipc_load_media(filename, start)
 	local filename_with_ext = filename
