@@ -137,6 +137,7 @@ nmap <silent> gc :call tsv_edl#calculate_duration_of_one_line()<CR>
 
 " Record voice over using default microphone (macOS, ffmpeg, libavfoundation)
 nmap <silent> \r :call tsv_edl#record_voice_over()<CR>
+nmap <silent> gC :call tsv_edl#update_out_timecode_to_media_end()<CR>
 
 " periodically playhead seek from mpv
 nnoremap <silent> gS :call DoTogglePlayheadSeekTimer()<cr>

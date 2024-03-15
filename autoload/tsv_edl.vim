@@ -911,6 +911,27 @@ function! tsv_edl#calculate_duration_of_one_line()
 	endif
 endfunction
 
+function! tsv_edl#update_out_timecode_to_media_end()
+	let pattern_2 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
+	let pattern_3 = "^xxx\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
+	let pattern_4 = "^---\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
+
+	if (getline(".") =~# pattern_2 || getline(".") =~# pattern_3 || getline(".") =~# pattern_3)
+		"update duration with sox. otherwise it will remain 00:00:10,000
+		let line=getline('.')
+		let line_list = split(line, '\t')
+		let filename = trim(trim(line_list[3],'|'))
+		"let command = 'soxi -D '. '"$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
+		let command = 'ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 '. '"$(ls *"' . filename . '"* | ' . " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1)\""
+		let result = str2float(trim(system(command)))   "0.0 when fails
+		if (result != 0.0)
+			let record_out = substitute(tsv_edl#sec_to_timecode(result), '\.', ',', 'g')
+			let _cur_line = printf("%s\t%s\t%s\t%s\t%s",line_list[0], line_list[1], record_out, '| '.filename." |", line_list[4])
+			call setline(".",_cur_line )
+		endif
+	endif
+endfunction
+
 function! tsv_edl#record_voice_over()
 	let filename = strftime('VoiceOver_%F-%Hh%Mm%Ss')
 	let pattern_2 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
