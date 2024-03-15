@@ -67,6 +67,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | gb    | the same as gB                                                                                               |
 | gc    | calculate duration of this line, append to the end.                                                          |
 | \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
+| \ r   | record Voice Over, filename generated based on timestamp. reserve multi takes old ones marked as 'xxx'       |
 
 ### EDITORIAL DECISION / BBC Paper Edit
 
@@ -137,8 +138,8 @@ git clone https://github.com/vim-airline/vim-airline
 git clone https://github.com/pR0Ps/molokai-dark
 cd ~/.vim/pack/plugins/start/tsv_edl.vim
 make install-utils 
-brew install mpv ffmpeg jq socat dos2unix
-#sudo apt install mpv ffmpeg jq socat
+brew install mpv ffmpeg jq socat dos2unix sox
+#sudo apt install mpv ffmpeg jq socat sox
 #brew install macvim
 ```
 

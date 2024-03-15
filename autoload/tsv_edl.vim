@@ -911,6 +911,50 @@ function! tsv_edl#calculate_duration_of_one_line()
 	endif
 endfunction
 
+function! tsv_edl#record_voice_over()
+	let filename = strftime('VoiceOver_%F-%Hh%Mm%Ss')
+	let pattern_2 = "^EDL\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
+	let pattern_3 = "^xxx\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d\\t\\d\\d:\\d\\d:\\d\\d,\\d\\d\\d"
+
+	let record_out = "00:00:10,000" "default value
+	"call ffmpeg
+	"return trim(system('echo "{ \"command\": [\"get_property\", \"playback-time\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data'))
+	"call system('ffmpeg -f avfoundation -i ":default" -c:a pcm_f32le -ar 48000 -aq 0 '.filename.'.wav')
+	" NOTFIXME ffmpeg will cause glitched sound on macOS. Switch to sox
+  
+	if (getline(".") =~# pattern_2 || getline(".") =~# pattern_3) " already have one. Will mark this line as 'xxx' and duplicate a new one
+		" perhaps mark this file on disk as deprecated
+		let line=getline('.')
+		let line_list = split(line, '\t')
+		let _cur_line = printf("%s\t%s\t%s\t%s\t%s",line_list[0], "00:00:00,000", record_out, '| '.filename." |", line_list[4])
+		let _next_line = printf("%s\t%s\t%s\t%s\t%s",'xxx', line_list[1], line_list[2], line_list[3], line_list[4]) "deprecated audio file for backup
+		call setline(".",_cur_line )
+		call append(".", _next_line)
+	else " raw text line
+		let line=getline('.')
+		let _cur_line = printf("EDL\t%s\t%s\t%s\t%s", '00:00:00,000', record_out, '| '.filename." |", line)
+		call setline('.', _cur_line)
+	endif
+	redraw!
+	echon "[Recording Voice Over] writing ".filename.".wav .... [Ctrl-C] to stop"
+	if 1
+		call system('sox -d '.filename.'.wav') "Ctrl-C will stop Vim function as well
+		"FIXME recorded duration will not be updated due to Ctrl-C in
+		"this fashion
+	endif	
+	if 0
+		"STYLE 2
+		execute "! echo '[Recording Voice Over] ". getline('.') ."' && sox -d ".filename.".wav"
+
+		"update duration with sox. otherwise it will remain 00:00:10,000
+		let record_out = substitute(tsv_edl#sec_to_timecode(trim(system('soxi -D '.filename.'.wav'))), '\.', ',', 'g')
+		let line=getline('.')
+		let line_list = split(line, '\t')
+		let _cur_line = printf("%s\t%s\t%s\t%s\t%s",line_list[0], "00:00:00,000", record_out, '| '.filename." |", line_list[4])
+		call setline(".",_cur_line )
+	endif
+endfunction
+
 function! tsv_edl#update_timeline_for_transcription()
 	let playback_time = tsv_edl#write_record_out()
 	normal! j
