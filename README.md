@@ -67,7 +67,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | gb    | the same as gB                                                                                               |
 | gc    | calculate duration of this line, append to the end.                                                          |
 | \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
-| \ r   | record Voice Over, filename generated based on timestamp. reserve multi takes old ones marked as 'xxx'       |
+| \ r   | record Voice Over, filename generated based on timestamp. preserve multi takes, old ones marked with 'xxx'   |
 
 ### EDITORIAL DECISION / BBC Paper Edit
 
