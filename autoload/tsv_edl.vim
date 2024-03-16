@@ -959,7 +959,8 @@ function! tsv_edl#record_voice_over()
 	redraw!
 	echon "[Recording Voice Over] writing ".filename.".wav .... [Ctrl-C] to stop"
 	if 1
-		call system('sox -d '.filename.'.wav') "Ctrl-C will stop Vim function as well
+		"call system('sox -d '.filename.'.wav') "Ctrl-C will stop Vim function as well
+		call system('rec -r 44100 -c 1 '.filename.'.wav') "Mono recording; Ctrl-C will stop Vim function as well
 		"FIXME recorded duration will not be updated due to Ctrl-C in
 		"this fashion
 	endif	
