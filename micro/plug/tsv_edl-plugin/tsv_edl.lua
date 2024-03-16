@@ -27,6 +27,7 @@ function edl_break_line()
 	end
 end
 
+-- Take one line and split it at X, returning two lines or nil
 function line_split(line, X)
 	local cursor_pos_percentage = infer_time_pos(line, X)
 	local record_in = line:sub(5,16)
@@ -39,14 +40,69 @@ function line_split(line, X)
 	local end_secs = timecode_to_secs(record_out)
 	if cursor_pos_percentage <= 0 then return nil end
 	local midpoint_secs = start_secs + ((end_secs - start_secs) * cursor_pos_percentage)
-	record_midpoint = secs_to_timecode(midpoint_secs)
-	edlpart = line:sub(1,3)
-	filepart = line:match("\t|[^|\t]*|\t")
-	text = line:match("[^\t]*$")
-	text_midpoint = text:len()*cursor_pos_percentage
+	local record_midpoint = secs_to_timecode(midpoint_secs)
+	local edlpart = line:sub(1,3)
+	local filepart = line:match("\t|[^|\t]*|\t")
+	local text = line:match("[^\t]*$")
+	local text_midpoint = text:len()*cursor_pos_percentage
 	return string.format("%s\t%s\t%s%s%s\n%s\t%s\t%s%s%s",
 		edlpart, record_in, record_midpoint, filepart, text:sub(1,text_midpoint),
 		edlpart, record_midpoint, record_out, filepart, text:sub(text_midpoint+1))
+end
+
+function edl_join_selected_lines()
+	local v = micro.CurPane()
+	local cs = v.Buf:GetCursors()
+	for i = 1, #cs do
+		local c = cs[i]
+		if c:HasSelection() then
+			if c.CurSelection[1]:GreaterThan(-c.CurSelection[2]) then
+				a, b = c.CurSelection[2], c.CurSelection[1]
+			else
+				a, b = c.CurSelection[1], c.CurSelection[2]
+			end
+			local line = lines_join(v.Buf, a.Y, b.Y)
+			-- micro.Log(line)
+			if line then
+				v.Buf:Replace(buffer.Loc(0, a.Y), buffer.Loc(#v.Buf:Line(b.Y), b.Y), line)
+			end
+		else
+			-- If there's no selection, don't do anything
+		end
+	end
+end
+
+-- Take multiple lines and turn them into one line.
+function lines_join(buffer, a_Y, b_Y)
+	local text = ""
+	local firstline = buffer:Line(a_Y)
+	local edlpart = firstline:sub(1,3)
+	local record_in = firstline:sub(5,16)
+	if record_in ~= string.match(record_in, "[0-9][0-9]:[0-9][0-9]:[0-9][0-9][,.][0-9][0-9][0-9]") then
+		return nil
+	end
+	local record_out = record_in
+	-- Iterate through the lines, checking the timestamps and concatenating text.
+	local filepart = firstline:match("\t|[^|\t]*|\t")
+	for i = a_Y, b_Y do
+		local line = buffer:Line(i)
+		if line:sub(5,16) ~= record_out then
+			-- Each line must start where the previous line ended.
+			return nil
+		end
+		if line:match("\t|[^|\t]*|\t") ~= filepart then
+			-- Each line must have the same filepart
+			return nil
+		end
+		record_out = line:sub(18,29)
+		if text ~= "" then text = text .. " " end
+		text = text .. line:match("[^\t]*$")
+	end
+	if record_out ~= string.match(record_out, "[0-9][0-9]:[0-9][0-9]:[0-9][0-9][,.][0-9][0-9][0-9]") then
+		return nil
+	end
+	return string.format("%s\t%s\t%s%s%s",
+		edlpart, record_in, record_out, filepart, text)
 end
 
 function edl_play_current_range()
@@ -65,6 +121,13 @@ function edl_play_current_range()
 end
 
 function edl_toggle_play()
+	is_playing = ipc_is_playing()
+	if is_playing == nil then return end
+	if is_playing then
+		ipc_always_pause()
+		return
+	end
+	-- Otherwise, seek and start playing
 	local v = micro.CurPane()
 	local cs = v.Buf:GetCursors()
 	if #cs ~= 1 then
@@ -73,9 +136,11 @@ function edl_toggle_play()
 	end
 	local length = ipc_seek(v.Buf:Line(cs[1].Y), cs[1].X)
 	if length == 0 then
+		-- Failed to seek, don't play.
 		return
 	end
-	ipc_toggle_play()
+	kill_pause_sleeper()
+	ipc_always_play()
 end
 
 function ipc_init(filename)
@@ -93,7 +158,7 @@ end
 function ipc_sleep_pause(time)
 	kill_pause_sleeper()
 	sleep = time
-	os.execute('sleep "' .. time .. '" && echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	os.execute('sleep "' .. time .. '" 2>/dev/null && echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
 function kill_pause_sleeper()
 	-- Note: this could be problematic if you have a lot of scripts that use 'sleep' in them.
@@ -102,17 +167,15 @@ end
 function ipc_always_pause()
 	os.execute('echo "{ \\"command\\": [\\"set_property\\", \\"pause\\", true ] }" | socat - /tmp/mpvsocket > /dev/null &')
 end
-function ipc_toggle_play()
-	local result=os_capture('echo "{ \\"command\\": [\\"get_property\\", \\"pause\\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data | tr -d "\n"')
-
-	if result == "true" then
-		ipc_always_play()
-		kill_pause_sleeper()
-	elseif result == "false" then
-		ipc_always_pause()
+function ipc_is_playing()
+	local pause_status=os_capture('echo "{ \\"command\\": [\\"get_property\\", \\"pause\\" ] }" | socat - /tmp/mpvsocket 2>/dev/null | jq -r .data | tr -d "\n"')
+	if pause_status == "true" then
+		return false
+	elseif pause_status == "false" then
+		return true
 	end
+	return nil
 end
-
 
 function ipc_load_media(filename, start)
 	local filename_with_ext = filename
@@ -190,4 +253,5 @@ function init()
 	config.MakeCommand("edl_toggle_play", edl_toggle_play, config.NoComplete)
 	-- [split] this line into two, guessing a new timecode
 	config.MakeCommand("edl_break_line", edl_break_line, config.NoComplete)
+	config.MakeCommand("edl_join_selected_lines", edl_join_selected_lines, config.NoComplete)
 end

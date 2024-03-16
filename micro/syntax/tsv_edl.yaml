@@ -1,6 +1,6 @@
 filetype: tsv_edl
 detect: 
-    header: "^EDL\t(Record In|[0-9][0-9]:[0-9][0-9]:[0-9][0-9])"
+    header: "^(EDL|xxx|---)\t(Record In|[0-9][0-9]:[0-9][0-9]:[0-9][0-9])"
 
 rules:
     # markdown headers
