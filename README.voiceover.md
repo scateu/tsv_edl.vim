@@ -37,7 +37,7 @@ EDL 00:00:01,033    00:00:08,341    | VoiceOver_2024-03-18-11h34m52s |  In this 
 ```
 
 
-You can add a film clip the you described as B roll:
+You can add a film clip the you described as B roll, with `gb`:
 
 
 ```
