@@ -926,6 +926,9 @@ function! tsv_edl#update_out_timecode_to_media_end()
 		let result = str2float(trim(system(command)))   "0.0 when fails
 		if (result != 0.0)
 			let record_out = substitute(tsv_edl#sec_to_timecode(result), '\.', ',', 'g')
+			if (len(line_list) == 4) "the subtitle column is empty
+				let line_list = line_list + ['']
+			endif
 			let _cur_line = printf("%s\t%s\t%s\t%s\t%s",line_list[0], line_list[1], record_out, '| '.filename." |", line_list[4])
 			call setline(".",_cur_line )
 		endif
@@ -947,6 +950,9 @@ function! tsv_edl#record_voice_over()
 		" perhaps mark this file on disk as deprecated
 		let line=getline('.')
 		let line_list = split(line, '\t')
+		if (len(line_list) == 4) "the subtitle column is empty
+			let line_list = line_list + ['']
+		endif
 		let _cur_line = printf("%s\t%s\t%s\t%s\t%s",line_list[0], "00:00:00,000", record_out, '| '.filename." |", line_list[4])
 		let _next_line = printf("%s\t%s\t%s\t%s\t%s",'xxx', line_list[1], line_list[2], line_list[3], line_list[4]) "deprecated audio file for backup
 		call setline(".",_cur_line )

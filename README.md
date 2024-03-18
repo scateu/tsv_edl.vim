@@ -68,7 +68,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 | gc    | calculate duration of this line based on `record_in` and `record_out`, append to the end of line.            |
 | ge    | calculate and update `record_out` to media file *end* . useful with Voice Over or `gN`                       |
 | \ c   | toggle conceallevel=0, 1 ; `:set nowrap` may help you.                                                       |
-| \ r   | record Voice Over, filename generated based on sys time. preserve multi takes, old ones marked with 'xxx'   |
+| gr   | record Voice Over, filename generated based on sys time. preserve multi takes, old ones marked with 'xxx'   |
 
 ### EDITORIAL DECISION / BBC Paper Edit
 

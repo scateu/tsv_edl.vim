@@ -136,7 +136,7 @@ nnoremap <silent> gN oEDL	00:00:00,000	00:10:00,000	\|  \|	[ VIDEO 10*60 secs  ]
 nmap <silent> gc :call tsv_edl#calculate_duration_of_one_line()<CR>
 
 " Record voice over using default microphone (macOS, ffmpeg, libavfoundation)
-nmap <silent> \r :call tsv_edl#record_voice_over()<CR>
+nmap <silent> gr :call tsv_edl#record_voice_over()<CR>
 nmap <silent> ge :call tsv_edl#update_out_timecode_to_media_end()<CR>
 
 " periodically playhead seek from mpv
