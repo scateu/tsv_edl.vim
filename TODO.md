@@ -1,3 +1,8 @@
+# May 6, 2024
+ - [ ] add crossfade in tsv2roughcut.py for podcasters.
+ - [ ] whisper generated srt may cause `| clipname.wav |`. 
+   - [ ] at least, filename matching needs to support full filename
+
 # TODOs
 
  - [ ] mpv ipc mode: Tab should stop at Record Out.
@@ -21,3 +26,5 @@
 >  '-i', filePath,
 > '-ss', '0', // If we don't do this, the output seems to start with an empty black after merging with the encoded part
 >  '-t', (cutTo - cutFrom).toFixed(5),
+
+
