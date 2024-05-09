@@ -97,9 +97,9 @@ def accurate_and_fast_time_for_ffmpeg(r_in,r_out, skip_time=15):
 
 def determine_filename_from_clipname(clipname):
     global is_pure_audio_project  #as long as one clip has video, this project goes videeeeeo!
-    filenames_v = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
+    filenames_v = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in video_formats ]
     #FIXME didn't test. *%s*.*
-    filenames_a = [ c for c in glob.glob("*%s*.*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
+    filenames_a = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in audio_formats ]
     # FIXME a.mp3 another.m4a
     filenames_i = [ c for c in glob.glob("*%s*"%clipname) if os.path.splitext(c)[1][1:].lower() in image_formats ]
 

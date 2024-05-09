@@ -1,7 +1,7 @@
 # May 6, 2024
  - [ ] add crossfade in tsv2roughcut.py for podcasters.
  - [ ] whisper generated srt may cause `| clipname.wav |`. 
-   - [ ] at least, filename matching needs to support full filename
+   - [X] at least, filename matching needs to support full filename
 
 # TODOs
 
