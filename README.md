@@ -23,7 +23,7 @@ EDL	00:00:01,000	00:10:01,422	| clipname |	subtitles….
 EDL	00:00:01,000	00:10:01,422	| clipname |	subtitles and\Nnewline
 
 NOTE: Detail of tab and space described as follow
-EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname⎵|⇥subtitles and\Nnewline
+EDL⇥00:00:01,000⇥00:10:01,422⇥|⎵clipname without extension⎵|⇥subtitles and\Nnewline
 
 *** SubSubSection
 Asterisk and sharp sign are equally treated.
