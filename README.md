@@ -8,6 +8,9 @@
 ![screenshot](screenshots/h.png)
 ![flow](tsv_edl_flow.png)
 
+# Q: What if I don't use Vim?
+
+Just grab [srt2tsv.py](https://github.com/scateu/tsv_edl.vim/blob/main/utils/srt2tsv.py) and [tsv2roughcut.py](https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2roughcut.py) and you are good to go. Only FFmpeg is needed. (a static build is good enough)
 
 # Syntax
 
