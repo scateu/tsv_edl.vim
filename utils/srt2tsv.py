@@ -75,7 +75,8 @@ def srt_file_to_tsv(fname):
 
             str_out = str_out_gaps_closed
 
-        with open(fname.replace('.srt', '.tsv'), 'w', encoding='utf8') if fname != "_CLIPNAME_" else sys.stdout as file_out:
+        #utf-8-sig will add UTF-8 BOM HEADER EF BB BF. courtesy of BG5HHP
+        with open(fname.replace('.srt', '.tsv'), 'w', encoding='utf-8-sig') if fname != "_CLIPNAME_" else sys.stdout as file_out:
             file_out.write("EDL\tRecord In\tRecord Out\tClipname\tSubtitle\n")
             file_out.write(str_out)
 

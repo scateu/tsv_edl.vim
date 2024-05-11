@@ -4,6 +4,7 @@
 HEADER="EDL\tRecord In\tRecord Out\tClipname\tSubtitle"
 
 function convert_it () {
+	printf '\xEF\xBB\xBF'
 	echo -e ${HEADER}
 	sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p'
 
