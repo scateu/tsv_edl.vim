@@ -33,13 +33,32 @@ https://brew.idayer.com/
 
 ## 装依赖
 
+    brew install ffmpeg mpv socat jq dos2unix yt-dlp 
+
+## 装Vim插件本体
+
     mkdir -p ~/.vim/pack/plugins/start; cd ~/.vim/pack/plugins/start
     git clone https://gh.idayer.com/https://github.com/scateu/tsv_edl.vim
     git clone https://gh.idayer.com/https://github.com/vim-airline/vim-airline
     git clone https://gh.idayer.com/https://github.com/pR0Ps/molokai-dark
     cd tsv_edl.vim
     make install-utils
-    brew install ffmpeg mpv socat jq dos2unix yt-dlp 
+
+## 向.vimrc里写几行
+
+```bash
+
+cat <<EOF >> ~/.vimrc
+"set fencs=utf-8,gbk
+filetype plugin indent on "especially this line.
+syntax on
+set laststatus=2
+set number
+set anti "macOS anti alias
+let g:airline#extensions#tabline#enabled = 1
+colorscheme molokai-dark
+EOF
+```
 
 ## macvim 去网站上下载dmg好了
 
