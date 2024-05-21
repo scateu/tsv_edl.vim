@@ -304,7 +304,13 @@ function! tsv_edl#ipc_load_media(filename)
 	endif
 	echon "[ipc_load_media] loading " . filename_with_ext
 
-	call system('echo "{ \"command\": [\"loadfile\", \"' . filename_with_ext . '\", \"replace\", \"start=' . string(deduced_start_pos_secs) . '\" ] }" | socat - /tmp/mpvsocket 2>/dev/null')
+	" call system('echo "{ \"command\": [\"loadfile\", \"' . filename_with_ext . '\", \"replace\", \"start=' . string(deduced_start_pos_secs) . '\" ] }" | socat - /tmp/mpvsocket 2>/dev/null')
+	" ^^^^^^ mpv 0.37.0 works
+	
+	" from mpv 0.38.0, https://github.com/mpv-player/mpv/blob/master/DOCS/interface-changes.rst
+	" 'third argument now needs to be set to -1 if the fourth argument needs to be used.'
+	call system('echo "{ \"command\": [\"loadfile\", \"' . filename_with_ext . '\", \"replace\", -1, \"start=' . string(deduced_start_pos_secs) . '\" ] }" | socat - /tmp/mpvsocket 2>/dev/null')
+
 	let g:ipc_loaded_media_name = a:filename
 	" seek again
 	"let command = 'echo "{ \"command\": [\"set_property\", \"playback-time\", ' . string(deduced_start_pos_secs) . ' ] }" | socat - /tmp/mpvsocket > /dev/null'
@@ -397,6 +403,7 @@ function! tsv_edl#ipc_init_and_load_media(...) "pause = v:true)
 	
 	let command = 'mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --start=' . start_tc 
 	" FIXME mpv 0.38.0 will fail if using '--no-focus-on-open', which is replaced by '--focus-on=never' . removed for now.
+	" FIXME command: get_version  will return {"data":131075,"request_id":0,"error":"success"} in 0.38.0. Maybe it's a way to do switch
 	if pause
 		let command = command . ' --pause' 
 		let g:ipc_pause = v:true
