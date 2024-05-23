@@ -1,3 +1,7 @@
+# May 23, 2024
+ - [ ] tsv2fcpxml: Mixed Media FPS issue.
+ - [ ] replace 'jq' 'socat' with python standard library, maybe with [this](https://github.com/iwalton3/python-mpv-jsonipc)
+
 # May 6, 2024
  - [ ] add crossfade in tsv2roughcut.py for podcasters.
  - [ ] whisper generated srt may cause `| clipname.wav |`. 
@@ -8,7 +12,6 @@
  - [ ] mpv ipc mode: Tab should stop at Record Out.
  - [ ] media path support. or a very fancy `ln -s` helper?
  - [ ] tesseract OCR on existing burn-in subtitle
- - [ ] replace 'jq' 'socat' with python standard library, maybe with [this](https://github.com/iwalton3/python-mpv-jsonipc)
  - [X] Gap: EDLSPACE?  `go`
  - [X] When there's only one tab, `Enter` should cease to work. 
  - [X] Tab/Space key on a visual region. render the region into a media file
