@@ -1,4 +1,4 @@
-VERSION = "0.0.0"
+VERSION = "0.0.1"
 
 local micro = import("micro")
 local config = import("micro/config")
@@ -122,7 +122,6 @@ end
 
 function edl_toggle_play()
 	is_playing = ipc_is_playing()
-	if is_playing == nil then return end
 	if is_playing then
 		ipc_always_pause()
 		return
@@ -146,7 +145,7 @@ end
 function ipc_init(filename)
 	local code = os.execute("pgrep -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
 	if code == 1 then
-		os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --no-focus-on-open --pause "' .. filename .. '" &')
+		os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --pause "' .. filename .. '" &')
 		os.execute('sleep .2')
 	end
 end
