@@ -30,6 +30,9 @@ end
 -- Take one line and split it at X, returning two lines or nil
 function line_split(line, X)
 	local cursor_pos_percentage = infer_time_pos(line, X)
+	if cursor_pos_percentage == nil then
+		return nil
+	end
 	local record_in = line:sub(5,16)
 	if record_in ~= string.match(record_in, "[0-9][0-9]:[0-9][0-9]:[0-9][0-9][,.][0-9][0-9][0-9]") then
 		return nil
@@ -231,7 +234,11 @@ function os_capture(cmd, raw)
 end
 
 function infer_time_pos(line, X)
-	local non_text_len = line:match("[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t"):len()
+	local match = line:match("[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
+	if match == nil then
+		return nil
+	end
+	local non_text_len = match:len()
 	if X < non_text_len then
 		return 0
 	end
