@@ -146,11 +146,10 @@ function edl_toggle_play()
 end
 
 function ipc_init(filename)
-	local code = os.execute("pgrep -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
-	if code == 1 then
-		os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --pause "' .. filename .. '" &')
-		os.execute('sleep .2')
-	end
+	-- For some reason, the command to switch media doesn't work any more, so just kill it and restart it.
+	local code = os.execute("pkill -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
+	os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --pause "' .. filename .. '" &')
+	os.execute('sleep .2')
 end
 
 
@@ -185,7 +184,7 @@ function ipc_load_media(filename, start)
 		filename_with_ext = os_capture('ls *"' .. filename .. '"* | ' .. " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1 | tr -d '\n'")
 	end
 	ipc_init(filename_with_ext)
-	os.execute('echo "{ \\"command\\": [\\"loadfile\\", \\"' .. filename_with_ext .. '\\", \\"replace\\", \\"start=' .. start .. '\\" ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	-- micro.Log(filename_with_ext)
 	ipc_loaded_media_name = filename
 	return 0
 end
@@ -219,6 +218,7 @@ function ipc_seek(line, X)
 
 	if filename ~= ipc_loaded_media_name then
 		-- different media, load new.
+		-- micro.Log(filename)
 		ipc_load_media(filename, record_in)
 	end
 
