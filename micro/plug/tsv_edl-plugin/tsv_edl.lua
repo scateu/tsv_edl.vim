@@ -108,6 +108,47 @@ function lines_join(buffer, a_Y, b_Y)
 		edlpart, record_in, record_out, filepart, text)
 end
 
+function edl_linewise(my_function)
+	local v = micro.CurPane()
+	local cs = v.Buf:GetCursors()
+	for i = 1, #cs do
+		local c = cs[i]
+		if c:HasSelection() then
+			if c.CurSelection[1]:GreaterThan(-c.CurSelection[2]) then
+				a, b = c.CurSelection[2], c.CurSelection[1]
+			else
+				a, b = c.CurSelection[1], c.CurSelection[2]
+			end
+			my_function(v.Buf, a.Y, b.Y)
+		else
+			my_function(v.Buf, c.Y, c.Y)
+		end
+	end
+end
+
+function do_lines_reject(buf, a_Y, b_Y)
+	-- Iterate through the lines, switching EDL to xxx
+	for i = a_Y, b_Y do
+		local line = buf:Line(i)
+		local edlpart = line:sub(1,3)
+		if edlpart == 'EDL' then
+			buf:Replace(buffer.Loc(0, i), buffer.Loc(3, i), "xxx")
+		end
+	end
+end
+function do_lines_toggle(buf, a_Y, b_Y)
+	for i = a_Y, b_Y do
+		local line = buf:Line(i)
+		local edlpart = line:sub(1,3)
+		if edlpart == 'EDL' then
+			buf:Replace(buffer.Loc(0, i), buffer.Loc(3, i), "xxx")
+		elseif edlpart == 'xxx' or edlpart == '---' then
+			buf:Replace(buffer.Loc(0, i), buffer.Loc(3, i), "EDL")
+		end
+	end
+end
+
+
 function edl_play_current_range()
 	local v = micro.CurPane()
 	local cs = v.Buf:GetCursors()
@@ -260,4 +301,6 @@ function init()
 	-- [split] this line into two, guessing a new timecode
 	config.MakeCommand("edl_break_line", edl_break_line, config.NoComplete)
 	config.MakeCommand("edl_join_selected_lines", edl_join_selected_lines, config.NoComplete)
+	config.MakeCommand("edl_reject", function() edl_linewise(do_lines_reject) end, config.NoComplete)
+	config.MakeCommand("edl_toggle", function() edl_linewise(do_lines_toggle) end, config.NoComplete)
 end
