@@ -30,6 +30,9 @@ end
 -- Take one line and split it at X, returning two lines or nil
 function line_split(line, X)
 	local cursor_pos_percentage = infer_time_pos(line, X)
+	if cursor_pos_percentage == nil then
+		return nil
+	end
 	local record_in = line:sub(5,16)
 	if record_in ~= string.match(record_in, "[0-9][0-9]:[0-9][0-9]:[0-9][0-9][,.][0-9][0-9][0-9]") then
 		return nil
@@ -105,6 +108,47 @@ function lines_join(buffer, a_Y, b_Y)
 		edlpart, record_in, record_out, filepart, text)
 end
 
+function edl_linewise(my_function)
+	local v = micro.CurPane()
+	local cs = v.Buf:GetCursors()
+	for i = 1, #cs do
+		local c = cs[i]
+		if c:HasSelection() then
+			if c.CurSelection[1]:GreaterThan(-c.CurSelection[2]) then
+				a, b = c.CurSelection[2], c.CurSelection[1]
+			else
+				a, b = c.CurSelection[1], c.CurSelection[2]
+			end
+			my_function(v.Buf, a.Y, b.Y)
+		else
+			my_function(v.Buf, c.Y, c.Y)
+		end
+	end
+end
+
+function do_lines_reject(buf, a_Y, b_Y)
+	-- Iterate through the lines, switching EDL to xxx
+	for i = a_Y, b_Y do
+		local line = buf:Line(i)
+		local edlpart = line:sub(1,3)
+		if edlpart == 'EDL' then
+			buf:Replace(buffer.Loc(0, i), buffer.Loc(3, i), "xxx")
+		end
+	end
+end
+function do_lines_toggle(buf, a_Y, b_Y)
+	for i = a_Y, b_Y do
+		local line = buf:Line(i)
+		local edlpart = line:sub(1,3)
+		if edlpart == 'EDL' then
+			buf:Replace(buffer.Loc(0, i), buffer.Loc(3, i), "xxx")
+		elseif edlpart == 'xxx' or edlpart == '---' then
+			buf:Replace(buffer.Loc(0, i), buffer.Loc(3, i), "EDL")
+		end
+	end
+end
+
+
 function edl_play_current_range()
 	local v = micro.CurPane()
 	local cs = v.Buf:GetCursors()
@@ -143,11 +187,10 @@ function edl_toggle_play()
 end
 
 function ipc_init(filename)
-	local code = os.execute("pgrep -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
-	if code == 1 then
-		os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --pause "' .. filename .. '" &')
-		os.execute('sleep .2')
-	end
+	-- For some reason, the command to switch media doesn't work any more, so just kill it and restart it.
+	local code = os.execute("pkill -f 'input-ipc-server=/tmp/mpvsocket' >/dev/null")
+	os.execute('mpv --autofit-larger=90%x80% --ontop --no-terminal --keep-open=always --input-ipc-server=/tmp/mpvsocket --pause "' .. filename .. '" &')
+	os.execute('sleep .2')
 end
 
 
@@ -182,7 +225,7 @@ function ipc_load_media(filename, start)
 		filename_with_ext = os_capture('ls *"' .. filename .. '"* | ' .. " sed '/srt$/d; /tsv$/d; /txt$/d;' | head -n1 | tr -d '\n'")
 	end
 	ipc_init(filename_with_ext)
-	os.execute('echo "{ \\"command\\": [\\"loadfile\\", \\"' .. filename_with_ext .. '\\", \\"replace\\", \\"start=' .. start .. '\\" ] }" | socat - /tmp/mpvsocket > /dev/null &')
+	-- micro.Log(filename_with_ext)
 	ipc_loaded_media_name = filename
 	return 0
 end
@@ -216,6 +259,7 @@ function ipc_seek(line, X)
 
 	if filename ~= ipc_loaded_media_name then
 		-- different media, load new.
+		-- micro.Log(filename)
 		ipc_load_media(filename, record_in)
 	end
 
@@ -231,7 +275,11 @@ function os_capture(cmd, raw)
 end
 
 function infer_time_pos(line, X)
-	local non_text_len = line:match("[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t"):len()
+	local match = line:match("[^\t]*\t[^\t]*\t[^\t]*\t[^\t]*\t")
+	if match == nil then
+		return nil
+	end
+	local non_text_len = match:len()
 	if X < non_text_len then
 		return 0
 	end
@@ -253,4 +301,6 @@ function init()
 	-- [split] this line into two, guessing a new timecode
 	config.MakeCommand("edl_break_line", edl_break_line, config.NoComplete)
 	config.MakeCommand("edl_join_selected_lines", edl_join_selected_lines, config.NoComplete)
+	config.MakeCommand("edl_reject", function() edl_linewise(do_lines_reject) end, config.NoComplete)
+	config.MakeCommand("edl_toggle", function() edl_linewise(do_lines_toggle) end, config.NoComplete)
 end
