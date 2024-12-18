@@ -475,7 +475,9 @@ if __name__ == "__main__":
                     # only one chunk
                     pass
                 elif len(audio_chunks_filename_list_with_abspath) == 2:
+                    command += " -filter_complex \""
                     command += "[0][1]acrossfade=d=0.125:c1=tri:c2=tri;"
+                    command += "\" "
                 else: 
                     command += " -filter_complex \""
                     for i in range(len(audio_chunks_filename_list_with_abspath)-1):
