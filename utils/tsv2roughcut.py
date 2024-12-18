@@ -470,17 +470,28 @@ if __name__ == "__main__":
                 command = "ffmpeg -hide_banner -loglevel error"
                 for line in audio_chunks_filename_list_with_abspath:
                     command += " -i %s"%line
-                command += " -filter_complex \""
                 assert len(audio_chunks_filename_list_with_abspath) >= 1
-                for i in range(len(audio_chunks_filename_list_with_abspath)-1):
-                    if i == 0:
-                        command += "[0][1]acrossfade=d=0.125:c1=tri:c2=tri;"
-                    else:
-                        if i==len(line)-1:
-                            command += "[a%d][%d]acrossfade=d=0.125:c1=tri:c2=tri;"%(i, i+1)
+                if len(audio_chunks_filename_list_with_abspath) == 1:
+                    # only one chunk
+                    pass
+                elif len(audio_chunks_filename_list_with_abspath) == 2:
+                    command += "[0][1]acrossfade=d=0.125:c1=tri:c2=tri;"
+                else: 
+                    command += " -filter_complex \""
+                    for i in range(len(audio_chunks_filename_list_with_abspath)-1):
+                        #len=1 | 0
+                        #len=2 | 0 1: [0][1]
+                        #len=3 | 0 1 2: [0][1]..[a1]; [a1][2]...;
+                        #len=4 | 0 1 2 3: [0][1]..[a1]; [a1][2]...[a2]; [a2][3]....;
+                        if i == 0:
+                            command += "[0][1]acrossfade=d=0.125:c1=tri:c2=tri[a1];"
                         else:
-                            command += "[a%d][%d]acrossfade=d=0.125:c1=tri:c2=tri[a%d];"%(i, i+1, i+1)
-                command += "\" %s %s"%(roughcut_audio_codec, roughcut_filename)
+                            if i==len(audio_chunks_filename_list_with_abspath)-2:
+                                command += "[a%d][%d]acrossfade=d=0.125:c1=tri:c2=tri;"%(i, i+1)
+                            else:
+                                command += "[a%d][%d]acrossfade=d=0.125:c1=tri:c2=tri[a%d];"%(i, i+1, i+1)
+                    command += "\" "
+                command += " %s %s"%(roughcut_audio_codec, roughcut_filename)
                 #eprint(command);sys.exit(-1)
                 subprocess.call(command, shell=True)
             else: #regular mode, no audio_crossfade
