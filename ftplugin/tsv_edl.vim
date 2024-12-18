@@ -234,7 +234,8 @@ nmap <silent> g[ /^[^E*#][^D][^L]<cr>
 " Export & Render
 "====================
 "vnoremap <space> :'<,'>w !tsv2roughcut<CR>
-vnoremap <space> :w !tsv2roughcut --ask-before-delete-temp-files --user-input-newname --play <CR>
+"vnoremap <space> :w !tsv2roughcut --ask-before-delete-temp-files --user-input-newname --play --audio-crossfade<CR>
+vnoremap <space> :w !tsv2roughcut --ask-before-delete-temp-files --user-input-newname --play<CR>
 vnoremap x :w !tsv2fcpxml --fps=25 > a.fcpxml<left><left><left><left><left><left><left>
 
 set nrformats=

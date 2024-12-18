@@ -308,6 +308,7 @@ if __name__ == "__main__":
     parser.add_argument("-u", "--user-input-newname", action="store_true", help="wait for user input then rename")
     parser.add_argument("-p", "--play", action="store_true", help="play after generated")
     parser.add_argument("-k", "--ask-before-delete-temp-files", action="store_true", help="ask before delete temp files")
+    parser.add_argument("-c", "--audio-crossfade", action="store_true", help="add cross fade between audio")
     args = parser.parse_args()
 
     output_queue = [] # [[filename, start_tc in secs, end_tc in secs], [...], [...], ...]
@@ -447,7 +448,43 @@ if __name__ == "__main__":
                 eprint("[srt] writing",srt_filename)
                 with open(srt_filename, "w") as output_file:
                     output_file.write('\n'.join(srt_queue))
-            subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt %s %s"%(tempdirname, roughcut_audio_codec, roughcut_filename), shell=True)
+
+            if args.audio_crossfade == True:
+                # from https://creatomate.com/blog/how-to-join-multiple-audio-clips-into-one-using-ffmpeg
+                # ffmpeg -i audio1.mp3 -i audio2.mp3 -filter_complex "acrossfade=d=5:c1=tri:c2=tri" output.mp3
+                # d=5 specifies the duration of the crossfade.
+                # c1=tri:c2=tri specifies the fade transition slope for the first and second input. Tri is an acronym for triangular slope. All available curves can be found on this page. https://trac.ffmpeg.org/wiki/AfadeCurves
+                #subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -ss 0 -filter_complex \"adeclick\" -c:v copy %s"%(tempdirname, roughcut_filename), shell=True)
+                #subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt -ss 0 -filter_complex \"acrossfade=d=5:c1=tri:c2=tri\" %s"%(tempdirname, roughcut_filename), shell=True)
+                # 0.125s = 3 Frames, which is the default settings from Davinci Resolve
+                audio_chunks_filename_list_with_abspath = []
+                with open("%s/roughcut.txt"%tempdirname,"r") as roughcut_list:
+                    for line in roughcut_list:
+                        # file '/var/folders/1t/fwmv9hhd3f1_6_bnv5l0b9h00000gp/T/tmpui_5l5uj/00000.mp3'
+                        # file '/var/folders/1t/fwmv9hhd3f1_6_bnv5l0b9h00000gp/T/tmpui_5l5uj/00001.mp3'
+                        if line.startswith("file "):
+                            audio_chunks_filename_list_with_abspath.append(line[5:].replace('\r','').replace('\n','')) #drop the leading 'file '
+
+                roughcut_audio_codec =  " "
+                #command = "ffmpeg -i 0.mp3 -i 1.mp3 -i 2.mp3 -i 3.mp3 -vn -filter_complex \"[0][1]acrossfade=d=10:c1=tri:c2=tri[a01]; [a01][2]acrossfade=d=10:c1=tri:c2=tri[a02]; [a02][3]acrossfade=d=10:c1=tri:c2=tri\" out.mp3"
+                command = "ffmpeg -hide_banner -loglevel error"
+                for line in audio_chunks_filename_list_with_abspath:
+                    command += " -i %s"%line
+                command += " -filter_complex \""
+                assert len(audio_chunks_filename_list_with_abspath) >= 1
+                for i in range(len(audio_chunks_filename_list_with_abspath)-1):
+                    if i == 0:
+                        command += "[0][1]acrossfade=d=0.125:c1=tri:c2=tri;"
+                    else:
+                        if i==len(line)-1:
+                            command += "[a%d][%d]acrossfade=d=0.125:c1=tri:c2=tri;"%(i, i+1)
+                        else:
+                            command += "[a%d][%d]acrossfade=d=0.125:c1=tri:c2=tri[a%d];"%(i, i+1, i+1)
+                command += "\" %s %s"%(roughcut_audio_codec, roughcut_filename)
+                #eprint(command);sys.exit(-1)
+                subprocess.call(command, shell=True)
+            else: #regular mode, no audio_crossfade
+                subprocess.call("ffmpeg -hide_banner -loglevel error -safe 0 -f concat -i %s/roughcut.txt %s %s"%(tempdirname, roughcut_audio_codec, roughcut_filename), shell=True)
 
             try:  # in Shortcuts.app  OSError: [Errno 9] Bad file descriptor
                 sys.stdin = os.fdopen(1)
