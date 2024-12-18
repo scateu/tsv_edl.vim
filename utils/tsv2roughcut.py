@@ -330,12 +330,17 @@ if __name__ == "__main__":
         codec_v = "libx264"
 
 ######### 1. eat lines into output_queue
+    line_counter = 0
     while True: # read EDL lines
         line = sys.stdin.readline()
         if not line:
             sys.stdin.close()
             break
-
+        if line_counter == 0: # first line
+            #First, remove BOM header from when press <SPACE> from vim, i.e., !w |tsv2roughcut
+            if line.startswith('\ufeff'):
+                #eprint("Zero Width Char!") # caused by BOM
+                line = line[1:]
         if line.startswith('EDL'):
             _l = line.strip()
             if _l.count('|'):
@@ -408,7 +413,7 @@ if __name__ == "__main__":
                     output_queue[-1][3]="NO_B_ROLL"  #[f,in,out,"NO_B_ROLL"]
 
     #print(output_queue);import sys;sys.exit(-1)
-
+    line_counter += 1
 ######### 2. stitch lines
 
     if len(output_queue) > 99999:
