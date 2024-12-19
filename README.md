@@ -196,7 +196,7 @@ vim -p example.tsv example_never.tsv
 ### macOS: Finder Integration with Shortcuts.app
 
  - <del> see [utils/apple_automator/README.md](utils/apple_automator/README.md) </del>
- - see [README.macOS.shortcuts.md](README.macOS.shortcuts.md)
+ - see [docs/README.macOS.shortcuts.md](docs/README.macOS.shortcuts.md)
 
 ![shortcuts](screenshots/shortcuts.png)
 
@@ -239,6 +239,16 @@ cat selection.tsv | tail -n 30 | tsv2roughcut test/good\ two
 cat selection.tsv | grep good | tsv2roughcut "test/good three"
 cat *.tsv | grep -C3 -i beep | tsv2roughcut #context 3 lines, ignore case
 ```
+
+For podcast editing, the `--audio-crossfade` switch will add batch audio cross fades between audio clips. (Not available for video project now.)
+
+```
+tsv2roughcut  --audio-crossfade
+```
+
+To enable this function by default (V Highlight then Space bar), edit [this line](https://github.com/scateu/tsv_edl.vim/blob/d4d0543ab3cfa393eabfebb218fac5c42b7a9952/ftplugin/tsv_edl.vim#L237C93-L237C111).
+
+
 ## 1.4 tsv2fcpxml
 
 NOTE: `tsv2edl` is not well-maintained.
