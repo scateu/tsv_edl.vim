@@ -6,7 +6,7 @@
 
 ![screenshot](screenshots/fcpx.jpg)
 ![screenshot](screenshots/h.png)
-![flow](tsv_edl_flow.png)
+![flow](docs/tsv_edl_flow.png)
 
 # Q: What if I don't use Vim?
 
@@ -42,7 +42,7 @@ sed -i "" 's/_CLIPNAME_/some/' some.tsv
 
 ## Key-bindings
 
-[Cheatsheet / Reference Card](https://github.com/scateu/tsv_edl.vim/raw/main/tsv_edl_refcard.pdf)
+[Cheatsheet / Reference Card](https://github.com/scateu/tsv_edl.vim/raw/main/docs/tsv_edl_refcard.pdf)
 
 ### PREVIEW
 
