@@ -342,6 +342,7 @@ if __name__ == "__main__":
             if line.startswith('\ufeff'):
                 #eprint("Zero Width Char!") # caused by BOM
                 line = line[1:]
+        line_counter += 1
         if line.startswith('EDL'):
             _l = line.strip()
             if _l.count('|'):
@@ -414,7 +415,6 @@ if __name__ == "__main__":
                     output_queue[-1][3]="NO_B_ROLL"  #[f,in,out,"NO_B_ROLL"]
 
     #print(output_queue);import sys;sys.exit(-1)
-    line_counter += 1
 ######### 2. stitch lines
 
     if len(output_queue) > 99999:
