@@ -196,7 +196,7 @@ def handle_local_clip(f, r_in, r_out, f_B, counter, tempdirname):
     # use -to to get more accuracy
     ext = os.path.splitext(f)[1].lower()[1:]
     if ext in video_formats:
-        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
+        subprocess.call("ffmpeg -hide_banner -loglevel error -ss %s -i \"%s\" -ss %s -to %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/%05d.ts"%(t2, f, t3, to, codec_v, tempdirname,counter), shell=True)
         # Dropframe causes more inaccuracy to srt than round( floatNumber, 3)
         # a FPS filter is very good.
         # -r? no good.
@@ -248,7 +248,7 @@ def handle_b_roll(f_B, tempdirname, counter, extname, codec_v, codec_a):
             # accurate_and_fast_time_for_ffmpeg seeking doesn't work with multiple input.
         else: #still image
             #subprocess.call("ffmpeg -hide_banner -loglevel error -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=48000 -loop 1 -i \"%s\" -t %s -vf 'fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1' -c:v %s -b:v 2M -shortest %s/b_%05d.ts"%(b_filename, b_to-b_t3, codec_v, tempdirname,counter), shell=True)
-            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M %s"%(_ts_filename, b_to-b_t3, b_filename, codec_v, ts_filename), shell=True)
+            subprocess.call("ffmpeg -hide_banner -loglevel error -i %s -loop 1 -t %s -i \"%s\" -filter_complex \"[1:v]fps=24, scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2,setsar=1[a]; [0:v][a]overlay=eof_action=pass[vout]\" -map [vout] -map a:0 -c:v %s -b:v 2M -shortest %s"%(_ts_filename, b_to-b_t3, b_filename, codec_v, ts_filename), shell=True)
     eprint("+",end="") #indicates B roll generated
 
 def handle_audio_clip(f, r_in, r_out, f_B, counter, tempdirname, intermediate_ext_name):
