@@ -134,8 +134,8 @@ body {
 			</div>
 
 			<div class="textarea-container">
-					<textarea id="contentArea" placeholder="Paste EDL content here...
-						      Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle"></textarea>
+				<textarea id="contentArea" placeholder="Paste EDL content here...
+					      Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle"></textarea>
 			</div>
 
 			<script>
@@ -407,55 +407,54 @@ body {
 					}, 200);
 				}
 
+
 				function markOutPoint() {
-					// Get current video time
-					const currentTime = video.currentTime;
-					const timecode = secondsToTimecode(currentTime);
+    // Get current video time
+    const currentTime = video.currentTime;
+    const timecode = secondsToTimecode(currentTime);
 
-					// Get the current cursor position and line
-					const cursorPosition = textarea.selectionStart;
-					const lines = textarea.value.split('\n');
-					let currentLineIndex = textarea.value.substr(0, cursorPosition).split('\n').length - 1;
-					const currentLine = lines[currentLineIndex];
+    // Get all lines, ensuring we handle empty textarea and trailing newlines properly
+    let content = textarea.value;
+    if (!content) {
+        // If textarea is empty, create new EDL line
+        let clipName = filenameDisplay.textContent;
+        clipName = clipName.replace(/\.[^.]+$/, '');
+        textarea.value = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+        return;
+    }
 
-					// Check if current line is an EDL line
-					if (currentLine && currentLine.startsWith('EDL')) {
-						// Split the current line into parts
-						const parts = currentLine.split('\t');
-						if (parts.length >= 3) {
-							// Update the out timecode (parts[2])
-							parts[2] = timecode;
+    // Remove trailing newline if exists for consistent handling
+    content = content.replace(/\n$/, '');
+    const lines = content.split('\n');
+    const lastLine = lines[lines.length - 1];
 
-							// Rejoin the line with tabs
-							const newLine = parts.join('\t');
+    if (lastLine.startsWith('EDL')) {
+        // Split and preserve all tabs
+        const parts = lastLine.split('\t');
+        // Update only the out timecode (index 2)
+        parts[2] = timecode;
+        // Replace last line while preserving exact tab structure
+        lines[lines.length - 1] = parts.join('\t');
+        // Update textarea with proper line ending
+        textarea.value = lines.join('\n') + '\n';
+    } else {
+        // If last line is not EDL, append new line
+        let clipName = filenameDisplay.textContent;
+        clipName = clipName.replace(/\.[^.]+$/, '');
+        textarea.value = content + (content ? '\n' : '') +
+            `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+    }
 
-							// Replace the current line in the array
-							lines[currentLineIndex] = newLine;
+    // Scroll to bottom and set cursor at end
+    textarea.scrollTop = textarea.scrollHeight;
+    textarea.setSelectionRange(textarea.value.length, textarea.value.length);
 
-							// Update textarea content
-							textarea.value = lines.join('\n');
-
-							// Maintain cursor position
-							const beforeText = lines.slice(0, currentLineIndex).join('\n');
-							const newCursorPosition = beforeText.length + (currentLineIndex > 0 ? 1 : 0) + newLine.length;
-							textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-						}
-					} else {
-						// If not an EDL line or no line, append a new line
-						let clipName = filenameDisplay.textContent;
-						clipName = clipName.replace(/\.[^.]+$/, ''); // Remove any extension
-
-						const newEDLLine = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
-						textarea.value += (textarea.value && !textarea.value.endsWith('\n') ? '\n' : '') + newEDLLine;
-						textarea.scrollTop = textarea.scrollHeight;
-					}
-
-					// Visual feedback
-					textarea.style.backgroundColor = '#ffffd0';
-					setTimeout(() => {
-						textarea.style.backgroundColor = '';
-					}, 200);
-				}
+    // Visual feedback
+    textarea.style.backgroundColor = '#ffffd0';
+    setTimeout(() => {
+        textarea.style.backgroundColor = '';
+    }, 200);
+}
 
 
 
