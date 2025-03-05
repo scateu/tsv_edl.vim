@@ -1,0 +1,604 @@
+<!-- with the help of claude35_sonnet2 -->
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>EDL Video Player</title>
+		<style>
+body {
+	font-family: Arial, sans-serif;
+	margin: 20px;
+	background-color: #f0f0f0;
+}
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+	.video-container {
+		width: 100%;
+		margin-bottom: 20px;
+	}
+	video {
+		width: 100%;
+		background: #000;
+	}
+	.toolbar {
+		background: #333;
+		padding: 10px;
+		margin: 10px 0;
+		border-radius: 5px;
+		color: white;
+	}
+	.toolbar button {
+		padding: 5px 15px;
+		margin: 0 5px;
+		cursor: pointer;
+	}
+	textarea {
+		width: 100%;
+		height: 300px;
+		margin-top: 20px;
+		padding: 10px;
+		font-family: monospace;
+		font-size: 14px;
+		line-height: 1.5;
+		/* Add these properties for better selection visibility */
+		caret-color: blue;
+		selection-background-color: #b3d4fc;
+	}
+
+	/* For webkit browsers */
+	textarea::selection {
+		background: #b3d4fc;
+	}
+	#currentTimecode {
+		display: inline-block;
+		margin-left: 20px;
+		font-family: monospace;
+	}
+
+	#currentFilename {
+		display: inline-block;
+		margin-left: 20px;
+		font-family: monospace;
+	}
+
+
+	button[onclick="saveToLocal()"] {
+		transition: background-color 0.3s;
+	}
+
+	/* Optional: Add save indicator */
+	button[onclick="saveToLocal()"]::after {
+		content: '';
+		display: inline-block;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		margin-left: 5px;
+		background-color: transparent;
+	}
+
+	button[onclick="saveToLocal()"].saving::after {
+		background-color: #ffb700;
+	}
+
+	button[onclick="saveToLocal()"].saved::after {
+		background-color: #00ff00;
+	}
+
+
+	.clear-button {
+		transition: background-color 0.3s;
+	}
+
+	.clear-button:hover {
+		background-color: #ffeeee; /* Light red hover effect */
+	}
+
+	button[onclick="toggleCurrentLine()"] {
+		transition: background-color 0.3s;
+	}
+
+	button[onclick="toggleCurrentLine()"].toggled {
+		background-color: #e0e0e0;
+	}
+
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="video-container">
+				<video id="videoPlayer" controls>
+					<source src="Authenticate2023-alibaba.mp4" type="video/mp4">
+					Your browser does not support the video element.
+				</video>
+			</div>
+
+			<div class="toolbar">
+				<button id="playPauseButton" onclick="togglePlayPause()">Play</button>
+				<button onclick="seekBack()">-10s</button>
+				<button onclick="seekForward()">+10s</button>
+				<button onclick="findCurrentPosition()">Seek</button>
+				<button onclick="toggleCurrentLine()">Toggle</button>  
+
+				<button onclick="markInPoint()">In</button> 
+				<button onclick="markOutPoint()">Out</button>  
+				<button onclick="saveToLocal()">SaveCache</button>
+				<button onclick="clearSavedContent()" class="clear-button">ClearCache</button> 
+
+
+
+				<span id="currentTimecode">00:00:00,000</span>
+				<span id="currentFilename"></span>
+			</div>
+
+			<div class="textarea-container">
+					<textarea id="contentArea" placeholder="Paste EDL content here...
+						      Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle"></textarea>
+			</div>
+
+			<script>
+				const filenameDisplay = document.getElementById('currentFilename');
+				let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
+
+
+				const video = document.getElementById('videoPlayer');
+				const textarea = document.getElementById('contentArea');
+				const timecodeDisplay = document.getElementById('currentTimecode');
+				const playPauseButton = document.getElementById('playPauseButton');
+
+
+
+
+				// Set initial filename when page loads
+				filenameDisplay.textContent = currentFilename;
+
+
+
+				function togglePlayPause() {
+					if (video.paused) {
+						video.play();
+						playPauseButton.textContent = 'Pause';
+						playPauseButton.style.backgroundColor = '#ffcccc'; // Optional: visual feedback
+					} else {
+						video.pause();
+						playPauseButton.textContent = 'Play';
+						playPauseButton.style.backgroundColor = ''; // Reset button color
+					}
+				}
+
+				// Update button text when video state changes
+				video.addEventListener('play', () => {
+					playPauseButton.textContent = 'Pause';
+				});
+
+				video.addEventListener('pause', () => {
+					playPauseButton.textContent = 'Play';
+				});
+
+				function timecodeToSeconds(timecode) {
+					const parts = timecode.split(/[:,]/);
+					const hours = parseInt(parts[0], 10);
+					const minutes = parseInt(parts[1], 10);
+					const seconds = parseInt(parts[2], 10);
+					const milliseconds = parseInt(parts[3], 10);
+					return (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 1000);
+				}
+
+				function secondsToTimecode(seconds) {
+					const hours = Math.floor(seconds / 3600);
+					seconds %= 3600;
+					const minutes = Math.floor(seconds / 60);
+					seconds %= 60;
+					const wholeSeconds = Math.floor(seconds);
+					const milliseconds = Math.floor((seconds - wholeSeconds) * 1000);
+
+					return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(wholeSeconds).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
+				}
+
+				function getCurrentLineContent() {
+					const cursorPosition = textarea.selectionStart;
+					const content = textarea.value;
+					const lineStart = content.lastIndexOf('\n', cursorPosition - 1) + 1;
+					let lineEnd = content.indexOf('\n', cursorPosition);
+					if (lineEnd === -1) lineEnd = content.length;
+					return content.substring(lineStart, lineEnd);
+				}
+
+
+				let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
+
+				function processEDLLine(line) {
+					const parts = line.split('\t');
+					if (parts.length >= 5 && parts[0] === 'EDL') {
+						const timecodeIn = parts[1];
+						const timecodeOut = parts[2];
+						const clipName = parts[3].replace(/\|/g, '').trim();
+						const subtitle = parts[4];
+
+						// Check if clipName is different than current
+						if (clipName && clipName !== currentClipName) {
+							// Update current clip name
+							currentClipName = clipName;
+
+							// Construct new video path
+							const newVideoPath = clipName + ".mp4";
+
+							// Change video
+							console.log(`Changing video to: ${newVideoPath}`);
+							changeVideo(newVideoPath);
+
+							// After changing video, we need to wait for the video to load
+							// before seeking to the correct timecode
+							video.addEventListener('loadeddata', function seekAfterLoad() {
+								video.currentTime = timecodeToSeconds(timecodeIn);
+								video.removeEventListener('loadeddata', seekAfterLoad);
+							});
+						} else {
+							// If same video, just seek to the new position
+							video.currentTime = timecodeToSeconds(timecodeIn);
+						}
+
+						// Update filename display
+						filenameDisplay.textContent = currentClipName;
+
+						console.log(`Seeking to ${timecodeIn} (${timecodeToSeconds(timecodeIn)} seconds)`);
+					}
+				}
+
+
+
+				// Modify changeVideo function to update currentClipName
+				function changeVideo(videoPath) {
+					const videoPlayer = document.getElementById('videoPlayer');
+					videoPlayer.src = videoPath;
+					videoPlayer.play();
+
+					// Update currentClipName (remove .mp4 extension)
+					currentClipName = videoPath.replace('.mp4', '');
+
+					// Update filename display
+					filenameDisplay.textContent = currentClipName;
+
+				}
+
+
+				function seekBack() {
+					video.currentTime = Math.max(0, video.currentTime - 10);
+				}
+
+				function seekForward() {
+					video.currentTime = Math.min(video.duration, video.currentTime + 10);
+				}
+
+				function toggleCurrentLine() {
+					// Get the current cursor position and line
+					const cursorPosition = textarea.selectionStart;
+					const lines = textarea.value.split('\n');
+					let currentLineIndex = textarea.value.substr(0, cursorPosition).split('\n').length - 1;
+					const currentLine = lines[currentLineIndex];
+
+					if (currentLine) {
+						const parts = currentLine.split('\t');
+						if (parts.length >= 1) {
+							// Toggle between 'EDL' and 'xxx'
+							parts[0] = (parts[0] === 'EDL') ? 'xxx' : 'EDL';
+
+							// Rejoin the line with tabs
+							const newLine = parts.join('\t');
+
+							// Replace the current line in the array
+							lines[currentLineIndex] = newLine;
+
+							// Update textarea content
+							textarea.value = lines.join('\n');
+
+							// Maintain cursor position
+							const beforeText = lines.slice(0, currentLineIndex).join('\n');
+							const newCursorPosition = beforeText.length + (currentLineIndex > 0 ? 1 : 0) + newLine.length;
+							textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+
+							// Visual feedback
+							textarea.style.backgroundColor = '#ffffd0';
+							setTimeout(() => {
+								textarea.style.backgroundColor = '';
+							}, 200);
+						}
+					}
+				}
+
+
+				function findCurrentPosition() {
+					const currentTime = video.currentTime;
+					const currentClip = filenameDisplay.textContent; // Get current filename
+					const lines = textarea.value.split('\n');
+					let nearestLine = null;
+					let nearestDiff = Infinity;
+					let nearestIndex = -1;
+
+					lines.forEach((line, index) => {
+						const parts = line.split('\t');
+						if (parts.length >= 3 && parts[0] === 'EDL') {
+							const inTime = timecodeToSeconds(parts[1]);
+							const outTime = timecodeToSeconds(parts[2]);
+							const clipName = parts[3].replace(/\|/g, '').trim();
+
+							// Only consider lines that match the current clip
+							if (clipName === currentClip) {
+								// Check if current time is within this segment
+								if (currentTime >= inTime && currentTime <= outTime) {
+									nearestLine = line;
+									nearestIndex = index;
+									nearestDiff = 0;
+									return;
+								}
+
+								// If not within any segment, find the nearest one
+								const diffIn = Math.abs(currentTime - inTime);
+								const diffOut = Math.abs(currentTime - outTime);
+								const minDiff = Math.min(diffIn, diffOut);
+
+								if (minDiff < nearestDiff) {
+									nearestDiff = minDiff;
+									nearestLine = line;
+									nearestIndex = index;
+								}
+							}
+						}
+					});
+
+					if (nearestLine) {
+						// Calculate the position to place the cursor
+						const lineStartPosition = textarea.value.split('\n')
+							.slice(0, nearestIndex)
+							.join('\n').length + (nearestIndex > 0 ? 1 : 0);
+						const lineEndPosition = lineStartPosition + nearestLine.length;
+
+						// Focus and select the line
+						textarea.focus();
+						textarea.setSelectionRange(lineStartPosition, lineEndPosition);
+
+						// Scroll to the line
+						const lineHeight = textarea.scrollHeight / lines.length;
+						const scrollPosition = lineHeight * nearestIndex;
+
+						// Center the line in the textarea viewport
+						textarea.scrollTop = scrollPosition - (textarea.clientHeight / 2) + (lineHeight / 2);
+
+						// Optional: Add temporary highlight effect
+						const originalColor = textarea.style.backgroundColor;
+						textarea.style.backgroundColor = '#ffffd0'; // Light yellow highlight
+						setTimeout(() => {
+							textarea.style.backgroundColor = originalColor;
+						}, 1000); // Remove highlight after 1 second
+
+						console.log(`Found matching line for clip ${currentClip} at time ${currentTime}`);
+					} else {
+						console.log(`No matching line found for clip ${currentClip} at time ${currentTime}`);
+					}
+				}
+
+
+				function markInPoint() {
+					// Get current video time
+					const currentTime = video.currentTime;
+					const timecode = secondsToTimecode(currentTime);
+
+
+					// Get current filename and remove extension
+					let clipName = filenameDisplay.textContent;
+					clipName = clipName.replace(/\.[^.]+$/, ''); // Remove any extension after the last dot
+
+
+					// Create new EDL line
+					const newEDLLine = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+
+					// Append to textarea
+					textarea.value += (textarea.value && !textarea.value.endsWith('\n') ? '\n' : '') + newEDLLine;
+
+					// Optional: Scroll textarea to bottom to show new line
+					textarea.scrollTop = textarea.scrollHeight;
+
+					// Optional: Flash feedback to user
+					textarea.style.backgroundColor = '#ffffd0';
+					setTimeout(() => {
+						textarea.style.backgroundColor = '';
+					}, 200);
+				}
+
+				function markOutPoint() {
+					// Get current video time
+					const currentTime = video.currentTime;
+					const timecode = secondsToTimecode(currentTime);
+
+					// Get the current cursor position and line
+					const cursorPosition = textarea.selectionStart;
+					const lines = textarea.value.split('\n');
+					let currentLineIndex = textarea.value.substr(0, cursorPosition).split('\n').length - 1;
+					const currentLine = lines[currentLineIndex];
+
+					// Check if current line is an EDL line
+					if (currentLine && currentLine.startsWith('EDL')) {
+						// Split the current line into parts
+						const parts = currentLine.split('\t');
+						if (parts.length >= 3) {
+							// Update the out timecode (parts[2])
+							parts[2] = timecode;
+
+							// Rejoin the line with tabs
+							const newLine = parts.join('\t');
+
+							// Replace the current line in the array
+							lines[currentLineIndex] = newLine;
+
+							// Update textarea content
+							textarea.value = lines.join('\n');
+
+							// Maintain cursor position
+							const beforeText = lines.slice(0, currentLineIndex).join('\n');
+							const newCursorPosition = beforeText.length + (currentLineIndex > 0 ? 1 : 0) + newLine.length;
+							textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+						}
+					} else {
+						// If not an EDL line or no line, append a new line
+						let clipName = filenameDisplay.textContent;
+						clipName = clipName.replace(/\.[^.]+$/, ''); // Remove any extension
+
+						const newEDLLine = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+						textarea.value += (textarea.value && !textarea.value.endsWith('\n') ? '\n' : '') + newEDLLine;
+						textarea.scrollTop = textarea.scrollHeight;
+					}
+
+					// Visual feedback
+					textarea.style.backgroundColor = '#ffffd0';
+					setTimeout(() => {
+						textarea.style.backgroundColor = '';
+					}, 200);
+				}
+
+
+
+				// Optional: Add keyboard shortcut (e.g., 'F' key) to find current position
+				document.addEventListener('keydown', function(e) {
+					if (e.key === 'f' || e.key === 'F') {
+						e.preventDefault(); // Prevent default 'find' dialog in browser
+						findCurrentPosition();
+					}
+					// Check if the pressed key is spacebar and the target is not the textarea
+					if (e.code === 'Space' && e.target.tagName !== 'TEXTAREA') {
+						e.preventDefault(); // Prevent page scrolling
+						togglePlayPause();
+					}
+					// Optional: Add keyboard shortcut (e.g., 'I' key)
+					if ((e.key === 'i' || e.key === 'I') && e.target.tagName !== 'TEXTAREA') {
+						e.preventDefault();
+						markInPoint();
+					}
+					if ((e.key === 'o' || e.key === 'O') && e.target.tagName !== 'TEXTAREA') {
+						e.preventDefault();
+						markOutPoint();
+					}
+					if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+						e.preventDefault(); // Prevent browser's save dialog
+						saveToLocal();
+					}
+					if ((e.key === 't' || e.key === 'T') && e.target.tagName !== 'TEXTAREA') {
+						e.preventDefault();
+						toggleCurrentLine();
+					}
+				});
+				// Update timecode display
+				video.addEventListener('timeupdate', function() {
+					timecodeDisplay.textContent = secondsToTimecode(video.currentTime);
+				});
+
+				// Process EDL line when cursor moves
+				textarea.addEventListener('click', function() {
+					const currentLine = getCurrentLineContent();
+					if (currentLine) {
+						processEDLLine(currentLine);
+					}
+				});
+
+				textarea.addEventListener('keyup', function(e) {
+					if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+						const currentLine = getCurrentLineContent();
+						if (currentLine) {
+							processEDLLine(currentLine);
+						}
+					}
+				});
+
+
+
+
+
+				//localStorage
+
+
+				// Function to save content to localStorage
+				function saveToLocal() {
+					const content = textarea.value;
+					try {
+						localStorage.setItem('edlContent', content);
+
+						// Visual feedback
+						const saveButton = document.querySelector('button[onclick="saveToLocal()"]');
+						const originalText = saveButton.textContent;
+						saveButton.textContent = 'Saved!';
+						saveButton.style.backgroundColor = '#90EE90'; // Light green
+
+						setTimeout(() => {
+							saveButton.textContent = originalText;
+							saveButton.style.backgroundColor = '';
+						}, 1000);
+
+						console.log('Content saved to local storage');
+					} catch (e) {
+						console.error('Error saving to local storage:', e);
+						alert('Failed to save content!');
+					}
+				}
+
+				// Function to load content from localStorage
+				function loadFromLocal() {
+					try {
+						const savedContent = localStorage.getItem('edlContent');
+						if (savedContent) {
+							textarea.value = savedContent;
+							console.log('Content loaded from local storage');
+						}
+					} catch (e) {
+						console.error('Error loading from local storage:', e);
+					}
+				}
+
+
+				// Auto-save functionality (optional)
+				let autoSaveTimeout;
+				textarea.addEventListener('input', () => {
+					clearTimeout(autoSaveTimeout);
+					autoSaveTimeout = setTimeout(() => {
+						saveToLocal();
+					}, 2000); // Auto-save 2 seconds after last input
+				});
+
+
+				// Load content when page loads
+				document.addEventListener('DOMContentLoaded', loadFromLocal);
+
+				function clearSavedContent() {
+					// Show confirmation dialog
+					if (confirm('Are you sure you want to clear saved content? This cannot be undone.')) {
+						try {
+							// Clear localStorage
+							localStorage.removeItem('edlContent');
+
+							// Clear textarea
+							textarea.value = '';
+
+							// Visual feedback
+							const clearButton = document.querySelector('.clear-button');
+							const originalText = clearButton.textContent;
+							clearButton.textContent = 'Cleared!';
+							clearButton.style.backgroundColor = '#ff9999'; // Light red
+
+							setTimeout(() => {
+								clearButton.textContent = originalText;
+								clearButton.style.backgroundColor = '';
+							}, 1000);
+
+							console.log('Content cleared from local storage');
+						} catch (e) {
+							console.error('Error clearing local storage:', e);
+							alert('Failed to clear content!');
+						}
+					}
+				}
+
+
+
+			</script>
+	</body>
+</html>
