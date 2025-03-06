@@ -173,7 +173,16 @@
          });
 
 	 //utils
+	 function isValidTimecode(timecode) {
+	    // Check format: HH:MM:SS,mmm
+	    const regex = /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]),([0-9]{3})$/;
+	    return regex.test(timecode);
+	}
          function timecodeToSeconds(timecode) {
+	     if (!isValidTimecode(timecode)) {
+		console.error('Invalid timecode format. Expected HH:MM:SS,mmm');
+		return 0;
+	    }
          	const parts = timecode.split(/[:,]/);
          	const hours = parseInt(parts[0], 10);
          	const minutes = parseInt(parts[1], 10);
@@ -193,22 +202,75 @@
          	return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(wholeSeconds).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
          }
          
-         function getCurrentLineContent() {
-         	const cursorPosition = textarea.selectionStart;
-         	const content = textarea.value;
-         	const lineStart = content.lastIndexOf('\n', cursorPosition - 1) + 1;
-         	let lineEnd = content.indexOf('\n', cursorPosition);
-         	if (lineEnd === -1) lineEnd = content.length;
-         	return content.substring(lineStart, lineEnd);
-         }
          
-         function processEDLLine(line) {
+	function getCurrentLineContent() {
+	    // Get the full content of the textarea
+	    const fullText = textarea.value;
+	    const cursorPosition = textarea.selectionStart;
+
+	    // Find the start of the current line by searching backwards for a newline
+	    const lineStart = fullText.lastIndexOf('\n', cursorPosition - 1) + 1;
+
+	    // Find the end of the current line by searching forwards for a newline
+	    let lineEnd = fullText.indexOf('\n', cursorPosition);
+	    if (lineEnd === -1) {
+		lineEnd = fullText.length; // If no newline is found, it's the end of the text
+	    }
+
+	    // Extract the line content
+	    const lineContent = fullText.substring(lineStart, lineEnd);
+
+	    // Calculate relative cursor position
+	    let relativePosition = 0;
+	    const parts = lineContent.split('\t');
+	    
+	    if (parts.length >= 5) {  // Valid EDL line with at least 5 columns
+		// Calculate tab positions
+		let subtitleColumnStart = 0;
+		for (let i = 0; i < 4; i++) {  // Sum lengths of first 4 columns plus tabs
+		    subtitleColumnStart += parts[i].length + 1;  // +1 for tab
+		}
+		
+		const subtitleColumnEnd = lineEnd;
+		const subtitleLength = lineEnd - lineStart - subtitleColumnStart;
+		
+		// Calculate relative position
+		if (cursorPosition <= lineStart + subtitleColumnStart) {
+		    relativePosition = 0;
+		} else if (cursorPosition >= lineEnd) {
+		    relativePosition = 1.0;
+		} else {
+		    // Calculate position within subtitle
+		    const positionInSubtitle = cursorPosition - (lineStart + subtitleColumnStart);
+		    relativePosition = positionInSubtitle / subtitleLength;
+		}
+	    }
+
+	    return {
+		content: lineContent,
+		cursorRelativePosition: relativePosition
+	    };
+	}
+
+         function processEDLLine(lineResult) {
+		const line = lineResult.content;
+		const linePosition = lineResult.cursorRelativePosition;
+		 console.log(line, linePosition);
+
          	const parts = line.split('\t');
          	if (parts.length >= 5 && parts[0] === 'EDL') {
          		const timecodeIn = parts[1];
          		const timecodeOut = parts[2];
          		const clipName = parts[3].replace(/\|/g, '').trim();
          		const subtitle = parts[4];
+
+			// Validate timecodeIn
+			    if (!isValidTimecode(timecodeIn)) {
+				console.log('Invalid timecode format:', timecodeIn, '(Expected HH:MM:SS,mmm)');
+				return 'Invalid timecode format';
+			    }
+
+			const timeAtCursor = timecodeToSeconds(timecodeIn) + linePosition * (timecodeToSeconds(timecodeOut) - timecodeToSeconds(timecodeIn));
          
          		// Check if clipName is different than current
          		if (clipName && clipName !== currentClipName) {
@@ -225,12 +287,12 @@
          			// After changing video, we need to wait for the video to load
          			// before seeking to the correct timecode
          			video.addEventListener('loadeddata', function seekAfterLoad() {
-         				video.currentTime = timecodeToSeconds(timecodeIn);
+         				video.currentTime = timeAtCursor;
          				video.removeEventListener('loadeddata', seekAfterLoad);
          			});
          		} else {
          			// If same video, just seek to the new position
-         			video.currentTime = timecodeToSeconds(timecodeIn);
+         			video.currentTime = timeAtCursor;
          		}
          
          		// Update filename display
@@ -318,6 +380,7 @@
          }
          
          function findCurrentPosition() {
+		 //video bar postion to edl file position
          	const currentTime = video.currentTime;
          	const currentClip = filenameDisplay.textContent; // Get current filename
          	const lines = textarea.value.split('\n');
