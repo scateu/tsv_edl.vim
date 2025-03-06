@@ -3,8 +3,7 @@
 <html lang="en">
    <head>
       <meta charset="UTF-8">
-      <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-      <title>EDL Video Player</title>
+      <title>rCut</title>
       <style>
          body {
          font-family: Arial, sans-serif;
@@ -92,6 +91,21 @@
          button[onclick="toggleCurrentLine()"].toggled {
          background-color: #e0e0e0;
          }
+
+	.button-style {
+	display: inline-block;
+	padding: 4px 8px;
+	background-color: #f0f0f0;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	text-decoration: none;
+	color: black;
+	cursor: pointer;
+	}
+
+	.button-style:hover {
+	background-color: #e0e0e0;
+	}
       </style>
    </head>
    <body>
@@ -120,15 +134,23 @@
          <textarea id="contentArea" placeholder="Paste EDL content here...
             Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle"></textarea>
       </div>
+      <div class="toolbar">
+	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2roughcut.py" target="_blank" class="button-style"> Download tsv2roughcut.py </a>
+      </div>
       <div>
 	      <details open> <summary> DEBUG INFO </summary>
 		      <div class="toolbar">
 			      <button onclick="loadTextFromURL()"> Load Sample </button>
 		      </div>
 		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
-			    <span>Current URL Prefix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
+			    <span>Media URL Prefix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
 			    <button onclick="setPrefix()">Set Prefix</button>
 			    <button onclick="clearPrefix()">Clear Prefix</button>
+			</div>
+		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
+			    <span>Media ext. name suffix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
+			    <button onclick="setSuffix()">Set Suffix</button>
+			    <button onclick="clearSuffix()">Clear Suffix</button>
 			</div>
 		      <div>
 			 <textarea id="debug1" placeholder="Debug Info 1"></textarea>
@@ -709,17 +731,35 @@
 /////////// Media file url prefix adding
 function setPrefix() {
     const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
-    const prefix = prompt("Enter URL prefix for videos:", currentPrefix);
+    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/", currentPrefix);
     
     if (prefix !== null) {  // if user didn't click Cancel
-        localStorage.setItem('videoUrlPrefix', prefix.trim());
+        // Add trailing slash if missing
+        let normalizedPrefix = prefix.trim();
+        if (normalizedPrefix && !normalizedPrefix.endsWith('/')) {
+            normalizedPrefix += '/';
+        }
+        localStorage.setItem('videoUrlPrefix', normalizedPrefix);
         updatePrefixDisplay();
+
+        //reload video
+        currentClipName = ""; // make it sure to invoke changeVideo()
+	const currentLine = getCurrentLineContent();
+	if (currentLine) {
+		processEDLLine(currentLine);
+	}
     }
 }
 
 function clearPrefix() {
     localStorage.removeItem('videoUrlPrefix');
     updatePrefixDisplay();
+	//reload video
+	currentClipName = ""; // make it sure to invoke changeVideo()
+	const currentLine = getCurrentLineContent();
+	if (currentLine) {
+		processEDLLine(currentLine);
+	}
 }
 
 function updatePrefixDisplay() {
