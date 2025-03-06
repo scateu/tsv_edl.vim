@@ -119,10 +119,12 @@
          <textarea id="contentArea" placeholder="Paste EDL content here...
             Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle"></textarea>
       </div>
-      <div class="textarea-container">
-         <textarea id="debug1" placeholder="Debug Info 1"></textarea>
-         <textarea id="debug2" placeholder="Debug Info 2"></textarea>
-         <textarea id="debug3" placeholder="Debug Info 3"></textarea>
+      <div>
+	      <details> <summary> DEBUG INFO </summary>
+			 <textarea id="debug1" placeholder="Debug Info 1"></textarea>
+			 <textarea id="debug2" placeholder="Debug Info 2"></textarea>
+			 <textarea id="debug3" placeholder="Debug Info 3"></textarea>
+	      </details>
       </div>
       <script>
          const filenameDisplay = document.getElementById('currentFilename');
