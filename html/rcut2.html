@@ -97,7 +97,7 @@
       <div class="container">
       <div class="video-container">
          <video id="videoPlayer" controls>
-            <source src="Authenticate2023-alibaba.mp4" type="video/mp4">
+            <source src="" type="video/mp4">
 	    
             Your browser does not support the video element.
          </video>
@@ -120,16 +120,28 @@
             Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle"></textarea>
       </div>
       <div>
-	      <details> <summary> DEBUG INFO </summary>
+	      <details open> <summary> DEBUG INFO </summary>
+		      <div class="toolbar">
+			      <button onclick="loadTextFromURL()"> Load Sample </button>
+		      </div>
+		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
+			    <span>Current URL Prefix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
+			    <button onclick="setPrefix()">Set Prefix</button>
+			    <button onclick="clearPrefix()">Clear Prefix</button>
+			</div>
+		      <div>
 			 <textarea id="debug1" placeholder="Debug Info 1"></textarea>
 			 <textarea id="debug2" placeholder="Debug Info 2"></textarea>
 			 <textarea id="debug3" placeholder="Debug Info 3"></textarea>
+		      </div>
 	      </details>
       </div>
       <script>
          const filenameDisplay = document.getElementById('currentFilename');
-         let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
-         let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
+         //let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
+         let currentFilename = ""; // Default filename
+         //let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
+         let currentClipName = ""; // Remove .mp4 extension for comparison
          
          const video = document.getElementById('videoPlayer');
          const textarea = document.getElementById('contentArea');
@@ -231,6 +243,9 @@
          function changeVideo(videoPath) {
          	const videoPlayer = document.getElementById('videoPlayer');
 
+	        const prefix = localStorage.getItem('videoUrlPrefix') || '';
+	        const fullPath = prefix + videoPath;
+
 		// Store current play state before changing source
 		const wasPlaying = !videoPlayer.paused;
 
@@ -248,7 +263,7 @@
 		// Add listener before changing source
 		videoPlayer.addEventListener('canplay', playHandler);
 
-         	videoPlayer.src = videoPath;
+         	videoPlayer.src = fullPath;
 
 		// Update currentClipName (remove .mp4 extension)
 		currentClipName = videoPath.replace('.mp4', '');
@@ -450,7 +465,7 @@
          
          // Optional: Add keyboard shortcut (e.g., 'F' key) to find current position
          document.addEventListener('keydown', function(e) {
-         	if (e.key === 'f' || e.key === 'F') {
+         	if ((e.key === 'f' || e.key === 'F') && e.target.tagName !== 'TEXTAREA') {
          		e.preventDefault(); // Prevent default 'find' dialog in browser
          		findCurrentPosition();
          	}
@@ -595,6 +610,67 @@
          		}
          	}
          }
+	async function loadTextFromURL() {
+	    // You can either hardcode the URL or use a prompt
+	    const url = prompt("Enter URL of the text file:", "textarea.txt");
+	    
+	    if (!url) return; // User cancelled the prompt
+
+	    try {
+		const response = await fetch(url);
+		if (!response.ok) {
+		    throw new Error(`HTTP error! status: ${response.status}`);
+		}
+		const text = await response.text();
+		
+		// Get the textarea and set its value
+		const textarea = document.getElementById('contentArea');
+		textarea.value = text;
+		
+		// Trigger any necessary update events
+		const inputEvent = new Event('input');
+		textarea.dispatchEvent(inputEvent);
+		
+		// Optional: Visual feedback
+		textarea.style.backgroundColor = '#ffffd0';
+		setTimeout(() => {
+		    textarea.style.backgroundColor = '';
+		}, 200);
+
+	    } catch (error) {
+		console.error('Error loading text:', error);
+		alert('Error loading text file. Check console for details.');
+	    }
+	}
+
+/////////// Media file url prefix adding
+function setPrefix() {
+    const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
+    const prefix = prompt("Enter URL prefix for videos:", currentPrefix);
+    
+    if (prefix !== null) {  // if user didn't click Cancel
+        localStorage.setItem('videoUrlPrefix', prefix.trim());
+        updatePrefixDisplay();
+    }
+}
+
+function clearPrefix() {
+    localStorage.removeItem('videoUrlPrefix');
+    updatePrefixDisplay();
+}
+
+function updatePrefixDisplay() {
+    const prefixDisplay = document.getElementById('currentPrefix');
+    const currentPrefix = localStorage.getItem('videoUrlPrefix');
+    prefixDisplay.textContent = currentPrefix || '(none)';
+}
+
+// Load saved prefix when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    updatePrefixDisplay();
+});
+
+
       </script>
    </body>
 </html>
