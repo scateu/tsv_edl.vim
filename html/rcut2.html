@@ -3,6 +3,7 @@
 <html lang="en">
    <head>
       <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
       <title>EDL Video Player</title>
       <style>
          body {
@@ -255,7 +256,6 @@
          function processEDLLine(lineResult) {
 		const line = lineResult.content;
 		const linePosition = lineResult.cursorRelativePosition;
-		 console.log(line, linePosition);
 
          	const parts = line.split('\t');
          	if (parts.length >= 5 && parts[0] === 'EDL') {
