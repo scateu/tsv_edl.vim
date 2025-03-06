@@ -98,6 +98,7 @@
       <div class="video-container">
          <video id="videoPlayer" controls>
             <source src="Authenticate2023-alibaba.mp4" type="video/mp4">
+	    
             Your browser does not support the video element.
          </video>
       </div>
@@ -121,20 +122,15 @@
       <script>
          const filenameDisplay = document.getElementById('currentFilename');
          let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
-         
+         let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
          
          const video = document.getElementById('videoPlayer');
          const textarea = document.getElementById('contentArea');
          const timecodeDisplay = document.getElementById('currentTimecode');
          const playPauseButton = document.getElementById('playPauseButton');
          
-         
-         
-         
          // Set initial filename when page loads
          filenameDisplay.textContent = currentFilename;
-         
-         
          
          function togglePlayPause() {
          	if (video.paused) {
@@ -156,7 +152,8 @@
          video.addEventListener('pause', () => {
          	playPauseButton.textContent = 'Play';
          });
-         
+
+	 //utils
          function timecodeToSeconds(timecode) {
          	const parts = timecode.split(/[:,]/);
          	const hours = parseInt(parts[0], 10);
@@ -185,9 +182,6 @@
          	if (lineEnd === -1) lineEnd = content.length;
          	return content.substring(lineStart, lineEnd);
          }
-         
-         
-         let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
          
          function processEDLLine(line) {
          	const parts = line.split('\t');
@@ -227,9 +221,6 @@
          	}
          }
          
-         
-         
-         // Modify changeVideo function to update currentClipName
          function changeVideo(videoPath) {
          	const videoPlayer = document.getElementById('videoPlayer');
          	videoPlayer.src = videoPath;
@@ -240,7 +231,6 @@
          
          	// Update filename display
          	filenameDisplay.textContent = currentClipName;
-         
          }
          
          
@@ -287,7 +277,6 @@
          		}
          	}
          }
-         
          
          function findCurrentPosition() {
          	const currentTime = video.currentTime;
@@ -387,7 +376,6 @@
          	}, 200);
          }
          
-         
          function markOutPoint() {
          	// Get current video time
          	const currentTime = video.currentTime;
@@ -435,8 +423,6 @@
          		textarea.style.backgroundColor = '';
          	}, 200);
          }
-         
-         
          
          // Optional: Add keyboard shortcut (e.g., 'F' key) to find current position
          document.addEventListener('keydown', function(e) {
@@ -489,12 +475,7 @@
          	}
          });
          
-         
-         
-         
-         
-         //localStorage
-         
+         //////////////////// localStorage
          
          // Function to save content to localStorage
          function saveToLocal() {
@@ -543,7 +524,6 @@
          	}, 2000); // Auto-save 2 seconds after last input
          });
          
-         
          // Load content when page loads
          document.addEventListener('DOMContentLoaded', loadFromLocal);
          
@@ -575,9 +555,6 @@
          		}
          	}
          }
-         
-         
-         
       </script>
    </body>
 </html>
