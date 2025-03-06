@@ -119,6 +119,11 @@
          <textarea id="contentArea" placeholder="Paste EDL content here...
             Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle"></textarea>
       </div>
+      <div class="textarea-container">
+         <textarea id="debug1" placeholder="Debug Info 1"></textarea>
+         <textarea id="debug2" placeholder="Debug Info 2"></textarea>
+         <textarea id="debug3" placeholder="Debug Info 3"></textarea>
+      </div>
       <script>
          const filenameDisplay = document.getElementById('currentFilename');
          let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
@@ -223,16 +228,33 @@
          
          function changeVideo(videoPath) {
          	const videoPlayer = document.getElementById('videoPlayer');
+
+		// Store current play state before changing source
+		const wasPlaying = !videoPlayer.paused;
+
+         	//videoPlayer.play(); // maintain previous play status
+
+
+		// Remove any existing canplay listeners
+		const playHandler = () => {
+		if (wasPlaying) {
+		    videoPlayer.play();
+		}
+		videoPlayer.removeEventListener('canplay', playHandler);
+		};
+
+		// Add listener before changing source
+		videoPlayer.addEventListener('canplay', playHandler);
+
          	videoPlayer.src = videoPath;
-         	videoPlayer.play();
-         
-         	// Update currentClipName (remove .mp4 extension)
-         	currentClipName = videoPath.replace('.mp4', '');
-         
-         	// Update filename display
-         	filenameDisplay.textContent = currentClipName;
-         }
-         
+
+		// Update currentClipName (remove .mp4 extension)
+		currentClipName = videoPath.replace('.mp4', '');
+	 
+		// Update filename display
+		filenameDisplay.textContent = currentClipName;
+	 }
+ 
          
          function seekBack() {
          	video.currentTime = Math.max(0, video.currentTime - 10);
@@ -474,6 +496,22 @@
          		}
          	}
          });
+
+	textarea.addEventListener('keydown', function(e) {
+		if (e.key === 'Tab') {
+			e.preventDefault(); // Prevent default tab behavior
+
+			// Get cursor position
+			const start = this.selectionStart;
+			const end = this.selectionEnd;
+
+			// Insert tab at cursor position
+			this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);
+
+			// Move cursor after tab
+			this.selectionStart = this.selectionEnd = start + 1;
+		}
+	});
          
          //////////////////// localStorage
          
