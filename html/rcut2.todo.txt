@@ -1,0 +1,13 @@
+ - [ ] cursor should be back in textarea after buttons in toolbar pressed
+
+ - [ ] Checkbox: seek lock ⬆️   ⬇️
+ - [ ] indication ▶️  on the left of textarea, to show which line operating on
+ - [ ] column highlight / background color
+ - [ ] ffmpeg.wasm
+ - [ ] add shortcut to toggle EDL mark status: delete / undelete 
+ - [ ] audio file, video file extensions
+ - [X] Tab key jail for textarea
+ - [ ] hijack all key when cursor on `EDL`
+ - [X] media prefix
+ - [ ] another html: srt2tsv, tsv2roughcut
+ - [ ] preview play: cursor automation with the help of javascript timeout.
