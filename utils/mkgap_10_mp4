@@ -1,2 +1,0 @@
-#!/bin/bash
-ffmpeg -f lavfi -i color=size=1280x720:rate=25:color=black -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -t 10 GAP.mp4

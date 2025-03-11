@@ -1,2 +1,0 @@
-!/bin/bash
-ffmpeg -f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100 -c:v copy -shortest -t 10 GAP.mp3
