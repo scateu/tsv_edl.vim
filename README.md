@@ -12,6 +12,8 @@
 
 Just grab [srt2tsv.py](https://github.com/scateu/tsv_edl.vim/blob/main/utils/srt2tsv.py) and [tsv2roughcut.py](https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2roughcut.py) and you are good to go. Only FFmpeg is needed. (a static build is good enough)
 
+ - And an experimental single-page [HTML](https://github.com/scateu/tsv_edl.vim/blob/main/html/rcut2.html). Download it, put it with your media in the same directory. And double click it. Or run from [this link](https://scateu.github.io/tsv_edl.vim/). All things save locally.
+
 # Syntax
 
 ```
