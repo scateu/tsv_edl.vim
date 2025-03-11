@@ -153,12 +153,15 @@
 			      <button onclick="loadTextFromURL()"> Load Sample </button>
 		      </div>
 		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
+			    Media URL: <span id="currentMediaURL" style="font-family: monospace;">will be http://prefix.example.com/path/clipname.mp4</span></span>
+			</div>
+		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
 			    <span>Media URL Prefix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
 			    <button onclick="setPrefix()">Set Prefix</button>
 			    <button onclick="clearPrefix()">Clear Prefix</button>
 			</div>
 		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
-			    <span>Media ext. name suffix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
+			    <span>Media ext. name suffix: <span id="currentSuffix" style="font-family: monospace;"></span></span>
 			    <button onclick="setSuffix()">Set Suffix</button>
 			    <button onclick="clearSuffix()">Clear Suffix</button>
 			</div>
@@ -169,6 +172,7 @@
       </div>
       <script>
          const filenameDisplay = document.getElementById('currentFilename');
+         const mediaURLDisplay = document.getElementById('currentMediaURL');
          //let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
          let currentFilename = ""; // Default filename
          //let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
@@ -327,6 +331,9 @@
          
          		// Update filename display
          		filenameDisplay.textContent = currentClipName;
+
+			// Update Media URL
+			mediaURLDisplay.textContent = video.src;
          
          		console.log(`Seeking to ${timecodeIn} (${timecodeToSeconds(timecodeIn)} seconds)`);
          	}
