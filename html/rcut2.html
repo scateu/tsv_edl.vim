@@ -118,15 +118,15 @@
          </video>
       </div>
       <div class="toolbar">
-         <button id="playPauseButton" onclick="togglePlayPause()">Play</button>
+         <button id="playPauseButton" onclick="togglePlayPause()">▶</button>
          <button onclick="seekBack()">-10s</button>
          <button onclick="seekForward()">+10s</button>
-         <button onclick="findCurrentPosition()">Seek</button>
-         <button onclick="toggleCurrentLine()">Toggle</button>  
-         <button onclick="markInPoint()">In</button> 
-         <button onclick="markOutPoint()">Out</button>  
-         <button onclick="saveToLocal()">SaveCache</button>
-         <button onclick="clearSavedContent()" class="clear-button">ClearCache</button> 
+         <button onclick="findCurrentPosition()">Seek▼</button>
+         <button onclick="toggleCurrentLine()">(un)❌</button>  
+         <button onclick="markInPoint()">IN▼</button> 
+         <button onclick="markOutPoint()">OUT▼</button>  
+         <button onclick="saveToLocal()">💾 Cache</button>
+         <button onclick="clearSavedContent()" class="clear-button">🗑 Cache</button> 
          <span id="currentTimecode">00:00:00,000</span>
          <span id="currentFilename"></span>
       </div>
@@ -185,22 +185,22 @@
          function togglePlayPause() {
          	if (video.paused) {
          		video.play();
-         		playPauseButton.textContent = 'Pause';
+         		playPauseButton.textContent = '⏸︎';
          		playPauseButton.style.backgroundColor = '#ffcccc'; // Optional: visual feedback
          	} else {
          		video.pause();
-         		playPauseButton.textContent = 'Play';
+         		playPauseButton.textContent = '▶';
          		playPauseButton.style.backgroundColor = ''; // Reset button color
          	}
          }
          
          // Update button text when video state changes
          video.addEventListener('play', () => {
-         	playPauseButton.textContent = 'Pause';
+         	playPauseButton.textContent = '⏸︎';
          });
          
          video.addEventListener('pause', () => {
-         	playPauseButton.textContent = 'Play';
+         	playPauseButton.textContent = '▶'; //U+25B6
          });
 
 	 //utils
