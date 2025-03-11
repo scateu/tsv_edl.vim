@@ -1,0 +1,1152 @@
+EDL	Record In	Record Out	Clipname	Subtitle
+
+
+** Megan's introduction
+EDL	00:00:00,033	00:00:11,911	| Authenticate2023-alibaba |	[Music]
+EDL	00:00:11,911	00:02:30,016	| Authenticate2023-alibaba |	[ SPACE 138.1 secs ]
+EDL	00:02:30,016	00:02:41,628	| Authenticate2023-alibaba |	[Music]
+EDL	00:02:41,628	00:02:58,011	| Authenticate2023-alibaba |	[ SPACE 16.4 secs ]
+EDL	00:02:58,011	00:03:00,747	| Authenticate2023-alibaba |	All right, we're gonna get
+EDL	00:03:00,747	00:03:02,215	| Authenticate2023-alibaba |	started with our next session.
+EDL	00:03:02,215	00:03:12,125	| Authenticate2023-alibaba |	[ SPACE 9.9 secs ]
+EDL	00:03:12,125	00:03:14,394	| Authenticate2023-alibaba |	We have Wang Kang here from Alibaba
+EDL	00:03:14,394	00:03:17,030	| Authenticate2023-alibaba |	Group. He's a staff security engineer.
+EDL	00:03:17,030	00:03:18,131	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:03:18,131	00:03:22,435	| Authenticate2023-alibaba |	So Alibaba has been deploying FIDO
+EDL	00:03:22,435	00:03:24,904	| Authenticate2023-alibaba |	internally in enterprise, and
+EDL	00:03:24,904	00:03:26,005	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:03:26,005	00:03:29,209	| Authenticate2023-alibaba |	Wang Kong is here to talk about learnings
+EDL	00:03:29,209	00:03:30,410	| Authenticate2023-alibaba |	and wishes. So maybe
+EDL	00:03:30,410	00:03:33,046	| Authenticate2023-alibaba |	some of the lessons learned,
+EDL	00:03:33,046	00:03:34,614	| Authenticate2023-alibaba |	but maybe some of the challenges that
+EDL	00:03:34,614	00:03:37,217	| Authenticate2023-alibaba |	we're looking to overcome with FIDO in
+EDL	00:03:37,217	00:03:38,051	| Authenticate2023-alibaba |	the enterprise space.
+EDL	00:03:38,051	00:03:40,186	| Authenticate2023-alibaba |	So please help me welcome Wang Kang.
+EDL	00:03:40,186	00:03:40,987	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:03:40,987	00:03:42,288	| Authenticate2023-alibaba |	[Applause]
+EDL	00:03:42,288	00:03:45,658	| Authenticate2023-alibaba |	[ SPACE 3.4 secs ]
+
+
+EDL	00:03:45,658	00:03:49,629	| Authenticate2023-alibaba |	Okay, thank you, Megan. I'll read my
+EDL	00:03:49,629	00:03:51,931	| Authenticate2023-alibaba |	notes because even I speak
+EDL	00:03:51,931	00:03:53,433	| Authenticate2023-alibaba |	in Chinese, I read notes.
+EDL	00:03:53,433	00:03:56,636	| Authenticate2023-alibaba |	I have no memory about words. So good
+EDL	00:03:56,636	00:03:58,605	| Authenticate2023-alibaba |	afternoon. My name is Wang Kang.
+EDL	00:03:58,605	00:04:02,175	| Authenticate2023-alibaba |	I have worked in Alibaba Group for more
+EDL	00:04:02,175	00:04:03,476	| Authenticate2023-alibaba |	than eight years as a
+EDL	00:04:03,476	00:04:04,010	| Authenticate2023-alibaba |	security researcher.
+EDL	00:04:04,010	00:04:08,281	| Authenticate2023-alibaba |	I'm very happy here to share the progress
+EDL	00:04:08,281	00:04:09,182	| Authenticate2023-alibaba |	of FIDO web
+EDL	00:04:09,182	00:04:11,818	| Authenticate2023-alibaba |	authentication deployment sets for you.
+EDL	00:04:11,818	00:04:12,452	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:04:12,452	00:04:13,920	| Authenticate2023-alibaba |	The credits go to my
+EDL	00:04:13,920	00:04:17,924	| Authenticate2023-alibaba |	awesome colleagues with no visa.
+EDL	00:04:17,924	00:04:18,825	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:04:18,825	00:04:25,531	| Authenticate2023-alibaba |	They are 曾真(别苑) 周兵(靕道) 徐侯君(Kimi) 张冬岩(蔺久) 马昕(灵闻) most of the hard
+EDL	00:04:25,531	00:04:27,333	| Authenticate2023-alibaba |	lifting work are done by them.
+EDL	00:04:27,333	00:04:28,034	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:04:28,034	00:04:29,569	| Authenticate2023-alibaba |	[Applause]
+EDL	00:04:29,569	00:04:33,006	| Authenticate2023-alibaba |	[ SPACE 3.4 secs ]
+EDL	00:04:33,006	00:04:35,241	| Authenticate2023-alibaba |	I'm the one who gets a visa in time. I
+EDL	00:04:35,241	00:04:37,377	| Authenticate2023-alibaba |	got my first Yubikey on
+EDL	00:04:37,377	00:04:40,480	| Authenticate2023-alibaba |	Taobao.com back a few years ago,
+EDL	00:04:40,480	00:04:40,813	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:04:40,813	00:04:42,315	| Authenticate2023-alibaba |	and the second free sample
+EDL	00:04:42,315	00:04:45,051	| Authenticate2023-alibaba |	from Yubikey on Black Hat 2015.
+EDL	00:04:45,051	00:04:45,952	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:04:45,952	00:04:47,520	| Authenticate2023-alibaba |	And the next year I got free
+EDL	00:04:47,520	00:04:50,590	| Authenticate2023-alibaba |	stickers. So thank you, Yubikey.
+EDL	00:04:50,590	00:04:51,357	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:04:51,357	00:04:55,828	| Authenticate2023-alibaba |	And a big thank you to Google for their
+EDL	00:04:55,828	00:04:57,697	| Authenticate2023-alibaba |	pioneer work on U2F.
+EDL	00:04:57,697	00:05:01,734	| Authenticate2023-alibaba |	[ SPACE 4.0 secs ]
+EDL	00:05:01,734	00:05:04,404	| Authenticate2023-alibaba |	So since 2018, we have been planning to
+EDL	00:05:04,404	00:05:05,872	| Authenticate2023-alibaba |	adopt FIDO, finally it's
+EDL	00:05:05,872	00:05:08,374	| Authenticate2023-alibaba |	deployed in last spring.
+EDL	00:05:08,374	00:05:08,908	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:05:08,908	00:05:11,010	| Authenticate2023-alibaba |	Now FIDO has been an authentication
+EDL	00:05:11,010	00:05:13,179	| Authenticate2023-alibaba |	method not only as a second factor,
+EDL	00:05:13,179	00:05:16,416	| Authenticate2023-alibaba |	but also as a first factor on the login
+EDL	00:05:16,416	00:05:19,018	| Authenticate2023-alibaba |	web page of the intranet for employees.
+EDL	00:05:19,018	00:05:22,955	| Authenticate2023-alibaba |	It is user friendly, fish resistant, and
+EDL	00:05:22,955	00:05:24,524	| Authenticate2023-alibaba |	loved by our colleagues,
+EDL	00:05:24,524	00:05:25,024	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:05:25,024	00:05:26,526	| Authenticate2023-alibaba |	although there is still a
+EDL	00:05:26,526	00:05:28,428	| Authenticate2023-alibaba |	very few privacy concerns.
+EDL	00:05:28,428	00:05:29,228	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:05:29,228	00:05:31,831	| Authenticate2023-alibaba |	For example, Touch ID, not all our
+EDL	00:05:31,831	00:05:33,466	| Authenticate2023-alibaba |	employees feel comfortable when the
+EDL	00:05:33,466	00:05:36,436	| Authenticate2023-alibaba |	finger is touched on a black square.
+EDL	00:05:36,436	00:05:38,004	| Authenticate2023-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:05:38,004	00:05:39,005	| Authenticate2023-alibaba |	But overall, they are
+EDL	00:05:39,005	00:05:41,107	| Authenticate2023-alibaba |	persuaded and happy to use it.
+EDL	00:05:41,107	00:05:41,474	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:05:41,474	00:05:43,309	| Authenticate2023-alibaba |	I'll quickly share a few cases to help
+EDL	00:05:43,309	00:05:46,012	| Authenticate2023-alibaba |	other organizations to adopt FIDO
+EDL	00:05:46,012	00:05:47,246	| Authenticate2023-alibaba |	and share a few things
+EDL	00:05:47,246	00:05:48,614	| Authenticate2023-alibaba |	that we are still wishing for.
+EDL	00:05:48,614	00:05:50,483	| Authenticate2023-alibaba |	[ SPACE 1.9 secs ]
+EDL	00:05:50,483	00:05:52,652	| Authenticate2023-alibaba |	So the benefits, strategies,
+EDL	00:05:52,652	00:05:53,319	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:05:53,319	00:05:55,421	| Authenticate2023-alibaba |	real user cases, and wishes.
+EDL	00:05:55,421	00:05:56,889	| Authenticate2023-alibaba |	[ SPACE 1.5 secs ]
+EDL	00:05:56,889	00:05:59,559	| Authenticate2023-alibaba |	What tie our hands? The first efforts
+EDL	00:05:59,559	00:06:01,394	| Authenticate2023-alibaba |	can date back to 2018.
+EDL	00:06:01,394	00:06:01,994	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:06:01,994	00:06:03,596	| Authenticate2023-alibaba |	When I was investigating the
+EDL	00:06:03,596	00:06:05,698	| Authenticate2023-alibaba |	key wrapping mechanism of U2F,
+EDL	00:06:05,698	00:06:06,132	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:06:06,132	00:06:10,036	| Authenticate2023-alibaba |	I found an attack called U2F fishing,
+EDL	00:06:10,036	00:06:10,670	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:06:10,670	00:06:11,971	| Authenticate2023-alibaba |	published on Virus Bulletin.
+EDL	00:06:11,971	00:06:12,405	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:06:12,405	00:06:15,641	| Authenticate2023-alibaba |	But during that process, I found U2F is
+EDL	00:06:15,641	00:06:17,210	| Authenticate2023-alibaba |	actually a very good design.
+EDL	00:06:17,210	00:06:17,877	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:06:17,877	00:06:20,480	| Authenticate2023-alibaba |	It's so good that you can use a single
+EDL	00:06:20,480	00:06:22,949	| Authenticate2023-alibaba |	chip to generate an
+EDL	00:06:22,949	00:06:26,285	| Authenticate2023-alibaba |	infinitive amount of private key pairs.
+EDL	00:06:26,285	00:06:27,420	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:06:27,420	00:06:30,790	| Authenticate2023-alibaba |	But to deploy in a large scale, inside an
+EDL	00:06:30,790	00:06:32,492	| Authenticate2023-alibaba |	organization, there are three things that
+EDL	00:06:32,492	00:06:34,026	| Authenticate2023-alibaba |	still tie our hands.
+EDL	00:06:34,026	00:06:39,599	| Authenticate2023-alibaba |	Cost, because the extra hardware, so many
+EDL	00:06:39,599	00:06:42,268	| Authenticate2023-alibaba |	employees, the exact number of it can be
+EDL	00:06:42,268	00:06:43,970	| Authenticate2023-alibaba |	found on the SEC filings.
+EDL	00:06:43,970	00:06:44,670	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:06:44,670	00:06:48,107	| Authenticate2023-alibaba |	It's around 240 Ks. We cannot afford it
+EDL	00:06:48,107	00:06:51,144	| Authenticate2023-alibaba |	at least in the early times when no one,
+EDL	00:06:51,144	00:06:52,078	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:06:52,078	00:06:53,746	| Authenticate2023-alibaba |	including the boss, sees the benefits.
+EDL	00:06:53,746	00:06:54,547	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:06:54,547	00:06:56,516	| Authenticate2023-alibaba |	And there are all devices, hundreds of
+EDL	00:06:56,516	00:06:59,318	| Authenticate2023-alibaba |	existing web applications, and plus
+EDL	00:06:59,318	00:07:01,721	| Authenticate2023-alibaba |	iCloud are not allowed.
+EDL	00:07:01,721	00:07:02,021	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:07:02,021	00:07:04,991	| Authenticate2023-alibaba |	I believe other enterprises also ban it as well.
+EDL	00:07:04,991	00:07:06,192	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:07:06,192	00:07:10,863	| Authenticate2023-alibaba |	The thing is how do we measure the benefits? After all 
+EDL	00:07:10,863	00:07:11,364	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:07:11,364	00:07:14,534	| Authenticate2023-alibaba |	It is a defensive mechanism. It doesn't
+EDL	00:07:14,534	00:07:16,369	| Authenticate2023-alibaba |	show benefits immediately.
+EDL	00:07:16,369	00:07:17,570	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:07:17,570	00:07:20,606	| Authenticate2023-alibaba |	I'll address them in the following slides.
+EDL	00:07:20,606	00:07:21,007	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:07:21,007	00:07:29,182	| Authenticate2023-alibaba |	We now have 40,000 employees
+EDL	00:07:29,182	00:07:32,285	| Authenticate2023-alibaba |	on board over a year or so.
+EDL	00:07:32,285	00:07:32,985	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:07:32,985	00:07:34,454	| Authenticate2023-alibaba |	We are not doing massive forcing
+EDL	00:07:34,454	00:07:36,622	| Authenticate2023-alibaba |	policies, so the real user feedbacks can
+EDL	00:07:36,622	00:07:40,092	| Authenticate2023-alibaba |	be measured by a natural, organic way.
+EDL	00:07:40,092	00:07:41,227	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:07:41,227	00:07:44,130	| Authenticate2023-alibaba |	The ratio of the active users in the last
+EDL	00:07:44,130	00:07:46,532	| Authenticate2023-alibaba |	30 days divided by the number of
+EDL	00:07:46,532	00:07:48,668	| Authenticate2023-alibaba |	registered users is around 53%.
+EDL	00:07:48,668	00:07:50,002	| Authenticate2023-alibaba |	[ SPACE 1.3 secs ]
+EDL	00:07:50,002	00:07:53,573	| Authenticate2023-alibaba |	I believe that proves that users really love FIDO.
+EDL	00:07:53,573	00:07:54,307	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:07:54,307	00:07:57,109	| Authenticate2023-alibaba |	Some users will come back to us even when
+EDL	00:07:57,109	00:07:59,445	| Authenticate2023-alibaba |	something goes wrong and Touch ID won't work.
+EDL	00:07:59,445	00:08:00,112	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:08:00,112	00:08:04,283	| Authenticate2023-alibaba |	This "come back to us" thing is very rare
+EDL	00:08:04,283	00:08:05,952	| Authenticate2023-alibaba |	in our company because our
+EDL	00:08:05,952	00:08:07,253	| Authenticate2023-alibaba |	colleagues are very focused.
+EDL	00:08:07,253	00:08:08,054	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:08:08,054	00:08:09,222	| Authenticate2023-alibaba |	They didn't care anything
+EDL	00:08:09,222	00:08:10,356	| Authenticate2023-alibaba |	other than their own work.
+EDL	00:08:10,356	00:08:11,991	| Authenticate2023-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:08:11,991	00:08:16,495	| Authenticate2023-alibaba |	This also shows FIDO is a good design.
+EDL	00:08:16,495	00:08:22,068	| Authenticate2023-alibaba |	[ SPACE 5.6 secs ]
+EDL	00:08:22,068	00:08:24,871	| Authenticate2023-alibaba |	The benefits, FIDO is very fast. I myself
+EDL	00:08:24,871	00:08:29,208	| Authenticate2023-alibaba |	is a touch typer. I can type as fast as YubiKey can.
+EDL	00:08:29,208	00:08:29,809	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:08:29,809	00:08:33,813	| Authenticate2023-alibaba |	I once won a bicycle by
+EDL	00:08:33,813	00:08:37,717	| Authenticate2023-alibaba |	Blackberry from a typing competition.
+EDL	00:08:37,717	00:08:38,017	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:08:38,017	00:08:41,654	| Authenticate2023-alibaba |	I have to say, when it comes to 10 times
+EDL	00:08:41,654	00:08:43,122	| Authenticate2023-alibaba |	a day, typing a password
+EDL	00:08:43,122	00:08:45,558	| Authenticate2023-alibaba |	is not very satisfying.
+EDL	00:08:45,558	00:08:47,927	| Authenticate2023-alibaba |	Each time you type a password, you feel you are defeated.
+EDL	00:08:47,927	00:08:48,528	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:08:48,528	00:08:51,097	| Authenticate2023-alibaba |	But when it comes to the Touch ID, you
+EDL	00:08:51,097	00:08:54,133	| Authenticate2023-alibaba |	press the finger. It seems like you
+EDL	00:08:54,133	00:08:56,969	| Authenticate2023-alibaba |	defeated the other guy.
+EDL	00:08:56,969	00:08:58,004	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:08:58,004	00:09:01,607	| Authenticate2023-alibaba |	Also with FIDO, we don't
+EDL	00:09:01,607	00:09:03,476	| Authenticate2023-alibaba |	need users to change passwords.
+EDL	00:09:03,476	00:09:04,377	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:09:04,377	00:09:06,712	| Authenticate2023-alibaba |	Like every half a year, changing
+EDL	00:09:06,712	00:09:09,649	| Authenticate2023-alibaba |	passwords actually makes passwords even
+EDL	00:09:09,649	00:09:11,183	| Authenticate2023-alibaba |	difficult to remember.
+EDL	00:09:11,183	00:09:13,052	| Authenticate2023-alibaba |	So they tend to use a pattern
+EDL	00:09:13,052	00:09:15,221	| Authenticate2023-alibaba |	which makes it more vulnerable.
+EDL	00:09:15,221	00:09:16,355	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:09:16,355	00:09:20,092	| Authenticate2023-alibaba |	Other benefits I quoted from Apple. It cannot be
+EDL	00:09:20,092	00:09:22,328	| Authenticate2023-alibaba |	exported and cannot be phished.
+EDL	00:09:22,328	00:09:23,195	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:09:23,195	00:09:24,130	| Authenticate2023-alibaba |	Those are FIDO's
+EDL	00:09:24,130	00:09:25,531	| Authenticate2023-alibaba |	benefits, most important.
+EDL	00:09:25,531	00:09:26,365	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:09:26,365	00:09:29,635	| Authenticate2023-alibaba |	And for employees who still have doubts,
+EDL	00:09:29,635	00:09:33,272	| Authenticate2023-alibaba |	we can do a very, very simple demonstration for them.
+EDL	00:09:33,272	00:09:33,739	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:09:33,739	00:09:37,243	| Authenticate2023-alibaba |	You log out from the Intranet, turn your
+EDL	00:09:37,243	00:09:39,946	| Authenticate2023-alibaba |	computer into airplane mode, add a new
+EDL	00:09:39,946	00:09:41,681	| Authenticate2023-alibaba |	fingerprint, and log in.
+EDL	00:09:41,681	00:09:42,515	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:09:42,515	00:09:45,551	| Authenticate2023-alibaba |	Voila. So this means the fingerprint only
+EDL	00:09:45,551	00:09:46,986	| Authenticate2023-alibaba |	stays inside the TPM.
+EDL	00:09:46,986	00:09:47,987	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+
+EDL	00:09:47,987	00:09:54,627	| Authenticate2023-alibaba |	So the strategy, this is designed by our
+EDL	00:09:54,627	00:09:55,828	| Authenticate2023-alibaba |	product manager, he's a
+EDL	00:09:55,828	00:09:57,897	| Authenticate2023-alibaba |	very good guy, 徐侯君 kimi.
+EDL	00:09:57,897	00:09:58,497	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:09:58,497	00:10:02,802	| Authenticate2023-alibaba |	He created a registration flow to encourage users to
+EDL	00:10:02,802	00:10:04,537	| Authenticate2023-alibaba |	get on board very quick.
+EDL	00:10:04,537	00:10:05,471	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:10:05,471	00:10:07,206	| Authenticate2023-alibaba |	He adds a registration button
+EDL	00:10:07,206	00:10:10,009	| Authenticate2023-alibaba |	directly on the pre-login page.
+EDL	00:10:10,009	00:10:14,113	| Authenticate2023-alibaba |	We first do a JavaScript check by
+EDL	00:10:14,113	00:10:17,550	| Authenticate2023-alibaba |	invoking, isUserVerifyingPlatformAuthenticatorAvailable()
+EDL	00:10:17,550	00:10:18,784	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:10:18,784	00:10:21,754	| Authenticate2023-alibaba |	This is learned from Microsoft
+EDL	00:10:21,754	00:10:23,356	| Authenticate2023-alibaba |	web page. Kudos to Microsoft.
+EDL	00:10:23,356	00:10:24,323	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:10:24,323	00:10:27,093	| Authenticate2023-alibaba |	So we can only show the registration
+EDL	00:10:27,093	00:10:29,595	| Authenticate2023-alibaba |	button when the browser is supported.
+EDL	00:10:29,595	00:10:30,262	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:10:30,262	00:10:32,164	| Authenticate2023-alibaba |	Then we check if the user is registered
+EDL	00:10:32,164	00:10:37,103	| Authenticate2023-alibaba |	before by sending an HTTPS post including
+EDL	00:10:37,103	00:10:39,005	| Authenticate2023-alibaba |	the user information stored in cookie.
+EDL	00:10:39,005	00:10:42,842	| Authenticate2023-alibaba |	If it's a new user, we start the onboard process.
+EDL	00:10:42,842	00:10:43,843	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:10:43,843	00:10:47,146	| Authenticate2023-alibaba |	Then the pre-installed security agent or
+EDL	00:10:47,146	00:10:49,048	| Authenticate2023-alibaba |	DLP agent will be brought up by
+EDL	00:10:49,048	00:10:51,017	| Authenticate2023-alibaba |	JavaScript to give a green light.
+EDL	00:10:51,017	00:10:52,385	| Authenticate2023-alibaba |	[ SPACE 1.4 secs ]
+EDL	00:10:52,385	00:10:54,854	| Authenticate2023-alibaba |	After the green light, a user type a
+EDL	00:10:54,854	00:10:56,622	| Authenticate2023-alibaba |	password, then the user goes onboard.
+EDL	00:10:56,622	00:10:57,657	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:10:57,657	00:11:00,526	| Authenticate2023-alibaba |	The registration flow he designed helps
+EDL	00:11:00,526	00:11:02,995	| Authenticate2023-alibaba |	users get on board really fast.
+
+EDL	00:11:02,995	00:11:12,371	| Authenticate2023-alibaba |	And this is a brief demo of our intranet.
+EDL	00:11:12,371	00:11:14,940	| Authenticate2023-alibaba |	[ SPACE 2.6 secs ]
+EDL	00:11:14,940	00:11:16,575	| Authenticate2023-alibaba |	The next page is blurred.
+EDL	00:11:16,575	00:11:19,712	| Authenticate2023-alibaba |	[ SPACE 3.1 secs ]
+
+EDL	00:11:19,712	00:11:24,850	| Authenticate2023-alibaba |	We need to allow limited kind of authenticators only.
+EDL	00:11:24,850	00:11:25,151	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:11:25,151	00:11:28,387	| Authenticate2023-alibaba |	For now, romaing authenticators are not
+EDL	00:11:28,387	00:11:30,990	| Authenticate2023-alibaba |	allowed to register into our intranet.
+EDL	00:11:30,990	00:11:31,991	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:11:31,991	00:11:35,061	| Authenticate2023-alibaba |	Since User-Agent in HTTP header can be
+EDL	00:11:35,061	00:11:38,264	| Authenticate2023-alibaba |	forged easily, the UA cannot be trusted.
+EDL	00:11:38,264	00:11:40,232	| Authenticate2023-alibaba |	Plus, all authenticators provide
+EDL	00:11:40,232	00:11:44,270	| Authenticate2023-alibaba |	authentication certificates because like
+EDL	00:11:44,270	00:11:48,107	| Authenticate2023-alibaba |	Apple doesn't provide it, Microsoft provides it,
+EDL	00:11:48,107	00:11:51,911	| Authenticate2023-alibaba |	but sometimes they provide a lot more, like the X5C.
+EDL	00:11:51,911	00:11:52,711	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:11:52,711	00:11:58,984	| Authenticate2023-alibaba |	Sometimes it's too long and exceeds the limits of our database field.
+EDL	00:11:58,984	00:12:01,987	| Authenticate2023-alibaba |	[ SPACE 3.0 secs ]
+
+EDL	00:12:01,987	00:12:07,326	| Authenticate2023-alibaba |	So the solution we found out is AAGUID.
+EDL	00:12:07,326	00:12:08,094	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:12:08,094	00:12:11,831	| Authenticate2023-alibaba |	Firstly, signed inside an authenticator
+EDL	00:12:11,831	00:12:13,566	| Authenticate2023-alibaba |	It's temporal resistant.
+EDL	00:12:13,566	00:12:14,867	| Authenticate2023-alibaba |	[ SPACE 1.3 secs ]
+EDL	00:12:14,867	00:12:17,536	| Authenticate2023-alibaba |	By maintaining a white list of AAGUID,
+EDL	00:12:17,536	00:12:20,239	| Authenticate2023-alibaba |	we can easily restrict the types of
+EDL	00:12:20,239	00:12:21,674	| Authenticate2023-alibaba |	authenticators that are allowed.
+EDL	00:12:21,674	00:12:22,575	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:12:22,575	00:12:26,011	| Authenticate2023-alibaba |	And make sure you update it regularly.
+
+EDL	00:12:26,011	00:12:30,049	| Authenticate2023-alibaba |	For example, when Windows Edge dev
+EDL	00:12:30,049	00:12:33,619	| Authenticate2023-alibaba |	version and Windows 11 roll out, the AAGUID
+EDL	00:12:33,619	00:12:35,454	| Authenticate2023-alibaba |	updates, remember to
+EDL	00:12:35,454	00:12:36,555	| Authenticate2023-alibaba |	add them in the white list.
+EDL	00:12:36,555	00:12:39,625	| Authenticate2023-alibaba |	[ SPACE 3.1 secs ]
+
+EDL	00:12:39,625	00:12:43,162	| Authenticate2023-alibaba |	Oh, this very interesting case, this is
+EDL	00:12:43,162	00:12:45,965	| Authenticate2023-alibaba |	actually unexpected benefits.
+EDL	00:12:45,965	00:12:46,899	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:12:46,899	00:12:51,537	| Authenticate2023-alibaba |	The first is the IT desk helps our users switch HDD and
+EDL	00:12:51,537	00:12:53,005	| Authenticate2023-alibaba |	motherboard out of a reason.
+EDL	00:12:53,005	00:12:56,442	| Authenticate2023-alibaba |	But after switching it, it just got
+EDL	00:12:56,442	00:12:59,378	| Authenticate2023-alibaba |	locked out because the TPM doesn't pair
+EDL	00:12:59,378	00:13:01,647	| Authenticate2023-alibaba |	with the hard drive.
+EDL	00:13:01,647	00:13:02,014	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:13:02,014	00:13:04,984	| Authenticate2023-alibaba |	So it really makes our IT, actually
+EDL	00:13:04,984	00:13:07,586	| Authenticate2023-alibaba |	security team very happy.
+EDL	00:13:07,586	00:13:08,187	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:13:08,187	00:13:12,091	| Authenticate2023-alibaba |	The second case is that another Mac user
+EDL	00:13:12,091	00:13:14,426	| Authenticate2023-alibaba |	with the help of IT guys
+EDL	00:13:14,426	00:13:17,429	| Authenticate2023-alibaba |	reset the secure enclave.
+EDL	00:13:17,429	00:13:18,030	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:13:18,030	00:13:20,533	| Authenticate2023-alibaba |	So it's a French word,
+EDL	00:13:20,533	00:13:21,066	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:13:21,066	00:13:22,234	| Authenticate2023-alibaba |	secure is English word.
+EDL	00:13:22,234	00:13:25,070	| Authenticate2023-alibaba |	[ SPACE 2.8 secs ]
+
+EDL	00:13:25,070	00:13:33,145	| Authenticate2023-alibaba |	Okay, they reset the secure enclave and they both got locked out.
+EDL	00:13:33,145	00:13:33,712	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:13:33,712	00:13:35,447	| Authenticate2023-alibaba |	So benefits.
+EDL	00:13:35,447	00:13:37,483	| Authenticate2023-alibaba |	[ SPACE 2.0 secs ]
+
+EDL	00:13:37,483	00:13:39,418	| Authenticate2023-alibaba |	There's another benefits
+EDL	00:13:39,418	00:13:41,687	| Authenticate2023-alibaba |	regarding the DLP agent.
+EDL	00:13:41,687	00:13:42,788	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:13:42,788	00:13:44,256	| Authenticate2023-alibaba |	We have security agent
+EDL	00:13:44,256	00:13:45,991	| Authenticate2023-alibaba |	pre-installed on users' computers.
+EDL	00:13:45,991	00:13:50,196	| Authenticate2023-alibaba |	The goal is to make sure this program is
+EDL	00:13:50,196	00:13:53,532	| Authenticate2023-alibaba |	installed and is running when accessing
+EDL	00:13:53,532	00:13:55,935	| Authenticate2023-alibaba |	the internet, uh, Intranet web applications.
+EDL	00:13:55,935	00:13:56,902	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:13:56,902	00:14:00,039	| Authenticate2023-alibaba |	So the security agent will do a heartbeat
+EDL	00:14:00,039	00:14:01,907	| Authenticate2023-alibaba |	report back to server.
+EDL	00:14:01,907	00:14:02,608	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:14:02,608	00:14:04,210	| Authenticate2023-alibaba |	However, when the channel between
+EDL	00:14:04,210	00:14:07,213	| Authenticate2023-alibaba |	JavaScript and the agent program is not
+EDL	00:14:07,213	00:14:09,281	| Authenticate2023-alibaba |	stable, for example, when
+EDL	00:14:09,281	00:14:10,583	| Authenticate2023-alibaba |	the user has two computers,
+EDL	00:14:10,583	00:14:10,983	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:14:10,983	00:14:13,819	| Authenticate2023-alibaba |	we cannot distinguish the keepalive
+EDL	00:14:13,819	00:14:16,155	| Authenticate2023-alibaba |	information from those two heartbeats.
+EDL	00:14:16,155	00:14:16,622	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:14:16,622	00:14:18,724	| Authenticate2023-alibaba |	So we have to add another factor using
+EDL	00:14:18,724	00:14:22,962	| Authenticate2023-alibaba |	SMS or TOTP alongside the password to let users pass.
+EDL	00:14:22,962	00:14:24,396	| Authenticate2023-alibaba |	[ SPACE 1.4 secs ]
+
+EDL	00:14:24,396	00:14:27,633	| Authenticate2023-alibaba |	Now, with FIDO, during the registration
+EDL	00:14:27,633	00:14:30,870	| Authenticate2023-alibaba |	process, we can collect the device ID of
+EDL	00:14:30,870	00:14:34,640	| Authenticate2023-alibaba |	the exact computer by the security agent
+EDL	00:14:34,640	00:14:35,341	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:14:35,341	00:14:37,176	| Authenticate2023-alibaba |	and store it alongside
+EDL	00:14:37,176	00:14:38,510	| Authenticate2023-alibaba |	the FIDO credential ID.
+EDL	00:14:38,510	00:14:39,111	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:14:39,111	00:14:40,746	| Authenticate2023-alibaba |	Now it's distinguishable.
+EDL	00:14:40,746	00:14:41,513	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:14:41,513	00:14:45,084	| Authenticate2023-alibaba |	We can reach the goal now the security
+EDL	00:14:45,084	00:14:51,390	| Authenticate2023-alibaba |	agent is running and it can be counted as a factor now.
+EDL	00:14:51,390	00:14:51,924	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:14:51,924	00:14:53,826	| Authenticate2023-alibaba |	Plus FIDO, we now get two factors
+EDL	00:14:53,826	00:14:59,031	| Authenticate2023-alibaba |	already, so no other factors is needed.
+EDL	00:14:59,031	00:15:02,668	| Authenticate2023-alibaba |	So we can let users pass.
+EDL	00:15:02,668	00:15:03,269	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:15:03,269	00:15:09,575	| Authenticate2023-alibaba |	It's very good because before that, it
+EDL	00:15:09,575	00:15:13,279	| Authenticate2023-alibaba |	has been a pain for about two years.
+EDL	00:15:13,279	00:15:13,812	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:15:13,812	00:15:17,616	| Authenticate2023-alibaba |	This is really helping for the security agent team.
+EDL	00:15:17,616	00:15:18,817	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+
+EDL	00:15:18,817	00:15:22,454	| Authenticate2023-alibaba |	And there's a case for Windows old version called 1809.
+EDL	00:15:22,454	00:15:23,155	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:15:23,155	00:15:24,590	| Authenticate2023-alibaba |	It's an LTSC version.
+EDL	00:15:24,590	00:15:25,457	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:15:25,457	00:15:28,093	| Authenticate2023-alibaba |	Many computers are preinstalled with this
+EDL	00:15:28,093	00:15:31,897	| Authenticate2023-alibaba |	kind of Windows in our company.
+EDL	00:15:31,897	00:15:32,464	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:15:32,464	00:15:34,633	| Authenticate2023-alibaba |	So the bad news is that the version
+EDL	00:15:34,633	00:15:39,872	| Authenticate2023-alibaba |	doesn't upgrade it and you cannot even
+EDL	00:15:39,872	00:15:42,074	| Authenticate2023-alibaba |	click any button to upgrade it.
+EDL	00:15:42,074	00:15:43,042	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:15:43,042	00:15:44,376	| Authenticate2023-alibaba |	You just have to download
+EDL	00:15:44,376	00:15:46,345	| Authenticate2023-alibaba |	some ISO file, install it.
+EDL	00:15:46,345	00:15:46,712	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:15:46,712	00:15:49,715	| Authenticate2023-alibaba |	So I was yelling at my colleagues that
+EDL	00:15:49,715	00:15:51,684	| Authenticate2023-alibaba |	why don't you just upgrade?
+EDL	00:15:51,684	00:15:52,318	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:15:52,318	00:15:55,354	| Authenticate2023-alibaba |	And I really into it and I
+EDL	00:15:55,354	00:15:58,223	| Authenticate2023-alibaba |	found that I was the bad guy.
+EDL	00:15:58,223	00:16:00,793	| Authenticate2023-alibaba |	[ SPACE 2.6 secs ]
+EDL	00:16:00,793	00:16:03,629	| Authenticate2023-alibaba |	And another bad news is
+EDL	00:16:03,629	00:16:05,497	| Authenticate2023-alibaba |	that the UI is very confusing.
+EDL	00:16:05,497	00:16:07,066	| Authenticate2023-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:16:07,066	00:16:11,603	| Authenticate2023-alibaba |	Windows PIN, Windows Hello PIN, the first
+EDL	00:16:11,603	00:16:17,976	| Authenticate2023-alibaba |	one doesn't support FIDO, web authentication or Passkey, whatever you call it.
+EDL	00:16:17,976	00:16:19,011	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:16:19,011	00:16:22,247	| Authenticate2023-alibaba |	Luckily, this version 1809, codenamed
+EDL	00:16:22,247	00:16:25,084	| Authenticate2023-alibaba |	Redstone 5, will not get mainstream
+EDL	00:16:25,084	00:16:27,886	| Authenticate2023-alibaba |	support after January 9th, 2024.
+EDL	00:16:27,886	00:16:29,021	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:16:29,021	00:16:33,359	| Authenticate2023-alibaba |	Now it's a very good reason to force them upgrade.
+EDL	00:16:33,359	00:16:34,827	| Authenticate2023-alibaba |	This time we can use force.
+EDL	00:16:34,827	00:16:38,163	| Authenticate2023-alibaba |	[ SPACE 3.3 secs ]
+EDL	00:16:38,163	00:16:39,832	| Authenticate2023-alibaba |	This case is very interesting.
+EDL	00:16:39,832	00:16:40,632	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:16:40,632	00:16:43,168	| Authenticate2023-alibaba |	Some old computers doesn't have fingerprint scanner.
+EDL	00:16:43,168	00:16:44,370	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:16:44,370	00:16:50,743	| Authenticate2023-alibaba |	For example, like desktops, we found very cheap mouses to rescue.
+EDL	00:16:50,743	00:16:51,243	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:16:51,243	00:16:53,278	| Authenticate2023-alibaba |	... which just have the right fingerprint
+EDL	00:16:53,278	00:16:55,414	| Authenticate2023-alibaba |	scanner on top of the mouse wheel.
+EDL	00:16:55,414	00:16:55,981	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:16:55,981	00:16:56,815	| Authenticate2023-alibaba |	It's very cheap.
+EDL	00:16:56,815	00:16:57,216	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:16:57,216	00:16:57,983	| Authenticate2023-alibaba |	You can see the price.
+EDL	00:16:57,983	00:16:59,284	| Authenticate2023-alibaba |	[ SPACE 1.3 secs ]
+EDL	00:16:59,284	00:17:03,188	| Authenticate2023-alibaba |	It works with the Windows Hello out of the box.
+EDL	00:17:03,188	00:17:04,056	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:17:04,056	00:17:05,824	| Authenticate2023-alibaba |	Thinkplus F1, buy one.
+EDL	00:17:05,824	00:17:09,995	| Authenticate2023-alibaba |	[ SPACE 4.2 secs ]
+
+EDL	00:17:09,995	00:17:14,033	| Authenticate2023-alibaba |	As for Google Chrome, the first issue is
+EDL	00:17:14,033	00:17:17,436	| Authenticate2023-alibaba |	that the Chrome upgrades regularly.
+EDL	00:17:17,436	00:17:17,970	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:17:17,970	00:17:20,472	| Authenticate2023-alibaba |	In a few rare cases, when it's upgraded
+EDL	00:17:20,472	00:17:23,776	| Authenticate2023-alibaba |	but not restarted, FIDO web authentication will fail.
+EDL	00:17:23,776	00:17:24,510	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:17:24,510	00:17:26,345	| Authenticate2023-alibaba |	Just let user restart it will help.
+EDL	00:17:26,345	00:17:27,112	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:17:27,112	00:17:29,181	| Authenticate2023-alibaba |	And the second thing is some engineers
+EDL	00:17:29,181	00:17:32,885	| Authenticate2023-alibaba |	have multiple Chrome profiles because
+EDL	00:17:32,885	00:17:35,187	| Authenticate2023-alibaba |	they have different role to play in the
+EDL	00:17:35,187	00:17:36,288	| Authenticate2023-alibaba |	Intranet web applications.
+EDL	00:17:36,288	00:17:37,022	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:17:37,022	00:17:39,792	| Authenticate2023-alibaba |	So we need to notify them that the FIDO
+EDL	00:17:39,792	00:17:41,960	| Authenticate2023-alibaba |	platform authenticator of Google Chrome
+EDL	00:17:41,960	00:17:44,096	| Authenticate2023-alibaba |	actually has two parts.
+EDL	00:17:44,096	00:17:44,630	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:17:44,630	00:17:47,633	| Authenticate2023-alibaba |	One part is stored in the /library
+EDL	00:17:47,633	00:17:49,802	| Authenticate2023-alibaba |	slash application support/Google
+EDL	00:17:49,802	00:17:51,770	| Authenticate2023-alibaba |	slash Chrome / default.
+EDL	00:17:51,770	00:17:52,638	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:17:52,638	00:17:55,874	| Authenticate2023-alibaba |	And preferences is in the JSON file.
+EDL	00:17:55,874	00:17:56,675	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:17:56,675	00:18:01,013	| Authenticate2023-alibaba |	This line, the metadata_secret is part one.
+EDL	00:18:01,013	00:18:04,783	| Authenticate2023-alibaba |	The second part stored in the secure and
+EDL	00:18:04,783	00:18:09,288	| Authenticate2023-alibaba |	you have to enter the recovery mode of a
+EDL	00:18:09,288	00:18:11,390	| Authenticate2023-alibaba |	MacBook to deal with it.
+EDL	00:18:11,390	00:18:12,891	| Authenticate2023-alibaba |	[ SPACE 1.5 secs ]
+
+EDL	00:18:12,891	00:18:14,760	| Authenticate2023-alibaba |	So this is a tip.
+EDL	00:18:14,760	00:18:18,263	| Authenticate2023-alibaba |	If you want to clear that part, you can
+EDL	00:18:18,263	00:18:22,734	| Authenticate2023-alibaba |	just ...  in the recovery mode type this line
+EDL	00:18:22,734	00:18:26,939	| Authenticate2023-alibaba |	of command, xartutil, and erase it so that
+EDL	00:18:26,939	00:18:29,274	| Authenticate2023-alibaba |	thing can be erased out.
+EDL	00:18:29,274	00:18:30,008	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:18:30,008	00:18:34,847	| Authenticate2023-alibaba |	Case: iCloud are not allowed and we
+EDL	00:18:34,847	00:18:38,550	| Authenticate2023-alibaba |	complained about it for a long time, but
+EDL	00:18:38,550	00:18:42,454	| Authenticate2023-alibaba |	I think others could complain as well.
+EDL	00:18:42,454	00:18:46,492	| Authenticate2023-alibaba |	But we can ban them for now.
+EDL	00:18:46,492	00:18:49,161	| Authenticate2023-alibaba |	[ SPACE 2.7 secs ]
+EDL	00:18:49,161	00:18:49,361	| Authenticate2023-alibaba |	Yes.
+EDL	00:18:49,361	00:18:51,296	| Authenticate2023-alibaba |	[ SPACE 1.9 secs ]
+EDL	00:18:51,296	00:18:52,865	| Authenticate2023-alibaba |	And the final case is iFrame.
+EDL	00:18:52,865	00:18:55,000	| Authenticate2023-alibaba |	[ SPACE 2.1 secs ]
+EDL	00:18:55,000	00:18:58,804	| Authenticate2023-alibaba |	You know, some old web applications used
+EDL	00:18:58,804	00:19:02,107	| Authenticate2023-alibaba |	a iFrame-wrapped content.
+EDL	00:19:02,107	00:19:02,975	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:19:02,975	00:19:04,109	| Authenticate2023-alibaba |	So two solutions.
+EDL	00:19:04,109	00:19:06,545	| Authenticate2023-alibaba |	You can just do this one by one.
+EDL	00:19:06,545	00:19:07,412	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:19:07,412	00:19:09,748	| Authenticate2023-alibaba |	You add two lines, one in the web
+EDL	00:19:09,748	00:19:11,383	| Authenticate2023-alibaba |	location, one in the HTML,
+EDL	00:19:11,383	00:19:11,984	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:19:11,984	00:19:13,252	| Authenticate2023-alibaba |	the other in the HTTP header.
+EDL	00:19:13,252	00:19:14,052	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:19:14,052	00:19:16,622	| Authenticate2023-alibaba |	And a simpler one.
+EDL	00:19:16,622	00:19:17,289	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:19:17,289	00:19:19,825	| Authenticate2023-alibaba |	You can just detect inside the JavaScript
+EDL	00:19:19,825	00:19:22,628	| Authenticate2023-alibaba |	and give user a prompt to log in another
+EDL	00:19:22,628	00:19:25,130	| Authenticate2023-alibaba |	window after all the SSO status is synced
+EDL	00:19:25,130	00:19:26,532	| Authenticate2023-alibaba |	between web applications.
+EDL	00:19:26,532	00:19:27,466	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:19:27,466	00:19:33,405	| Authenticate2023-alibaba |	So they use iFrame at first, just because
+EDL	00:19:33,405	00:19:36,275	| Authenticate2023-alibaba |	they are lazy, so you cannot expect them
+EDL	00:19:36,275	00:19:39,545	| Authenticate2023-alibaba |	to cooperate with you to change anything.
+EDL	00:19:39,545	00:19:40,012	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:19:40,012	00:19:46,385	| Authenticate2023-alibaba |	Okay.
+EDL	00:19:46,385	00:19:48,353	| Authenticate2023-alibaba |	[ SPACE 2.0 secs ]
+EDL	00:19:48,353	00:19:48,720	| Authenticate2023-alibaba |	The future.
+EDL	00:19:48,720	00:19:49,354	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:19:49,354	00:19:49,555	| Authenticate2023-alibaba |	Future.
+EDL	00:19:49,555	00:19:51,190	| Authenticate2023-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:19:51,190	00:19:53,292	| Authenticate2023-alibaba |	I heard Eduroam are doing a very good
+EDL	00:19:53,292	00:19:55,227	| Authenticate2023-alibaba |	job at about a
+EDL	00:19:55,227	00:19:57,362	| Authenticate2023-alibaba |	something called EAP-FIDO.
+EDL	00:19:57,362	00:19:59,765	| Authenticate2023-alibaba |	I really hope they could do this because
+EDL	00:19:59,765	00:20:02,801	| Authenticate2023-alibaba |	as for the enterprise Wi-Fi
+EDL	00:20:02,801	00:20:05,203	| Authenticate2023-alibaba |	authentication regarding the
+EDL	00:20:05,203	00:20:08,006	| Authenticate2023-alibaba |	freeradius and wpa_supplicant.
+EDL	00:20:08,006	00:20:12,311	| Authenticate2023-alibaba |	I really hope that this could cover it.
+EDL	00:20:12,311	00:20:12,778	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:20:12,778	00:20:15,013	| Authenticate2023-alibaba |	And I myself using an app called Secrective.
+EDL	00:20:15,013	00:20:16,048	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:20:16,048	00:20:19,284	| Authenticate2023-alibaba |	It can act like an SSH agent.
+EDL	00:20:19,284	00:20:20,219	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:20:20,219	00:20:22,154	| Authenticate2023-alibaba |	I can log into my SSH server with it.
+EDL	00:20:22,154	00:20:23,322	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:20:23,322	00:20:26,758	| Authenticate2023-alibaba |	And we wish, just read the line, the
+EDL	00:20:26,758	00:20:28,927	| Authenticate2023-alibaba |	FIDO, FIDO2, Web Authentication Passkey U2F,
+EDL	00:20:28,927	00:20:31,029	| Authenticate2023-alibaba |	UAF, those words can be very confusing.
+EDL	00:20:31,029	00:20:31,763	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:20:31,763	00:20:33,332	| Authenticate2023-alibaba |	And engineers are users too.
+EDL	00:20:33,332	00:20:33,832	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:20:33,832	00:20:35,233	| Authenticate2023-alibaba |	The engineers get scared.
+EDL	00:20:35,233	00:20:36,034	| Authenticate2023-alibaba |	They don't do anything.
+EDL	00:20:36,034	00:20:40,405	| Authenticate2023-alibaba |	So we hope there are more tutorial.
+EDL	00:20:40,405	00:20:41,707	| Authenticate2023-alibaba |	[ SPACE 1.3 secs ]
+EDL	00:20:41,707	00:20:44,476	| Authenticate2023-alibaba |	And I'm very happy to see they are on the way.
+EDL	00:20:44,476	00:20:46,812	| Authenticate2023-alibaba |	[ SPACE 2.3 secs ]
+EDL	00:20:46,812	00:20:49,681	| Authenticate2023-alibaba |	And we need a delete-key-in-the-authenticator button.
+EDL	00:20:49,681	00:20:50,916	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:20:50,916	00:20:51,750	| Authenticate2023-alibaba |	Here is the reason.
+EDL	00:20:51,750	00:20:52,451	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:20:52,451	00:20:55,087	| Authenticate2023-alibaba |	And I remember Microsoft has one.
+EDL	00:20:55,087	00:20:55,754	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:20:55,754	00:20:59,224	| Authenticate2023-alibaba |	And other companies are also adding it.
+EDL	00:20:59,224	00:20:59,591	| Authenticate2023-alibaba |	No problem.
+EDL	00:20:59,591	00:21:01,193	| Authenticate2023-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:21:01,193	00:21:01,827	| Authenticate2023-alibaba |	So another wishes.
+EDL	00:21:01,827	00:21:02,594	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:21:02,594	00:21:02,794	| Authenticate2023-alibaba |	Okay.
+EDL	00:21:02,794	00:21:03,562	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:21:03,562	00:21:03,762	| Authenticate2023-alibaba |	Conclusion.
+EDL	00:21:03,762	00:21:04,763	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:21:04,763	00:21:05,364	| Authenticate2023-alibaba |	Not important.
+EDL	00:21:05,364	00:21:05,731	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:21:05,731	00:21:06,131	| Authenticate2023-alibaba |	Not important.
+EDL	00:21:06,131	00:21:08,166	| Authenticate2023-alibaba |	[ SPACE 2.0 secs ]
+EDL	00:21:08,166	00:21:10,836	| Authenticate2023-alibaba |	This is important for you who don't leave.
+EDL	00:21:10,836	00:21:13,572	| Authenticate2023-alibaba |	[ SPACE 2.7 secs ]
+EDL	00:21:13,572	00:21:14,172	| Authenticate2023-alibaba |	Do I have sound?
+EDL	00:21:14,172	00:21:15,674	| Authenticate2023-alibaba |	[ SPACE 1.5 secs ]
+EDL	00:21:15,674	00:21:16,174	| Authenticate2023-alibaba |	Can I have sound?
+EDL	00:21:16,174	00:21:17,109	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:21:17,109	00:21:18,243	| Authenticate2023-alibaba |	Sound is very important.
+EDL	00:21:18,243	00:21:19,144	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:21:19,144	00:21:19,878	| Authenticate2023-alibaba |	Sound, please.
+EDL	00:21:19,878	00:21:20,379	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:21:20,379	00:21:20,946	| Authenticate2023-alibaba |	Don't worry.
+EDL	00:21:20,946	00:21:21,680	| Authenticate2023-alibaba |	I have four minutes.
+EDL	00:21:21,680	00:21:26,451	| Authenticate2023-alibaba |	[ SPACE 4.8 secs ]
+EDL	00:21:26,451	00:21:26,752	| Authenticate2023-alibaba |	Okay.
+EDL	00:21:26,752	00:21:27,686	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:21:27,686	00:21:27,953	| Authenticate2023-alibaba |	Okay.
+EDL	00:21:27,953	00:21:28,153	| Authenticate2023-alibaba |	Cool.
+EDL	00:21:28,153	00:21:29,254	| Authenticate2023-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:21:29,254	00:21:29,554	| Authenticate2023-alibaba |	Sound.
+EDL	00:21:29,554	00:21:30,055	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:21:30,055	00:21:31,023	| Authenticate2023-alibaba |	This is the main part.
+
+EDL	00:21:31,023	00:21:32,124	| Authenticate2023-alibaba |	The pass key.
+EDL	00:21:32,124	00:21:32,524	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:21:32,524	00:21:33,825	| Authenticate2023-alibaba |	Here is the pass key.
+EDL	00:21:33,825	00:21:35,360	| Authenticate2023-alibaba |	[ SPACE 1.5 secs ]
+EDL	00:21:35,360	00:21:39,865	| Authenticate2023-alibaba |	The pass key in the trouser pocket ... was a
+EDL	00:21:39,865	00:21:42,000	| Authenticate2023-alibaba |	conductor's pass key.
+EDL	00:21:42,000	00:21:42,467	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:21:42,467	00:21:44,403	| Authenticate2023-alibaba |	Made his way by means of the convenient
+EDL	00:21:44,403	00:21:46,071	| Authenticate2023-alibaba |	passkey to Ratcheet's compartment.
+EDL	00:21:46,071	00:21:46,872	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:21:46,872	00:21:48,106	| Authenticate2023-alibaba |	Stabbed him to death.
+EDL	00:21:48,106	00:21:50,008	| Authenticate2023-alibaba |	Planted the dagger of the uniform.
+EDL	00:21:50,008	00:21:55,013	| Authenticate2023-alibaba |	[ SPACE 5.0 secs ]
+EDL	00:21:55,013	00:21:58,450	| Authenticate2023-alibaba |	So the passkey actually can be found on
+EDL	00:21:58,450	00:22:00,852	| Authenticate2023-alibaba |	the Agatha Christie's novel.
+EDL	00:22:00,852	00:22:02,487	| Authenticate2023-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:22:02,487	00:22:06,825	| Authenticate2023-alibaba |	And the passkey led to a murder.
+EDL	00:22:06,825	00:22:07,492	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:22:07,492	00:22:10,862	| Authenticate2023-alibaba |	And it's by 12 murders.
+EDL	00:22:10,862	00:22:12,597	| Authenticate2023-alibaba |	[ SPACE 1.7 secs ]
+
+EDL	00:22:12,597	00:22:14,533	| Authenticate2023-alibaba |	Oh, this video is cut by
+EDL	00:22:14,533	00:22:17,636	| Authenticate2023-alibaba |	my self open source project.
+EDL	00:22:17,636	00:22:18,270	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:22:18,270	00:22:19,371	| Authenticate2023-alibaba |	Feel free to use it.
+EDL	00:22:19,371	00:22:20,205	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:22:20,205	00:22:21,139	| Authenticate2023-alibaba |	(this) is the github page.
+EDL	00:22:21,139	00:22:21,973	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:22:21,973	00:22:23,008	| Authenticate2023-alibaba |	I really love it.
+EDL	00:22:23,008	00:22:24,476	| Authenticate2023-alibaba |	It's a VIM plugin.
+EDL	00:22:24,476	00:22:25,110	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:22:25,110	00:22:27,346	| Authenticate2023-alibaba |	You can edit video with it in a
+EDL	00:22:27,346	00:22:29,514	| Authenticate2023-alibaba |	spreadsheet just like the BBC style.
+EDL	00:22:29,514	00:22:30,315	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:22:30,315	00:22:31,216	| Authenticate2023-alibaba |	And this is the detail.
+EDL	00:22:31,216	00:22:32,084	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:22:32,084	00:22:33,518	| Authenticate2023-alibaba |	And this is the URL.
+EDL	00:22:33,518	00:22:34,186	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:22:34,186	00:22:35,520	| Authenticate2023-alibaba |	Feel free to ask about this.
+EDL	00:22:35,520	00:22:35,887	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:22:35,887	00:22:36,188	| Authenticate2023-alibaba |	Thank you.
+EDL	00:22:36,188	00:22:39,124	| Authenticate2023-alibaba |	[ SPACE 2.9 secs ]
+EDL	00:22:39,124	00:22:39,224	| Authenticate2023-alibaba |	[ Applause ]
+EDL	00:22:39,224	00:22:39,591	| Authenticate2023-alibaba |	Thank you.
+EDL	00:22:39,591	00:22:41,526	| Authenticate2023-alibaba |	[ SPACE 1.9 secs ]
+EDL	00:22:41,526	00:22:41,860	| Authenticate2023-alibaba |	Thank you.
+EDL	00:22:41,860	00:22:43,528	| Authenticate2023-alibaba |	[ SPACE 1.7 secs ]
+EDL	00:22:43,528	00:22:45,464	| Authenticate2023-alibaba |	[ Applause ]
+EDL	00:22:45,464	00:22:46,531	| Authenticate2023-alibaba |	All right.
+EDL	00:22:46,531	00:22:48,066	| Authenticate2023-alibaba |	[ SPACE 1.5 secs ]
+
+EDL	00:22:48,066	00:22:48,433	| Authenticate2023-alibaba |	Question time.
+EDL	00:22:48,433	00:22:49,334	| Authenticate2023-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:22:49,334	00:22:50,669	| Authenticate2023-alibaba |	It's a little known fact about me.
+EDL	00:22:50,669	00:22:51,002	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:22:51,002	00:22:53,672	| Authenticate2023-alibaba |	I'm a very big Hercule Perot fan.
+EDL	00:22:53,672	00:22:54,306	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:22:54,306	00:22:55,807	| Authenticate2023-alibaba |	So I enjoyed that very, very much.
+EDL	00:22:55,807	00:22:56,208	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:22:56,208	00:22:57,109	| Authenticate2023-alibaba |	Have you seen it before?
+EDL	00:22:57,109	00:22:57,809	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:22:57,809	00:22:59,644	| Authenticate2023-alibaba |	I've read every book.
+EDL	00:22:59,644	00:23:00,345	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:23:00,345	00:23:01,213	| Authenticate2023-alibaba |	Every single one.
+EDL	00:23:01,213	00:23:01,713	| Authenticate2023-alibaba |	The pass key.
+EDL	00:23:01,713	00:23:03,648	| Authenticate2023-alibaba |	I've seen murder on the Orian Express.
+EDL	00:23:03,648	00:23:04,383	| Authenticate2023-alibaba |	Pass key on the book?
+EDL	00:23:04,383	00:23:04,750	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:23:04,750	00:23:05,250	| Authenticate2023-alibaba |	Yeah.
+EDL	00:23:05,250	00:23:05,550	| Authenticate2023-alibaba |	Oh.
+EDL	00:23:05,550	00:23:05,984	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:23:05,984	00:23:07,452	| Authenticate2023-alibaba |	So you named pass key.
+EDL	00:23:07,452	00:23:07,652	| Authenticate2023-alibaba |	Yeah.
+EDL	00:23:07,652	00:23:08,253	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:23:08,253	00:23:08,487	| Authenticate2023-alibaba |	Oh.
+EDL	00:23:08,487	00:23:09,287	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:23:09,287	00:23:10,288	| Authenticate2023-alibaba |	That's the reason.
+EDL	00:23:10,288	00:23:10,655	| Authenticate2023-alibaba |	Nobody knows. 
+EDL	00:23:10,655	00:23:11,289	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:23:11,289	00:23:11,490	| Authenticate2023-alibaba |	Shh.
+EDL	00:23:11,490	00:23:13,992	| Authenticate2023-alibaba |	[ SPACE 2.5 secs ]
+EDL	00:23:13,992	00:23:14,326	| Authenticate2023-alibaba |	Cool.
+EDL	00:23:14,326	00:23:15,994	| Authenticate2023-alibaba |	[ SPACE 1.7 secs ]
+EDL	00:23:15,994	00:23:16,628	| Authenticate2023-alibaba |	Who has questions?
+EDL	00:23:16,628	00:23:22,667	| Authenticate2023-alibaba |	[ SPACE 6.0 secs ]
+
+EDL	00:23:22,667	00:23:26,271	| Authenticate2023-alibaba |	Just curious, after you spent so many
+EDL	00:23:26,271	00:23:27,973	| Authenticate2023-alibaba |	effort in Alibaba, like,
+EDL	00:23:27,973	00:23:29,508	| Authenticate2023-alibaba |	what is the adoption rate
+EDL	00:23:29,508	00:23:31,643	| Authenticate2023-alibaba |	right now in Alibaba for passkey?
+EDL	00:23:31,643	00:23:32,477	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:23:32,477	00:23:32,978	| Authenticate2023-alibaba |	Adoption rate.
+EDL	00:23:32,978	00:23:34,613	| Authenticate2023-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:23:34,613	00:23:36,615	| Authenticate2023-alibaba |	Out of our employees
+EDL	00:23:36,615	00:23:41,586	| Authenticate2023-alibaba |	around 240K, they are 40K now.
+EDL	00:23:41,586	00:23:43,255	| Authenticate2023-alibaba |	[ SPACE 1.7 secs ]
+EDL	00:23:43,255	00:23:44,489	| Authenticate2023-alibaba |	So adoption rate
+EDL	00:23:44,489	00:23:47,626	| Authenticate2023-alibaba |	regarding the person is this.
+EDL	00:23:47,626	00:23:48,026	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:23:48,026	00:23:50,829	| Authenticate2023-alibaba |	And regarding the web applications, it's
+EDL	00:23:50,829	00:23:52,764	| Authenticate2023-alibaba |	100% because we use a
+EDL	00:23:52,764	00:23:55,233	| Authenticate2023-alibaba |	single SSO platform.
+EDL	00:23:55,233	00:23:55,734	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:23:55,734	00:23:58,069	| Authenticate2023-alibaba |	So as long as we deal with this,
+EDL	00:23:58,069	00:23:58,703	| Authenticate2023-alibaba |	everything is good.
+EDL	00:23:58,703	00:24:03,241	| Authenticate2023-alibaba |	[ SPACE 4.5 secs ]
+EDL	00:24:03,241	00:24:05,610	| Authenticate2023-alibaba |	Any question about my open source project?
+EDL	00:24:05,610	00:24:07,112	| Authenticate2023-alibaba |	[ SPACE 1.5 secs ]
+EDL	00:24:07,112	00:24:08,046	| Authenticate2023-alibaba |	I have a question.
+EDL	00:24:08,046	00:24:08,880	| Authenticate2023-alibaba |	Can you tell us all about
+EDL	00:24:08,880	00:24:09,915	| Authenticate2023-alibaba |	your open source project?
+EDL	00:24:09,915	00:24:10,415	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:24:10,415	00:24:10,615	| Authenticate2023-alibaba |	Yes.
+EDL	00:24:10,615	00:24:11,116	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:24:11,116	00:24:12,250	| Authenticate2023-alibaba |	Yes, yes, yes, yes.
+EDL	00:24:12,250	00:24:12,551	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:24:12,551	00:24:12,751	| Authenticate2023-alibaba |	Please.
+EDL	00:24:12,751	00:24:13,518	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:24:13,518	00:24:14,753	| Authenticate2023-alibaba |	We want to hear all about it, please.
+EDL	00:24:14,753	00:24:17,589	| Authenticate2023-alibaba |	[ SPACE 2.8 secs ]
+EDL	00:24:17,589	00:24:18,490	| Authenticate2023-alibaba |	Say more about it.
+EDL	00:24:18,490	00:24:19,157	| Authenticate2023-alibaba |	Tell us more.
+EDL	00:24:19,157	00:24:19,925	| Authenticate2023-alibaba |	Tell us more.
+EDL	00:24:19,925	00:24:21,092	| Authenticate2023-alibaba |	Oh, oh, oh, oh.
+EDL	00:24:21,092	00:24:21,293	| Authenticate2023-alibaba |	Okay.
+EDL	00:24:21,293	00:24:23,028	| Authenticate2023-alibaba |	[ SPACE 1.7 secs ]
+EDL	00:24:23,028	00:24:23,929	| Authenticate2023-alibaba |	I thought you'd never ask.
+EDL	00:24:23,929	00:24:24,629	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:24:24,629	00:24:26,231	| Authenticate2023-alibaba |	How does it compare to Adobe Premiere?
+EDL	00:24:26,231	00:24:26,998	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:24:26,998	00:24:28,500	| Authenticate2023-alibaba |	Adobe Premiere, great question.
+
+EDL	00:24:28,500	00:24:28,867	| Authenticate2023-alibaba |	Great question.
+EDL	00:24:28,867	00:24:29,267	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:24:29,267	00:24:33,071	| Authenticate2023-alibaba |	Adobe Premiere can take FCPXML as input.
+EDL	00:24:33,071	00:24:33,839	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:24:33,839	00:24:37,008	| Authenticate2023-alibaba |	And Adobe Premiere takes money.
+EDL	00:24:37,008	00:24:37,309	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:24:37,309	00:24:39,110	| Authenticate2023-alibaba |	So mine doesn't take money.
+EDL	00:24:39,110	00:24:39,711	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:24:39,711	00:24:41,913	| Authenticate2023-alibaba |	And I speak FCPXML.
+EDL	00:24:41,913	00:24:42,681	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:24:42,681	00:24:45,984	| Authenticate2023-alibaba |	And it basically is a plain text.
+EDL	00:24:45,984	00:24:46,651	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:24:46,651	00:24:49,054	| Authenticate2023-alibaba |	It starts with EDL, called editorial
+EDL	00:24:49,054	00:24:53,925	| Authenticate2023-alibaba |	decision list, and a timecode in, timecode out, and a
+EDL	00:24:53,925	00:24:54,392	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:24:54,392	00:24:56,628	| Authenticate2023-alibaba |	clipname and subtitle.
+EDL	00:24:56,628	00:24:57,429	| Authenticate2023-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:24:57,429	00:25:00,932	| Authenticate2023-alibaba |	Basically this type of file I called tsv_edl.
+EDL	00:25:00,932	00:25:01,433	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:25:01,433	00:25:04,135	| Authenticate2023-alibaba |	It's a tab spread like CSV, TSV.
+EDL	00:25:04,135	00:25:04,836	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:25:04,836	00:25:07,973	| Authenticate2023-alibaba |	And this type of file is equivalent to SRT.
+EDL	00:25:07,973	00:25:08,406	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:25:08,406	00:25:11,209	| Authenticate2023-alibaba |	So you convert SRT to TSV.
+EDL	00:25:11,209	00:25:12,944	| Authenticate2023-alibaba |	You can convert TSV to SRT.
+EDL	00:25:12,944	00:25:13,345	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:25:13,345	00:25:15,647	| Authenticate2023-alibaba |	And you choose pick this line.
+EDL	00:25:15,647	00:25:16,114	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:25:16,114	00:25:17,549	| Authenticate2023-alibaba |	You combine it.
+EDL	00:25:17,549	00:25:18,250	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:25:18,250	00:25:19,985	| Authenticate2023-alibaba |	You shuffle it.
+EDL	00:25:19,985	00:25:20,552	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:25:20,552	00:25:23,855	| Authenticate2023-alibaba |	And you select it and press space.
+EDL	00:25:23,855	00:25:24,289	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:25:24,289	00:25:25,123	| Authenticate2023-alibaba |	And you will invoke
+EDL	00:25:25,123	00:25:27,325	| Authenticate2023-alibaba |	FFmpeg and render one.
+EDL	00:25:27,325	00:25:27,826	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:25:27,826	00:25:31,997	| Authenticate2023-alibaba |	And you can also export it to FCPXML to
+EDL	00:25:31,997	00:25:34,366	| Authenticate2023-alibaba |	the Adobe Premiere,
+EDL	00:25:34,366	00:25:36,835	| Authenticate2023-alibaba |	which spends a lot of money.
+EDL	00:25:36,835	00:25:37,335	| Authenticate2023-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:25:37,335	00:25:39,371	| Authenticate2023-alibaba |	And also other things
+EDL	00:25:39,371	00:25:40,705	| Authenticate2023-alibaba |	that doesn't take money.
+EDL	00:25:40,705	00:25:42,574	| Authenticate2023-alibaba |	So this is number one.
+EDL	00:25:42,574	00:25:43,308	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:25:43,308	00:25:48,813	| Authenticate2023-alibaba |	It has a markdown style fold.
+EDL	00:25:48,813	00:25:49,514	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:25:49,514	00:25:49,714	| Authenticate2023-alibaba |	Fold.
+EDL	00:25:49,714	00:25:50,882	| Authenticate2023-alibaba |	You can fold it, unfold it.
+EDL	00:25:50,882	00:25:51,283	| Authenticate2023-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:25:51,283	00:25:52,450	| Authenticate2023-alibaba |	And you can add B roll.
+EDL	00:25:52,450	00:25:52,784	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:25:52,784	00:25:57,088	| Authenticate2023-alibaba |	Simply put a square bracket B at the
+EDL	00:25:57,088	00:25:59,391	| Authenticate2023-alibaba |	front of the subtitle.
+EDL	00:25:59,391	00:26:00,425	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:26:00,425	00:26:02,928	| Authenticate2023-alibaba |	And this is another example.
+EDL	00:26:02,928	00:26:03,929	| Authenticate2023-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:26:03,929	00:26:06,331	| Authenticate2023-alibaba |	And you can even edit it in
+EDL	00:26:06,331	00:26:07,732	| Authenticate2023-alibaba |	a spreadsheet with Google.
+EDL	00:26:07,732	00:26:08,333	| Authenticate2023-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:26:08,333	00:26:11,970	| Authenticate2023-alibaba |	You can just cut it, paste it, and voila.
+EDL	00:26:11,970	00:26:13,972	| Authenticate2023-alibaba |	[ SPACE 2.0 secs ]
+EDL	00:26:13,972	00:26:15,273	| Authenticate2023-alibaba |	Page.
+EDL	00:26:15,273	00:26:15,507	| Authenticate2023-alibaba |	Page.
+EDL	00:26:15,507	00:26:16,174	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:26:16,174	00:26:16,775	| Authenticate2023-alibaba |	Page is here.
+EDL	00:26:16,775	00:26:18,243	| Authenticate2023-alibaba |	[ SPACE 1.5 secs ]
+EDL	00:26:18,243	00:26:19,477	| Authenticate2023-alibaba |	[ Applause ]
+EDL	00:26:19,477	00:26:22,781	| Authenticate2023-alibaba |	Thank you so much.
+EDL	00:26:22,781	00:26:23,982	| Authenticate2023-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:26:23,982	00:26:24,649	| Authenticate2023-alibaba |	That was awesome.
+EDL	00:26:24,649	00:26:24,983	| Authenticate2023-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:26:24,983	00:26:26,051	| Authenticate2023-alibaba |	Thank you.
+EDL	00:26:26,051	00:26:31,056	| Authenticate2023-alibaba |	[ Applause ]
+EDL	00:26:31,056	00:26:31,723	| Authenticate2023-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:26:31,723	00:26:33,191	| Authenticate2023-alibaba |	So I definitely urge folks
+EDL	00:26:33,191	00:26:35,594	| Authenticate2023-alibaba |	to stay for our next session.
+EDL	00:26:35,594	00:26:36,161	| Authenticate2023-alibaba |	Just going to start
+EDL	00:26:36,161	00:26:38,430	| Authenticate2023-alibaba |	in about five minutes. [ Music ]
+﻿EDL	Record In	Record Out	Clipname	Subtitle
+EDL	00:00:00,000	00:00:02,040	| Authenticate2024-alibaba |	5 minutes
+EDL	00:00:02,040	00:00:02,915	| Authenticate2024-alibaba |	And after that
+EDL	00:00:02,915	00:00:07,580	| Authenticate2024-alibaba |	I guess you'll have an hour to go get ready for the party tonight
+EDL	00:00:07,580	00:00:08,619	| Authenticate2024-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:00:08,619	00:00:09,349	| Authenticate2024-alibaba |	With that
+EDL	00:00:09,349	00:00:10,890	| Authenticate2024-alibaba |	let me introduce Shawn
+EDL	00:00:10,890	00:00:13,250	| Authenticate2024-alibaba |	from Alibaba Group
+EDL	00:00:13,250	00:00:14,119	| Authenticate2024-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:00:14,119	00:00:15,699	| Authenticate2024-alibaba |	We won't do Q&A after this
+EDL	00:00:15,699	00:00:17,690	| Authenticate2024-alibaba |	If you have any questions for Xiao
+EDL	00:00:17,690	00:00:21,350	| Authenticate2024-alibaba |	feel free to go to the Expo hall and discuss with them over there
+EDL	00:00:21,350	00:00:21,940	| Authenticate2024-alibaba |	With that
+EDL	00:00:21,940	00:00:22,510	| Authenticate2024-alibaba |	over to Xiao
+EDL	00:00:22,510	00:00:25,769	| Authenticate2024-alibaba |	[ SPACE 3.3 secs ]
+EDL	00:00:25,769	00:00:26,089	| Authenticate2024-alibaba |	Thank you
+EDL	00:00:26,089	00:00:29,500	| Authenticate2024-alibaba |	[ SPACE 3.4 secs ]
+EDL	00:00:29,500	00:00:30,149	| Authenticate2024-alibaba |	Hi everyone
+EDL	00:00:30,149	00:00:30,500	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:00:30,500	00:00:31,149	| Authenticate2024-alibaba |	good afternoon
+EDL	00:00:31,149	00:00:32,229	| Authenticate2024-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:00:32,229	00:00:35,030	| Authenticate2024-alibaba |	Thank you for your being here for my speak
+EDL	00:00:35,030	00:00:38,490	| Authenticate2024-alibaba |	And I prepared some notes because I think it's very important
+EDL	00:00:38,490	00:00:39,399	| Authenticate2024-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:00:39,399	00:00:41,590	| Authenticate2024-alibaba |	My name is Xiao is a Chinese Pinyin
+EDL	00:00:41,590	00:00:43,280	| Authenticate2024-alibaba |	actually you can call me Shawn
+EDL	00:00:43,280	00:00:45,554	| Authenticate2024-alibaba |	I would like to introduce myself a little bit first
+EDL	00:00:45,554	00:00:49,634	| Authenticate2024-alibaba |	and I have been working for Alibaba for over 16 years
+EDL	00:00:49,634	00:00:54,494	| Authenticate2024-alibaba |	And currently I lead a team responsible for the identity management
+EDL	00:00:54,494	00:00:55,314	| Authenticate2024-alibaba |	the authorization
+EDL	00:00:55,314	00:00:56,954	| Authenticate2024-alibaba |	centralized authorization services
+EDL	00:00:56,954	00:01:00,104	| Authenticate2024-alibaba |	and the enterprise network infrastructure
+EDL	00:01:00,104	00:01:02,034	| Authenticate2024-alibaba |	for our internal employees
+EDL	00:01:02,034	00:01:03,615	| Authenticate2024-alibaba |	And before this
+EDL	00:01:03,615	00:01:11,275	| Authenticate2024-alibaba |	I worked as a solution architect for HP and for the HP select identity and select access products
+EDL	00:01:11,275	00:01:19,805	| Authenticate2024-alibaba |	so outside work and I am HAM Radio operator and also contributes to some open source projects
+EDL	00:01:19,805	00:01:23,805	| Authenticate2024-alibaba |	so as a tradition I would like to today
+EDL	00:01:23,805	00:01:26,435	| Authenticate2024-alibaba |	I represent a team of our project
+EDL	00:01:26,435	00:01:26,834	| Authenticate2024-alibaba |	Yeah
+EDL	00:01:26,834	00:01:29,765	| Authenticate2024-alibaba |	so I would like to thank our our colleagues
+EDL	00:01:29,765	00:01:34,623	| Authenticate2024-alibaba |	Wang Kang, Xu Hou-Jun, Zhen Zhen, Yang Yu-Duo, Zhou Bing, Ma Xin
+EDL	00:01:34,623	00:01:41,174	| Authenticate2024-alibaba |	we came from different departments and we worked closely on the Passkey deployment project
+EDL	00:01:41,174	00:01:42,424	| Authenticate2024-alibaba |	And finally we make it happen
+EDL	00:01:42,424	00:01:42,974	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:01:42,974	00:01:46,314	| Authenticate2024-alibaba |	So and also special thanks to my colleague Mr. Wang Kang
+EDL	00:01:46,314	00:01:56,765	| Authenticate2024-alibaba |	He presented slides last year and he also prepared most of the materials for this year's sharing and I deleted most of them
+EDL	00:01:56,765	00:01:59,075	| Authenticate2024-alibaba |	[ SPACE 2.3 secs ]
+EDL	00:01:59,075	00:02:01,590	| Authenticate2024-alibaba |	You so he also
+EDL	00:02:01,590	00:02:04,832	| Authenticate2024-alibaba |	prepared the joke in the page 13
+EDL	00:02:04,832	00:02:10,502	| Authenticate2024-alibaba |	yeahfirst I will bring some update from our Passkey deployment for the Alibaba Group employees
+EDL	00:02:10,502	00:02:13,037	| Authenticate2024-alibaba |	then the technical challenges and the solutions
+EDL	00:02:13,037	00:02:15,067	| Authenticate2024-alibaba |	and briefly discussing the future
+EDL	00:02:15,067	00:02:15,467	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:02:15,467	00:02:17,106	| Authenticate2024-alibaba |	some thoughts about the future
+EDL	00:02:17,106	00:02:19,257	| Authenticate2024-alibaba |	So the deployment updates
+EDL	00:02:19,257	00:02:25,909	| Authenticate2024-alibaba |	we have been adopting FIDO WebAuthn / Passkey since 2019
+EDL	00:02:25,909	00:02:28,546	| Authenticate2024-alibaba |	and Passkey has been brought online
+EDL	00:02:28,546	00:02:34,526	| Authenticate2024-alibaba |	I mean public open to our employees on July 2022
+EDL	00:02:34,526	00:02:35,657	| Authenticate2024-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:02:35,657	00:02:39,657	| Authenticate2024-alibaba |	So here is the user growth
+EDL	00:02:39,657	00:02:40,776	| Authenticate2024-alibaba |	compared to last year
+EDL	00:02:40,776	00:02:46,836	| Authenticate2024-alibaba |	we now have over 19000 employees user online
+EDL	00:02:46,836	00:02:47,236	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:02:47,236	00:02:48,146	| Authenticate2024-alibaba |	One year ago
+EDL	00:02:48,146	00:02:50,067	| Authenticate2024-alibaba |	the number was 40000
+EDL	00:02:50,067	00:02:53,616	| Authenticate2024-alibaba |	and 60% of them are active users
+EDL	00:02:53,616	00:02:56,366	| Authenticate2024-alibaba |	which is active users divided by registered users
+EDL	00:02:56,366	00:02:58,257	| Authenticate2024-alibaba |	In the last 30 days
+EDL	00:02:58,257	00:03:01,717	| Authenticate2024-alibaba |	it is increased by 10%
+EDL	00:03:01,717	00:03:07,026	| Authenticate2024-alibaba |	It's a natural way we do not promote or we do not persuade the user to register the FIDO keys
+EDL	00:03:07,026	00:03:07,727	| Authenticate2024-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:03:07,727	00:03:12,997	| Authenticate2024-alibaba |	About 50000 Passkey authentication requests were made per week
+EDL	00:03:12,997	00:03:13,317	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:03:13,317	00:03:15,007	| Authenticate2024-alibaba |	So by rough calculation
+EDL	00:03:15,007	00:03:15,326	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:03:15,326	00:03:22,106	| Authenticate2024-alibaba |	we saved over 1 million second factor text messages over the last year
+EDL	00:03:22,106	00:03:25,456	| Authenticate2024-alibaba |	So I think it's a good indicator that our employees
+EDL	00:03:25,456	00:03:27,026	| Authenticate2024-alibaba |	really love Passkey
+EDL	00:03:27,026	00:03:29,377	| Authenticate2024-alibaba |	So compared to last year
+EDL	00:03:29,377	00:03:33,637	| Authenticate2024-alibaba |	user reported issues are are decreasing significantly
+EDL	00:03:33,637	00:03:39,836	| Authenticate2024-alibaba |	So the main issue is from the iFrame websites
+EDL	00:03:39,836	00:03:40,706	| Authenticate2024-alibaba |	iFrame websites
+EDL	00:03:40,706	00:03:43,257	| Authenticate2024-alibaba |	because there are so many internal websites
+EDL	00:03:43,257	00:03:44,157	| Authenticate2024-alibaba |	web applications
+EDL	00:03:44,157	00:03:52,766	| Authenticate2024-alibaba |	people sometimes will build a portal websites to embed a bunch of websites together by HTML iFrame tags
+EDL	00:03:52,766	00:03:53,197	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:03:53,197	00:03:54,426	| Authenticate2024-alibaba |	So there are many
+EDL	00:03:54,426	00:03:55,176	| Authenticate2024-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:03:55,176	00:03:57,217	| Authenticate2024-alibaba |	many portal websites
+EDL	00:03:57,217	00:04:01,167	| Authenticate2024-alibaba |	Now one problem solved by more problems
+EDL	00:04:01,167	00:04:01,706	| Authenticate2024-alibaba |	So of course
+EDL	00:04:01,706	00:04:03,567	| Authenticate2024-alibaba |	they should design something better
+EDL	00:04:03,567	00:04:06,546	| Authenticate2024-alibaba |	But iFrame is a simple approach
+EDL	00:04:06,546	00:04:08,146	| Authenticate2024-alibaba |	[ SPACE 1.6 secs ]
+EDL	00:04:08,146	00:04:08,956	| Authenticate2024-alibaba |	iFrame of course
+EDL	00:04:08,956	00:04:11,997	| Authenticate2024-alibaba |	we will fail to bring up a passkey user
+EDL	00:04:11,997	00:04:12,667	| Authenticate2024-alibaba |	UI
+EDL	00:04:12,667	00:04:16,406	| Authenticate2024-alibaba |	especially when third party cookies are used
+EDL	00:04:16,406	00:04:16,836	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:04:16,836	00:04:19,286	| Authenticate2024-alibaba |	so we will solve it in the next slides
+EDL	00:04:19,286	00:04:20,447	| Authenticate2024-alibaba |	[ SPACE 1.2 secs ]
+EDL	00:04:20,447	00:04:25,257	| Authenticate2024-alibaba |	Other portions of issues come from the devoted Safari users For many reasons
+EDL	00:04:25,257	00:04:33,439	| Authenticate2024-alibaba |	we have to decide to ban Safari from accessing passkey in our in enterprise currently
+EDL	00:04:33,439	00:04:35,033	| Authenticate2024-alibaba |	compared to last year
+EDL	00:04:35,033	00:04:42,997	| Authenticate2024-alibaba |	we user report issues decrease significantly and the rest portion of issues are bearable
+EDL	00:04:42,997	00:04:43,836	| Authenticate2024-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:04:43,836	00:04:51,137	| Authenticate2024-alibaba |	So overall we are more and more confident on deploying Passkey and ready to involve more employee to use Passkeys
+EDL	00:04:51,137	00:04:51,687	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:04:51,687	00:04:52,807	| Authenticate2024-alibaba |	We currently have
+EDL	00:04:52,807	00:04:53,697	| Authenticate2024-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:04:53,697	00:04:55,877	| Authenticate2024-alibaba |	according to the public documents
+EDL	00:04:55,877	00:04:59,776	| Authenticate2024-alibaba |	we have more than 240,000 employees
+EDL	00:04:59,776	00:05:02,487	| Authenticate2024-alibaba |	And based on our current progress
+EDL	00:05:02,487	00:05:04,437	| Authenticate2024-alibaba |	only 10% of them are covered
+EDL	00:05:04,437	00:05:10,666	| Authenticate2024-alibaba |	So we are we will roll out more quickly in the next few six months
+EDL	00:05:10,666	00:05:12,677	| Authenticate2024-alibaba |	Here's technical challenge solutions
+EDL	00:05:12,677	00:05:14,247	| Authenticate2024-alibaba |	So use case 1
+EDL	00:05:14,247	00:05:14,627	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:05:14,627	00:05:16,307	| Authenticate2024-alibaba |	iFrame and cookies
+EDL	00:05:16,307	00:05:17,637	| Authenticate2024-alibaba |	As I mentioned
+EDL	00:05:17,637	00:05:22,697	| Authenticate2024-alibaba |	it's easier for the developer to build a system using iFrame piles of them
+EDL	00:05:22,697	00:05:28,416	| Authenticate2024-alibaba |	We have to add allow publickey-credentials-get attribute in the outside web page
+EDL	00:05:28,416	00:05:32,476	| Authenticate2024-alibaba |	Otherwise it won't be presenting web key UI
+EDL	00:05:32,476	00:05:36,377	| Authenticate2024-alibaba |	But this approach requires lots of developmental
+EDL	00:05:36,377	00:05:37,387	| Authenticate2024-alibaba |	lots of changes
+EDL	00:05:37,387	00:05:38,346	| Authenticate2024-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:05:38,346	00:05:39,677	| Authenticate2024-alibaba |	It's quite annoying
+EDL	00:05:39,677	00:05:43,887	| Authenticate2024-alibaba |	So since we have control of the single sign on site
+EDL	00:05:43,887	00:05:45,976	| Authenticate2024-alibaba |	so the solution #2 is is easier
+EDL	00:05:45,976	00:05:49,047	| Authenticate2024-alibaba |	We just have to detect if inside a iFrame
+EDL	00:05:49,047	00:05:51,822	| Authenticate2024-alibaba |	sometimes we will jump out of the frame
+EDL	00:05:51,822	00:05:55,776	| Authenticate2024-alibaba |	or prompt the user saying you are currently inside a frame
+EDL	00:05:55,776	00:05:58,309	| Authenticate2024-alibaba |	please just click this the popup link
+EDL	00:05:58,309	00:06:01,547	| Authenticate2024-alibaba |	so that you can get a login page in a new tab
+EDL	00:06:01,547	00:06:05,627	| Authenticate2024-alibaba |	So then the user can return to iFrame page if they still want
+EDL	00:06:05,627	00:06:07,047	| Authenticate2024-alibaba |	[ SPACE 1.4 secs ]
+EDL	00:06:07,047	00:06:16,846	| Authenticate2024-alibaba |	and to the third party cookie, part of the iFrame issue comes from the third party cookie
+EDL	00:06:16,846	00:06:21,117	| Authenticate2024-alibaba |	We have a centralized domain top domain for SSO
+EDL	00:06:21,117	00:06:27,459	| Authenticate2024-alibaba |	but sometimes business unit will use different domains that will cause such kind of problems
+EDL	00:06:27,459	00:06:32,507	| Authenticate2024-alibaba |	We have prepared to guide the user to approve third party cookies initially
+EDL	00:06:32,507	00:06:34,297	| Authenticate2024-alibaba |	[ SPACE 1.8 secs ]
+EDL	00:06:34,297	00:06:35,107	| Authenticate2024-alibaba |	then later
+EDL	00:06:35,107	00:06:39,278	| Authenticate2024-alibaba |	We have to launch a huge project crossing the whole group
+EDL	00:06:39,278	00:06:44,221	| Authenticate2024-alibaba |	to migrate, to upgrade those apps with third party cookies
+EDL	00:06:44,221	00:06:49,346	| Authenticate2024-alibaba |	because Google announced that it will abandon the third party support in the future
+EDL	00:06:49,346	00:06:50,697	| Authenticate2024-alibaba |	So and we have
+EDL	00:06:50,697	00:06:51,137	| Authenticate2024-alibaba |	you know
+EDL	00:06:51,137	00:06:57,007	| Authenticate2024-alibaba |	we have more than 10K enterprise web apps to upgrade a huge work
+EDL	00:06:57,007	00:06:57,536	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:06:57,536	00:07:03,377	| Authenticate2024-alibaba |	And then Google decided to postpone the campaign under some pressure from the community, I think
+EDL	00:07:03,377	00:07:04,377	| Authenticate2024-alibaba |	But unfortunately
+EDL	00:07:04,377	00:07:05,836	| Authenticate2024-alibaba |	we already have the top 10
+EDL	00:07:05,836	00:07:06,716	| Authenticate2024-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:07:06,716	00:07:09,947	| Authenticate2024-alibaba |	sorry, top 1000 apps has already been upgraded
+EDL	00:07:09,947	00:07:14,247	| Authenticate2024-alibaba |	They have decoupled from the third party cookies.
+EDL	00:07:14,247	00:07:16,052	| Authenticate2024-alibaba |	thank you Google so,
+EDL	00:07:16,052	00:07:18,156	| Authenticate2024-alibaba |	our problem has been solved.
+EDL	00:07:18,156	00:07:22,677	| Authenticate2024-alibaba |	So the use case #2 the native apps and the containers
+EDL	00:07:22,677	00:07:25,007	| Authenticate2024-alibaba |	there's another case
+EDL	00:07:25,007	00:07:26,766	| Authenticate2024-alibaba |	I think it's worth sharing
+EDL	00:07:26,766	00:07:27,307	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:07:27,307	00:07:28,437	| Authenticate2024-alibaba |	As you may not know
+EDL	00:07:28,437	00:07:30,627	| Authenticate2024-alibaba |	some of our internal apps
+EDL	00:07:30,627	00:07:40,817	| Authenticate2024-alibaba |	like we have internal IM app called Dingtalk like WeChat and Alilang
+EDL	00:07:40,817	00:07:41,377	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:07:41,377	00:07:47,567	| Authenticate2024-alibaba |	It's our UEM app, are built with CEF or Electron frameworks
+EDL	00:07:47,567	00:07:47,927	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:07:47,927	00:07:49,067	| Authenticate2024-alibaba |	So however
+EDL	00:07:49,067	00:07:53,266	| Authenticate2024-alibaba |	we can bring up FIDO2 registration at first
+EDL	00:07:53,266	00:08:00,497	| Authenticate2024-alibaba |	then with some hacks and some patches also because they are available by source form
+EDL	00:08:00,497	00:08:00,896	| Authenticate2024-alibaba |	So by some hacks
+EDL	00:08:00,896	00:08:03,476	| Authenticate2024-alibaba |	we finally make it happen
+EDL	00:08:03,476	00:08:04,447	| Authenticate2024-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:08:04,447	00:08:06,396	| Authenticate2024-alibaba |	We are really good to go
+EDL	00:08:06,396	00:08:09,197	| Authenticate2024-alibaba |	[ SPACE 2.8 secs ]
+EDL	00:08:09,197	00:08:12,607	| Authenticate2024-alibaba |	And also we have lots of Windows laptops
+EDL	00:08:12,607	00:08:15,877	| Authenticate2024-alibaba |	And there's good news from Microsoft
+EDL	00:08:15,877	00:08:16,586	| Authenticate2024-alibaba |	From Windows
+EDL	00:08:16,586	00:08:22,357	| Authenticate2024-alibaba |	We are happy to see the Windows Remote Desktop RDP now maybe renamed to Windows app
+EDL	00:08:22,357	00:08:22,867	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:08:22,867	00:08:27,357	| Authenticate2024-alibaba |	now support Windows Hello or security keys for the WebAuthn forwarding
+EDL	00:08:27,357	00:08:30,726	| Authenticate2024-alibaba |	Alibaba also working on a thin client platform
+EDL	00:08:30,726	00:08:31,137	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:08:31,137	00:08:37,496	| Authenticate2024-alibaba |	It's a public service and much pretty like a Citrix called in Chinese WuYing
+EDL	00:08:37,496	00:08:38,167	| Authenticate2024-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:08:38,167	00:08:42,167	| Authenticate2024-alibaba |	We tested the USB forwarding and it do works
+EDL	00:08:42,167	00:08:43,187	| Authenticate2024-alibaba |	Case #3
+EDL	00:08:43,187	00:08:43,527	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:08:43,527	00:08:44,596	| Authenticate2024-alibaba |	the Safari issue
+EDL	00:08:44,596	00:08:49,236	| Authenticate2024-alibaba |	We use a white list then to be based on the AAGUID
+EDL	00:08:49,236	00:08:49,557	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:08:49,557	00:08:55,606	| Authenticate2024-alibaba |	at server side to ban the Safari from accessing our Passkey
+EDL	00:08:55,606	00:08:56,547	| Authenticate2024-alibaba |	What's worse
+EDL	00:08:56,547	00:08:57,206	| Authenticate2024-alibaba |	in Chrome
+EDL	00:08:57,206	00:09:01,631	| Authenticate2024-alibaba |	we found it very confusing that user has to click the Cancel button
+EDL	00:09:01,631	00:09:07,337	| Authenticate2024-alibaba |	on the dialog before a regular profile based Passkey registration window is shown
+EDL	00:09:07,337	00:09:09,956	| Authenticate2024-alibaba |	to make this window not shown in the first time
+EDL	00:09:09,956	00:09:11,706	| Authenticate2024-alibaba |	we have two ways
+EDL	00:09:11,706	00:09:16,356	| Authenticate2024-alibaba |	First is guide user to log out Apple ID completely
+EDL	00:09:16,356	00:09:17,297	| Authenticate2024-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:09:17,297	00:09:28,547	| Authenticate2024-alibaba |	or find a way to turn off the iCloud keychain by security agent like the MDM by sending provisions
+EDL	00:09:28,547	00:09:30,136	| Authenticate2024-alibaba |	some kind of policies
+EDL	00:09:30,136	00:09:38,956	| Authenticate2024-alibaba |	Our engineer also digging into the code and the Chromium cannot detect if iCloud keychains is on or not
+EDL	00:09:38,956	00:09:44,787	| Authenticate2024-alibaba |	But they found out that there's no iCloud Drive means no iCloud Keychain
+EDL	00:09:44,787	00:09:49,197	| Authenticate2024-alibaba |	So they just detected identityToken of the FileManager object
+EDL	00:09:49,197	00:09:51,297	| Authenticate2024-alibaba |	And if the token is empty
+EDL	00:09:51,297	00:09:53,307	| Authenticate2024-alibaba |	it means no iCloud drive
+EDL	00:09:53,307	00:09:54,817	| Authenticate2024-alibaba |	then no iCloud Keychain
+EDL	00:09:54,817	00:10:03,767	| Authenticate2024-alibaba |	Here's code snippet for the standalone program to detect iCloud Drive based on Chrome team, the method
+EDL	00:10:03,767	00:10:07,216	| Authenticate2024-alibaba |	for this purpose we can detect
+EDL	00:10:07,216	00:10:10,917	| Authenticate2024-alibaba |	And Mr Wang Kang insisted that
+EDL	00:10:10,917	00:10:12,397	| Authenticate2024-alibaba |	[ SPACE 1.5 secs ]
+EDL	00:10:12,397	00:10:14,216	| Authenticate2024-alibaba |	at the line 7
+EDL	00:10:14,216	00:10:14,557	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:10:14,557	00:10:17,636	| Authenticate2024-alibaba |	if no iCloud driver detected
+EDL	00:10:17,636	00:10:18,236	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:10:18,236	00:10:20,407	| Authenticate2024-alibaba |	they will print no iCloud Drive
+EDL	00:10:20,407	00:10:22,027	| Authenticate2024-alibaba |	Unfortunately I cannot tell the difference
+EDL	00:10:22,027	00:10:22,407	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:10:22,407	00:10:23,006	| Authenticate2024-alibaba |	sorry
+EDL	00:10:23,006	00:10:29,326	| Authenticate2024-alibaba |	[Audience: Laugh]
+EDL	00:10:29,326	00:10:29,647	| Authenticate2024-alibaba |	Sorry
+EDL	00:10:29,647	00:10:29,996	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:10:29,996	00:10:33,937	| Authenticate2024-alibaba |	so as to Mdm profile visioning
+EDL	00:10:33,937	00:10:37,664	| Authenticate2024-alibaba |	the right corner is the code snippet for the XML payload
+EDL	00:10:37,664	00:10:44,736	| Authenticate2024-alibaba |	so that we can push to our employer's device to enable/disable the iCloud
+EDL	00:10:44,736	00:10:45,456	| Authenticate2024-alibaba |	On this page
+EDL	00:10:45,456	00:10:52,206	| Authenticate2024-alibaba |	I would like to share some idea from our another colleague Mr Xu Hou Jun "Kimi"
+EDL	00:10:52,206	00:10:53,006	| Authenticate2024-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:10:53,006	00:10:56,167	| Authenticate2024-alibaba |	He's our product manager
+EDL	00:10:56,167	00:10:56,537	| Authenticate2024-alibaba |	Yeah
+EDL	00:10:56,537	00:11:02,136	| Authenticate2024-alibaba |	and the design goal is to authorize unsupported browser from a supported one
+EDL	00:11:02,136	00:11:02,787	| Authenticate2024-alibaba |	For example
+EDL	00:11:02,787	00:11:06,226	| Authenticate2024-alibaba |	use Safari for some devoted Safari users
+EDL	00:11:06,226	00:11:07,216	| Authenticate2024-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:11:07,216	00:11:08,567	| Authenticate2024-alibaba |	They still want to log in
+EDL	00:11:08,567	00:11:09,886	| Authenticate2024-alibaba |	but the secure agent
+EDL	00:11:09,886	00:11:12,947	| Authenticate2024-alibaba |	we have our UEM endpoint management agent
+EDL	00:11:12,947	00:11:15,255	| Authenticate2024-alibaba |	and we'll generate a piece of random data
+EDL	00:11:15,255	00:11:22,996	| Authenticate2024-alibaba |	because both the Chrome or the Alilang has supported the web authentication
+EDL	00:11:22,996	00:11:23,866	| Authenticate2024-alibaba |	[ SPACE 0.9 secs ]
+EDL	00:11:23,866	00:11:26,817	| Authenticate2024-alibaba |	they will generate a piece of random data and send to the
+EDL	00:11:26,817	00:11:27,246	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:11:27,246	00:11:27,437	| Authenticate2024-alibaba |	of course
+EDL	00:11:27,437	00:11:30,547	| Authenticate2024-alibaba |	with short lifespan
+EDL	00:11:30,547	00:11:36,736	| Authenticate2024-alibaba |	Safari will then pass it to the our backend SSO server and they get a pre login ticket response
+EDL	00:11:36,736	00:11:37,116	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:11:37,116	00:11:40,187	| Authenticate2024-alibaba |	However it's not that's safe
+EDL	00:11:40,187	00:11:41,476	| Authenticate2024-alibaba |	You know
+EDL	00:11:41,476	00:11:41,777	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:11:41,777	00:11:46,947	| Authenticate2024-alibaba |	this approach lacks the anti phishing design compared to the Passkey
+EDL	00:11:46,947	00:11:51,407	| Authenticate2024-alibaba |	So the security level is somewhat is like a QR code or scanning approach
+EDL	00:11:51,407	00:11:52,197	| Authenticate2024-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:11:52,197	00:11:53,486	| Authenticate2024-alibaba |	So but it's still
+EDL	00:11:53,486	00:11:54,817	| Authenticate2024-alibaba |	[ SPACE 1.3 secs ]
+EDL	00:11:54,817	00:12:01,937	| Authenticate2024-alibaba |	acceptable if it's a solution to help the Safari user in the enterprise and for some special case
+EDL	00:12:01,937	00:12:03,886	| Authenticate2024-alibaba |	So other trouble shooting tips
+EDL	00:12:03,886	00:12:12,187	| Authenticate2024-alibaba |	well we'll share another gold tip when Windows hello should fail in some rare case based our on our experience
+EDL	00:12:12,187	00:12:16,986	| Authenticate2024-alibaba |	probably maybe because of an unperfect upgrade from a lower version of Windows
+EDL	00:12:16,986	00:12:17,756	| Authenticate2024-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:12:17,756	00:12:20,157	| Authenticate2024-alibaba |	Have you tried turning it off and on again
+EDL	00:12:20,157	00:12:20,736	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:12:20,736	00:12:23,917	| Authenticate2024-alibaba |	This is the golden tip from our IT support colleague
+EDL	00:12:23,917	00:12:24,397	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:12:24,397	00:12:26,287	| Authenticate2024-alibaba |	Yeah most of the time it will work
+EDL	00:12:26,287	00:12:26,856	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:12:26,856	00:12:27,606	| Authenticate2024-alibaba |	Just remember
+EDL	00:12:27,606	00:12:29,636	| Authenticate2024-alibaba |	turn off Windows Hello completely
+EDL	00:12:29,636	00:12:33,317	| Authenticate2024-alibaba |	You have to turn off PIN, Face and fingerprint at all once
+EDL	00:12:33,317	00:12:33,966	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:12:33,966	00:12:35,280	| Authenticate2024-alibaba |	otherwise it won't reset
+EDL	00:12:35,280	00:12:39,557	| Authenticate2024-alibaba |	and sometimes reset the browser cache will help
+EDL	00:12:39,557	00:12:40,136	| Authenticate2024-alibaba |	Okay
+EDL	00:12:40,136	00:12:40,966	| Authenticate2024-alibaba |	key password manager
+EDL	00:12:40,966	00:12:41,947	| Authenticate2024-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:12:41,947	00:12:47,366	| Authenticate2024-alibaba |	We learned some design from very famous password manager apps
+EDL	00:12:47,366	00:12:47,797	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:12:47,797	00:12:55,147	| Authenticate2024-alibaba |	Also even Apple released a password manager a few weeks ago in their new iOS operating system
+EDL	00:12:55,147	00:12:56,667	| Authenticate2024-alibaba |	[ SPACE 1.5 secs ]
+EDL	00:12:56,667	00:13:01,917	| Authenticate2024-alibaba |	like 1Password or bitwarden and they used a technique called monkey patch
+EDL	00:13:01,917	00:13:07,481	| Authenticate2024-alibaba |	So monkey patch has been widely used in JavaScript for backward compatibility
+EDL	00:13:07,481	00:13:11,447	| Authenticate2024-alibaba |	or for hacking because some new language does not support it
+EDL	00:13:11,447	00:13:12,736	| Authenticate2024-alibaba |	some new APIs
+EDL	00:13:12,736	00:13:13,917	| Authenticate2024-alibaba |	or in older browsers
+EDL	00:13:13,917	00:13:14,417	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:13:14,417	00:13:17,817	| Authenticate2024-alibaba |	people have to define in that way
+EDL	00:13:17,817	00:13:19,927	| Authenticate2024-alibaba |	So password manager is a browser extension
+EDL	00:13:19,927	00:13:22,264	| Authenticate2024-alibaba |	We can set up a wide browser extension
+EDL	00:13:22,264	00:13:28,167	| Authenticate2024-alibaba |	and inject our scripting code into into the browser to hijack web application APIs
+EDL	00:13:28,167	00:13:28,856	| Authenticate2024-alibaba |	for example
+EDL	00:13:28,856	00:13:31,197	| Authenticate2024-alibaba |	navigate.credentials.create
+EDL	00:13:31,197	00:13:34,710	| Authenticate2024-alibaba |	So when the WebAuthn is called password manager will be brought up
+EDL	00:13:34,710	00:13:39,456	| Authenticate2024-alibaba |	and first before we get the chance to use the default UI
+EDL	00:13:39,456	00:13:48,517	| Authenticate2024-alibaba |	this is a simple example JavaScript demo for how the monkey patch works
+EDL	00:13:48,517	00:13:49,537	| Authenticate2024-alibaba |	So to achieve this
+EDL	00:13:49,537	00:13:54,746	| Authenticate2024-alibaba |	we injected with user script extension like GreaseMonkey or TamperMonkey
+EDL	00:13:54,746	00:13:55,626	| Authenticate2024-alibaba |	Of course it's a  demo
+EDL	00:13:55,626	00:13:59,147	| Authenticate2024-alibaba |	Also to test this
+EDL	00:13:59,147	00:14:02,326	| Authenticate2024-alibaba |	you need to enable the development mode of your browser
+EDL	00:14:02,326	00:14:08,307	| Authenticate2024-alibaba |	We can also use this code snippet to start building your own Passkey forwarder
+EDL	00:14:08,307	00:14:08,876	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:14:08,876	00:14:14,956	| Authenticate2024-alibaba |	However browser seems to consider behavior is a high risk so have to turn on the developer mode, yes
+EDL	00:14:14,956	00:14:17,506	| Authenticate2024-alibaba |	[ SPACE 2.5 secs ]
+EDL	00:14:17,506	00:14:22,224	| Authenticate2024-alibaba |	So from the discussion from the foreseeing developers one year ago
+EDL	00:14:22,224	00:14:26,606	| Authenticate2024-alibaba |	and some concern from someone more years
+EDL	00:14:26,606	00:14:27,697	| Authenticate2024-alibaba |	seven years ago
+EDL	00:14:27,697	00:14:28,567	| Authenticate2024-alibaba |	it's not perfect
+EDL	00:14:28,567	00:14:32,767	| Authenticate2024-alibaba |	but for test purposes is enough
+EDL	00:14:32,767	00:14:33,277	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:14:33,277	00:14:34,057	| Authenticate2024-alibaba |	Okay
+EDL	00:14:34,057	00:14:34,636	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:14:34,636	00:14:39,230	| Authenticate2024-alibaba |	so here's the now next to the future thought
+EDL	00:14:39,230	00:14:48,549	| Authenticate2024-alibaba |	I'd like to share first is the a few new designs from our colleague Mr Wang Kang
+EDL	00:14:48,549	00:14:41,509	| Authenticate2024-alibaba |	Low budget gadgets
+EDL	00:14:41,509	00:14:42,019	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:14:42,019	00:14:46,090	| Authenticate2024-alibaba |	We are currently using platform authenticators
+EDL	00:14:46,090	00:14:48,080	| Authenticate2024-alibaba |	in some cases
+EDL	00:14:48,080	00:14:49,070	| Authenticate2024-alibaba |	[ SPACE 1.0 secs ]
+EDL	00:14:49,070	00:14:50,408	| Authenticate2024-alibaba |	it may not work.
+EDL	00:14:50,408	00:14:58,450	| Authenticate2024-alibaba |	We look at USB security keys and they support all kinds of computers, phones, browsers and operating system
+EDL	00:14:58,450	00:14:59,039	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:14:59,039	00:15:01,480	| Authenticate2024-alibaba |	but they are currently very expensive
+EDL	00:15:01,480	00:15:08,429	| Authenticate2024-alibaba |	especially when we think about the deployer hundreds of thousands of keys to the company
+EDL	00:15:08,429	00:15:14,039	| Authenticate2024-alibaba |	Yeah, so we also tried NFC card that has FIDO 2.0 support
+EDL	00:15:14,039	00:15:15,669	| Authenticate2024-alibaba |	It works pretty well
+EDL	00:15:15,669	00:15:20,049	| Authenticate2024-alibaba |	but Chrome on Android only supports FIDO 1.0
+EDL	00:15:20,049	00:15:20,590	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:15:20,590	00:15:24,149	| Authenticate2024-alibaba |	So why we don't just make an NFC card reader
+EDL	00:15:24,149	00:15:26,220	| Authenticate2024-alibaba |	and maybe as a bridge
+EDL	00:15:26,220	00:15:30,299	| Authenticate2024-alibaba |	translate those protocol into the FIDO 2 USB HID device
+EDL	00:15:30,299	00:15:31,000	| Authenticate2024-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:15:31,000	00:15:35,549	| Authenticate2024-alibaba |	So we are now working with Infineon and the card manufacturer Watchdata
+EDL	00:15:35,549	00:15:35,960	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:15:35,960	00:15:40,679	| Authenticate2024-alibaba |	So please feel free to talk with me or Infineon in the expo hall later
+EDL	00:15:40,679	00:15:42,750	| Authenticate2024-alibaba |	So there will be concerns
+EDL	00:15:42,750	00:15:43,870	| Authenticate2024-alibaba |	will it work?
+EDL	00:15:43,870	00:15:44,600	| Authenticate2024-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:15:44,600	00:15:52,909	| Authenticate2024-alibaba |	And we looked carefully into the documents and found that chapter teaching us how to migrate U2F to FIDO2
+EDL	00:15:52,909	00:15:55,320	| Authenticate2024-alibaba |	And yesterday evening
+EDL	00:15:55,320	00:15:56,789	| Authenticate2024-alibaba |	I also visited the expo hall
+EDL	00:15:56,789	00:15:59,879	| Authenticate2024-alibaba |	I found some companies have a similar idea
+EDL	00:15:59,879	00:16:00,509	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:16:00,509	00:16:02,860	| Authenticate2024-alibaba |	like as we are thinking
+EDL	00:16:02,860	00:16:05,100	| Authenticate2024-alibaba |	and basically the Crypto
+EDL	00:16:05,100	00:16:05,590	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:16:05,590	00:16:07,440	| Authenticate2024-alibaba |	I think it's possible
+EDL	00:16:07,440	00:16:09,440	| Authenticate2024-alibaba |	And according to the document
+EDL	00:16:09,440	00:16:13,820	| Authenticate2024-alibaba |	I think the crypto signature also does not need to be regenerated
+EDL	00:16:13,820	00:16:14,580	| Authenticate2024-alibaba |	[ SPACE 0.8 secs ]
+EDL	00:16:14,580	00:16:20,879	| Authenticate2024-alibaba |	And there are some equations also about the migration on the right corner
+EDL	00:16:20,879	00:16:23,019	| Authenticate2024-alibaba |	I hope it will help
+EDL	00:16:23,019	00:16:31,509	| Authenticate2024-alibaba |	[ SPACE 8.5 secs ]
+EDL	00:16:31,509	00:16:36,700	| Authenticate2024-alibaba |	The number two of our further sort has no slides
+EDL	00:16:36,700	00:16:37,330	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:16:37,330	00:16:43,323	| Authenticate2024-alibaba |	Yes we are currently building our own Zero Trust Enterprise Networking System
+EDL	00:16:43,323	00:16:47,740	| Authenticate2024-alibaba |	and integrating FIDO Passkey into the whole system
+EDL	00:16:47,740	00:16:50,259	| Authenticate2024-alibaba |	It's very important in the first step of our work
+EDL	00:16:50,259	00:16:52,179	| Authenticate2024-alibaba |	and it's very very challenging
+EDL	00:16:52,179	00:16:52,789	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:16:52,789	00:16:54,799	| Authenticate2024-alibaba |	And unfortunately
+EDL	00:16:54,799	00:16:59,100	| Authenticate2024-alibaba |	because we are still in very early stage of the work
+EDL	00:16:59,100	00:17:02,049	| Authenticate2024-alibaba |	so I may not be able to share too much info about that
+EDL	00:17:02,049	00:17:02,440	| Authenticate2024-alibaba |	I hope
+EDL	00:17:02,440	00:17:02,799	| Authenticate2024-alibaba |	[ SPACE 0.4 secs ]
+EDL	00:17:02,799	00:17:07,799	| Authenticate2024-alibaba |	I wish I could, next year we can share more about our progress
+EDL	00:17:07,799	00:17:08,890	| Authenticate2024-alibaba |	[ SPACE 1.1 secs ]
+EDL	00:17:08,890	00:17:10,259	| Authenticate2024-alibaba |	If you are interested
+EDL	00:17:10,259	00:17:10,859	| Authenticate2024-alibaba |	[ SPACE 0.6 secs ]
+EDL	00:17:10,859	00:17:16,150	| Authenticate2024-alibaba |	please feel free to talk with me offline in the expo on this topic
+EDL	00:17:16,150	00:17:21,769	| Authenticate2024-alibaba |	[ SPACE 5.6 secs ]
+EDL	00:17:21,769	00:17:22,230	| Authenticate2024-alibaba |	Yeah
+EDL	00:17:22,230	00:17:23,289	| Authenticate2024-alibaba |	last but not least
+EDL	00:17:23,289	00:17:30,539	| Authenticate2024-alibaba |	we are using these two websites for our daily work and debugger on our user computers
+EDL	00:17:30,539	00:17:33,099	| Authenticate2024-alibaba |	And we found that they are very
+EDL	00:17:33,099	00:17:36,650	| Authenticate2024-alibaba |	very helpful for our daily work for our developers
+EDL	00:17:36,650	00:17:37,180	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:17:37,180	00:17:38,990	| Authenticate2024-alibaba |	So they are both created by Matthew
+EDL	00:17:38,990	00:17:40,109	| Authenticate2024-alibaba |	So thank you Matthew
+EDL	00:17:40,109	00:17:41,049	| Authenticate2024-alibaba |	it rocks!
+EDL	00:17:41,049	00:17:47,029	| Authenticate2024-alibaba |	[ Audience (Probably Matthew): You are welcome! ]
+EDL	00:17:47,029	00:17:47,420	| Authenticate2024-alibaba |	So
+EDL	00:17:47,420	00:17:47,730	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:17:47,730	00:17:48,210	| Authenticate2024-alibaba |	thank you
+EDL	00:17:48,210	00:17:50,269	| Authenticate2024-alibaba |	I think that's all my sharing
+EDL	00:17:50,269	00:17:52,900	| Authenticate2024-alibaba |	And thank you for sharing (your time)
+EDL	00:17:52,900	00:17:54,109	| Authenticate2024-alibaba |	And I'm really
+EDL	00:17:54,109	00:17:55,980	| Authenticate2024-alibaba |	thank you for the conference
+EDL	00:17:55,980	00:17:57,289	| Authenticate2024-alibaba |	for Megan
+EDL	00:17:57,289	00:17:58,329	| Authenticate2024-alibaba |	for Andrew
+EDL	00:17:58,329	00:17:59,480	| Authenticate2024-alibaba |	for the FIDO Alliance
+EDL	00:17:59,480	00:18:06,230	| Authenticate2024-alibaba |	to give us a chance to show our working and progress on our FIDO key deployment
+EDL	00:18:06,230	00:18:07,299	| Authenticate2024-alibaba |	And thank you
+EDL	00:18:07,299	00:18:08,180	| Authenticate2024-alibaba |	thank you so much
+EDL	00:18:08,180	00:18:11,150	| Authenticate2024-alibaba |	[ SPACE 3.0 secs ]
+EDL	00:18:11,150	00:18:11,849	| Authenticate2024-alibaba |	All right
+EDL	00:18:11,849	00:18:12,549	| Authenticate2024-alibaba |	thanks so much
+EDL	00:18:12,549	00:18:13,220	| Authenticate2024-alibaba |	[ SPACE 0.7 secs ]
+EDL	00:18:13,220	00:18:14,519	| Authenticate2024-alibaba |	I appreciate that
+EDL	00:18:14,519	00:18:17,759	| Authenticate2024-alibaba |	And I think that wraps up today for us here
+EDL	00:18:17,759	00:18:18,250	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:18:18,250	00:18:21,240	| Authenticate2024-alibaba |	or at least the formal part of the day
+EDL	00:18:21,240	00:18:21,549	| Authenticate2024-alibaba |	[ SPACE 0.3 secs ]
+EDL	00:18:21,549	00:18:23,500	| Authenticate2024-alibaba |	I hope to see you all at 6
+EDL	00:18:23,500	00:18:24,609	| Authenticate2024-alibaba |	6 30
+EDL	00:18:24,609	00:18:28,789	| Authenticate2024-alibaba |	Sorry for the authenticated party by the pool
+EDL	00:18:28,789	00:18:29,240	| Authenticate2024-alibaba |	[ SPACE 0.5 secs ]
+EDL	00:18:29,240	00:18:29,779	| Authenticate2024-alibaba |	Thank you
+
