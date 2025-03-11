@@ -11,3 +11,5 @@
  - [X] media prefix
  - [ ] another html: srt2tsv, tsv2roughcut
  - [ ] preview play: cursor automation with the help of javascript timeout.
+
+ - [ ] Add an Save button to save this html to local disk. courtesy of xujie04
