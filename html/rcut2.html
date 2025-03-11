@@ -136,6 +136,9 @@
       </div>
       <div class="toolbar">
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2roughcut.py" target="_blank" class="button-style"> Download tsv2roughcut.py </a>
+	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/srt2tsv.py" target="_blank" class="button-style"> Download srt2tsv.py </a>
+	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/html/rcut2.html" target="_blank" class="button-style"> Download rcut2.html </a>
+	      <a href="https://github.com/scateu/tsv_edl.vim" target="_blank" class="button-style"> Project Homepage </a>
       </div>
       <div>
 	      <details open> <summary> DEBUG INFO </summary>
@@ -731,7 +734,7 @@
 /////////// Media file url prefix adding
 function setPrefix() {
     const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
-    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/", currentPrefix);
+    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/\n       file:///Users/k/www/some/", currentPrefix);
     
     if (prefix !== null) {  // if user didn't click Cancel
         // Add trailing slash if missing
