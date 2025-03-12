@@ -16,3 +16,13 @@
  - [X] Add an Save button to save this html to local disk. courtesy of xujie04
 
  - [ ] CORS - localhost 
+
+
+
+Compatibility table:
+
+| Media Server \ HTML Server | file:/// | http://     | https://    |
+| file:///                   | OK       | Not allowed |             |
+| http://                    | OK       | OK          | X           |
+| https://                   | OK       | No response | not allowed |
+
