@@ -106,6 +106,16 @@
 	.button-style:hover {
 	background-color: #e0e0e0;
 	}
+
+	.item {
+    display: inline-block;
+    padding: 0 15px;
+    border-right: 1px solid #ccc;
+	}
+	.item:last-child {
+	    border-right: none;
+	}
+
       </style>
    </head>
    <body>
@@ -152,18 +162,23 @@
 		      <div class="toolbar">
 			      <button onclick="loadTextFromURL()"> Load Sample </button>
 		      </div>
+
 		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
+			  <span class="item">
 			    Media URL: <span id="currentMediaURL" style="font-family: monospace;">will be http://prefix.example.com/path/clipname.mp4</span></span>
-			</div>
-		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
-			    <span>Media URL Prefix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
-			    <button onclick="setPrefix()">Set Prefix</button>
-			    <button onclick="clearPrefix()">Clear Prefix</button>
-			</div>
-		      <div class="config-zone" style="margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
-			    <span>Media ext. name suffix: <span id="currentSuffix" style="font-family: monospace;"></span></span>
-			    <button onclick="setSuffix()">Set Suffix</button>
-			    <button onclick="clearSuffix()">Clear Suffix</button>
+			  </span>
+			  <span class="separator">  </span>
+			  <span class="item">
+			    <span>Prefix: <span id="currentPrefix" style="font-family: monospace;"></span></span>
+			    <button onclick="setPrefix()">SET</button>
+			    <button onclick="clearPrefix()">CLR</button>
+			  </span>
+			  <span class="item">
+			  <span class="separator">  </span>
+			    <span>ext. name Suffix: <span id="currentSuffix" style="font-family: monospace;"></span></span>
+			    <button onclick="setSuffix()">SET</button>
+			    <button onclick="clearSuffix()">CLR</button>
+			  </span>
 			</div>
 		      <!--<div>
 			 <textarea id="debug1" placeholder="Debug Info 1"></textarea>
