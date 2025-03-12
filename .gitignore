@@ -11,3 +11,5 @@ mpv-latest.tar.gz
 socat_macOS.bin
 documentation
 utils/_tsv2roughcut.py
+html/go-http-server-*
+html/build.sh
