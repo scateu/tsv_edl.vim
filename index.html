@@ -1,121 +1,122 @@
-<!-- with the help of claude35_sonnet2 -->
 <!DOCTYPE html>
 <html lang="en">
    <head>
       <meta charset="UTF-8">
       <title>rCut</title>
       <style>
-         body {
-         font-family: Arial, sans-serif;
-         margin: 20px;
-         background-color: #f0f0f0;
-         }
-         .container {
-         max-width: 1200px;
-         margin: 0 auto;
-         }
-         .video-container {
-         width: 100%;
-         margin-bottom: 20px;
-         }
-         video {
-         width: 100%;
-         background: #000;
-         }
-         .toolbar {
-         background: #333;
-         padding: 10px;
-         margin: 10px 0;
-         border-radius: 5px;
-         color: white;
-         }
-         .toolbar button {
-         padding: 5px 15px;
-         margin: 0 5px;
-         cursor: pointer;
-         }
-         textarea {
-         width: 100%;
-         height: 300px;
-         margin-top: 20px;
-         padding: 10px;
-         font-family: monospace;
-         font-size: 14px;
-         line-height: 1.5;
-         /* Add these properties for better selection visibility */
-         caret-color: blue;
-         selection-background-color: #b3d4fc;
-         }
-         /* For webkit browsers */
-         textarea::selection {
-         background: #b3d4fc;
-         }
-         #currentTimecode {
-         display: inline-block;
-         margin-left: 20px;
-         font-family: monospace;
-         }
-         #currentFilename {
-         display: inline-block;
-         margin-left: 20px;
-         font-family: monospace;
-         }
-         button[onclick="saveToLocal()"] {
-         transition: background-color 0.3s;
-         }
-         /* Optional: Add save indicator */
-         button[onclick="saveToLocal()"]::after {
-         content: '';
-         display: inline-block;
-         width: 8px;
-         height: 8px;
-         border-radius: 50%;
-         margin-left: 5px;
-         background-color: transparent;
-         }
-         button[onclick="saveToLocal()"].saving::after {
-         background-color: #ffb700;
-         }
-         button[onclick="saveToLocal()"].saved::after {
-         background-color: #00ff00;
-         }
-         .clear-button {
-         transition: background-color 0.3s;
-         }
-         .clear-button:hover {
-         background-color: #ffeeee; /* Light red hover effect */
-         }
-         button[onclick="toggleCurrentLine()"] {
-         transition: background-color 0.3s;
-         }
-         button[onclick="toggleCurrentLine()"].toggled {
-         background-color: #e0e0e0;
-         }
-
-	.button-style {
-	display: inline-block;
-	padding: 4px 8px;
-	background-color: #f0f0f0;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	text-decoration: none;
-	color: black;
-	cursor: pointer;
+	body {
+		font-family: Arial, sans-serif;
+		margin: 20px;
+		background-color: #f0f0f0;
 	}
+	 .container {
+		 max-width: 1200px;
+		 margin: 0 auto;
+	 }
+	 .video-container {
+		 width: 100%;
+		 margin-bottom: 20px;
+	 }
+	 video {
+		 width: 100%;
+		 background: #000;
+	 }
+	 .toolbar {
+		 background: #333;
+		 padding: 10px;
+		 margin: 10px 0;
+		 border-radius: 5px;
+		 color: white;
+	 }
+	 .toolbar button {
+		 padding: 5px 15px;
+		 margin: 0 5px;
+		 cursor: pointer;
+	 }
+	 textarea {
+		 width: 100%;
+		 height: 300px;
+		 margin-top: 20px;
+		 padding: 10px;
+		 font-family: monospace;
+		 font-size: 14px;
+		 line-height: 1.5;
+		 /* Add these properties for better selection visibility */
+		 caret-color: blue;
+		 selection-background-color: #b3d4fc;
+	 }
+	 /* For webkit browsers */
+	 textarea::selection {
+		 background: #b3d4fc;
+	 }
+	 #contentArea {
 
-	.button-style:hover {
-	background-color: #e0e0e0;
-	}
+	 }
+	 #currentTimecode {
+		 display: inline-block;
+		 margin-left: 20px;
+		 font-family: monospace;
+	 }
+	 #currentFilename {
+		 display: inline-block;
+		 margin-left: 20px;
+		 font-family: monospace;
+	 }
+	 button[onclick="saveToLocal()"] {
+		 transition: background-color 0.3s;
+	 }
+	 /* Optional: Add save indicator */
+	 button[onclick="saveToLocal()"]::after {
+		 content: '';
+		 display: inline-block;
+		 width: 8px;
+		 height: 8px;
+		 border-radius: 50%;
+		 margin-left: 5px;
+		 background-color: transparent;
+	 }
+	 button[onclick="saveToLocal()"].saving::after {
+		 background-color: #ffb700;
+	 }
+	 button[onclick="saveToLocal()"].saved::after {
+		 background-color: #00ff00;
+	 }
+	 .clear-button {
+		 transition: background-color 0.3s;
+	 }
+	 .clear-button:hover {
+		 background-color: #ffeeee; /* Light red hover effect */
+	 }
+	 button[onclick="toggleCurrentLine()"] {
+		 transition: background-color 0.3s;
+	 }
+	 button[onclick="toggleCurrentLine()"].toggled {
+		 background-color: #e0e0e0;
+	 }
 
-	.item {
-    display: inline-block;
-    padding: 0 15px;
-    border-right: 1px solid #ccc;
-	}
-	.item:last-child {
-	    border-right: none;
-	}
+	 .button-style {
+		 display: inline-block;
+		 padding: 4px 8px;
+		 background-color: #f0f0f0;
+		 border: 1px solid #ccc;
+		 border-radius: 4px;
+		 text-decoration: none;
+		 color: black;
+		 cursor: pointer;
+	 }
 
+	 .button-style:hover {
+		 background-color: #e0e0e0;
+	 }
+
+	 .item {
+		 display: inline-block;
+		 padding: 0 15px;
+		 border-right: 1px solid #ccc;
+	 }
+	 .item:last-child {
+		 border-right: none;
+	 }
       </style>
    </head>
    <body>
@@ -128,20 +129,19 @@
          </video>
       </div>
       <div class="toolbar">
-         <button id="playPauseButton" onclick="togglePlayPause()">▶</button>
+         <button title="outside: Space; inside: Shift-Space" id="playPauseButton" onclick="togglePlayPause()">▶</button>
          <button onclick="seekBack()">-10s</button>
          <button onclick="seekForward()">+10s</button>
-         <button onclick="findCurrentPosition()">Seek▼</button>
-         <button onclick="toggleCurrentLine()">(un)❌</button>  
-         <button onclick="markInPoint()">IN▼</button> 
-         <button onclick="markOutPoint()">OUT▼</button>  
-         <button onclick="saveToLocal()">💾 Cache</button>
-         <button onclick="clearSavedContent()" class="clear-button">🗑 Cache</button> 
+         <button title="s" onclick="findCurrentPosition()">Seek▼</button>
+         <button title="inside: Shift-Backspace; outside: t" onclick="toggleCurrentLine()">(un)❌</button>  
+         <button title="outside: i" onclick="markInPoint()">IN▼</button> 
+         <button title="outside: o" onclick="markOutPoint()">OUT▼</button>  
+         <button title="Ctrl-s" onclick="saveToLocal()">💾 Cache</button>
          <span id="currentTimecode">00:00:00,000</span>
          <span id="currentFilename"></span>
       </div>
       <div class="textarea-container">
-         <textarea id="contentArea" placeholder="Paste tsv EDL content here... (can be generated by srt2tsv.py)
+         <textarea id="contentArea" spellCheck="false" placeholder="Paste tsv EDL content here... (can be generated by srt2tsv.py)
             or cat some.srt | sed -n -r '1{/^$/n;};/^[0-9]+$/{n; s/ --> /\t/; s/$/\t| _CLIPNAME_ |\t/; N; s/\n//; h; d;}; /^$/! { H; $!d;}; x; s/\n/\\N/g; s/^/EDL\t/;p' > some.tsv
 
             Format: EDL[tab]00:00:00,000[tab]00:00:00,000[tab]| Filename |[tab]Subtitle
@@ -156,6 +156,8 @@
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/html/rcut2.html" target="_blank" class="button-style"> rcut2.html </a>
 	      <a href="https://github.com/scateu/tsv_edl.vim" target="_blank" class="button-style"> Project Homepage </a>
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2fcpxml.py" target="_blank" class="button-style"> tsv2fcpxml.py </a>
+         <button onclick="reloadMedia()">Reload Media</button> 
+         <button onclick="clearSavedContent()" >🗑 Cache</button> 
       </div>
       <div>
 	      <details open> <summary> ADVANCED CONFIGURATION </summary>
@@ -191,6 +193,7 @@
          let currentFilename = ""; // Default filename
          //let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
          let currentClipName = ""; // Remove .mp4 extension for comparison
+	 let lastKnownCursorPosition = 0; // to maintain cursor position of textarea contentArea
          
          const video = document.getElementById('videoPlayer');
          const textarea = document.getElementById('contentArea');
@@ -223,13 +226,14 @@
 
 	 //utils
 	 function isValidTimecode(timecode) {
-	    // Check format: HH:MM:SS,mmm
-	    const regex = /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]),([0-9]{3})$/;
-	    return regex.test(timecode);
-	}
+		 // Check format: HH:MM:SS,mmm
+		 //   const regex = /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]),([0-9]{3})$/;
+		 const regex = /^\d\d:\d\d:\d\d,\d\d\d$/;
+		 return regex.test(timecode);
+	 }
          function timecodeToSeconds(timecode) {
 	     if (!isValidTimecode(timecode)) {
-		console.error('Invalid timecode format. Expected HH:MM:SS,mmm');
+		console.error('timecodeToSeconds: Invalid timecode format. Expected HH:MM:SS,mmm' + '   ' + timecode);
 		return 0;
 	    }
          	const parts = timecode.split(/[:,]/);
@@ -307,8 +311,8 @@
 
          	const parts = line.split('\t');
          	if (parts.length >= 5 && parts[0] === 'EDL') {
-         		const timecodeIn = parts[1];
-         		const timecodeOut = parts[2];
+         		const timecodeIn = parts[1].trim();
+         		const timecodeOut = parts[2].trim();
          		const clipName = parts[3].replace(/\|/g, '').trim();
          		const subtitle = parts[4];
 
@@ -393,10 +397,25 @@
          function seekForward() {
          	video.currentTime = Math.min(video.duration, video.currentTime + 10);
          }
-         
+
+	 textarea.addEventListener('blur', () => {
+		 lastKnownCursorPosition = textarea.selectionStart;
+	 });
+
+	 textarea.addEventListener('click', () => {
+		 lastKnownCursorPosition = textarea.selectionStart;
+	 });
+
+	 textarea.addEventListener('keyup', () => {
+		 lastKnownCursorPosition = textarea.selectionStart;
+	 });
+ 
          function toggleCurrentLine() {
-         	// Get the current cursor position and line
-         	const cursorPosition = textarea.selectionStart;
+		// Use the last known position if textarea is not focused
+		const cursorPosition = textarea.matches(':focus') ? 
+			 textarea.selectionStart : 
+			 lastKnownCursorPosition;
+
          	const lines = textarea.value.split('\n');
          	let currentLineIndex = textarea.value.substr(0, cursorPosition).split('\n').length - 1;
          	const currentLine = lines[currentLineIndex];
@@ -428,6 +447,7 @@
          			}, 200);
          		}
          	}
+		textarea.focus();
          }
          
          function findCurrentPosition() {
@@ -579,7 +599,7 @@
          
          // Optional: Add keyboard shortcut (e.g., 'F' key) to find current position
          document.addEventListener('keydown', function(e) {
-         	if ((e.key === 'f' || e.key === 'F') && e.target.tagName !== 'TEXTAREA') {
+         	if ((e.key === 's' || e.key === 'S') && e.target.tagName !== 'TEXTAREA') {
          		e.preventDefault(); // Prevent default 'find' dialog in browser
          		findCurrentPosition();
          	}
@@ -605,6 +625,7 @@
          		e.preventDefault();
          		toggleCurrentLine();
          	}
+
          });
          // Update timecode display
          video.addEventListener('timeupdate', function() {
@@ -642,6 +663,15 @@
 			// Move cursor after tab
 			this.selectionStart = this.selectionEnd = start + 1;
 		}
+
+	        if (e.key === 'Backspace' && e.shiftKey && !e.ctrlKey && !e.altKey) {
+         		e.preventDefault();
+         		toggleCurrentLine();
+         	}
+	        if (e.key === ' ' && e.shiftKey && !e.ctrlKey && !e.altKey) {
+         		e.preventDefault();
+         		togglePlayPause();
+         	}
 	});
          
          //////////////////// localStorage
@@ -757,52 +787,55 @@
 	    }
 	}
 
-/////////// Media file url prefix adding
-function setPrefix() {
-    const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
-    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/\n       file:///Users/k/www/some/", currentPrefix);
-    
-    if (prefix !== null) {  // if user didn't click Cancel
-        // Add trailing slash if missing
-        let normalizedPrefix = prefix.trim();
-        if (normalizedPrefix && !normalizedPrefix.endsWith('/')) {
-            normalizedPrefix += '/';
-        }
-        localStorage.setItem('videoUrlPrefix', normalizedPrefix);
-        updatePrefixDisplay();
 
-        //reload video
-        currentClipName = ""; // make it sure to invoke changeVideo()
-	const currentLine = getCurrentLineContent();
-	if (currentLine) {
-		processEDLLine(currentLine);
+        function reloadMedia(){
+		//reload video
+		currentClipName = ""; // make it sure to invoke changeVideo()
+		const currentLine = getCurrentLineContent();
+		if (currentLine) {
+			processEDLLine(currentLine);
+		}
 	}
-    }
-}
 
-function clearPrefix() {
-    localStorage.removeItem('videoUrlPrefix');
-    updatePrefixDisplay();
-	//reload video
-	currentClipName = ""; // make it sure to invoke changeVideo()
-	const currentLine = getCurrentLineContent();
-	if (currentLine) {
-		processEDLLine(currentLine);
+	/////////// Media file url prefix adding
+	function setPrefix() {
+	    const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
+	    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/\n       file:///Users/k/www/some/", currentPrefix);
+	    
+	    if (prefix !== null) {  // if user didn't click Cancel
+		// Add trailing slash if missing
+		let normalizedPrefix = prefix.trim();
+		if (normalizedPrefix && !normalizedPrefix.endsWith('/')) {
+		    normalizedPrefix += '/';
+		}
+		localStorage.setItem('videoUrlPrefix', normalizedPrefix);
+		updatePrefixDisplay();
+
+		//reload video
+		reloadMedia();
+	    }
 	}
-}
 
-function updatePrefixDisplay() {
-    const prefixDisplay = document.getElementById('currentPrefix');
-    const currentPrefix = localStorage.getItem('videoUrlPrefix');
-    prefixDisplay.textContent = currentPrefix || '(none)';
-}
+	function clearPrefix() {
+	    localStorage.removeItem('videoUrlPrefix');
+	    updatePrefixDisplay();
+            reloadMedia();
+	}
 
-// Load saved prefix when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    updatePrefixDisplay();
-});
+	function updatePrefixDisplay() {
+	    const prefixDisplay = document.getElementById('currentPrefix');
+	    const currentPrefix = localStorage.getItem('videoUrlPrefix');
+	    prefixDisplay.textContent = currentPrefix || '(none)';
+	}
+
+	// Load saved prefix when page loads
+	document.addEventListener('DOMContentLoaded', () => {
+	    updatePrefixDisplay();
+	});
 
 
       </script>
    </body>
 </html>
+<!-- with the help of claude35_sonnet2, Thank you! -->
+<!-- !tidy -mi -html -wrap 0 % -->
