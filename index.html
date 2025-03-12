@@ -32,6 +32,7 @@
 		 padding: 5px 15px;
 		 margin: 0 5px;
 		 cursor: pointer;
+		 //height: 20px;
 	 }
 	 textarea {
 		 width: 100%;
@@ -69,8 +70,6 @@
 	 button[onclick="saveToLocal()"]::after {
 		 content: '';
 		 display: inline-block;
-		 width: 8px;
-		 height: 8px;
 		 border-radius: 50%;
 		 margin-left: 5px;
 		 background-color: transparent;
@@ -103,6 +102,8 @@
 		 text-decoration: none;
 		 color: black;
 		 cursor: pointer;
+		 margin-left: 5px;
+		 margin-right: 5px;
 	 }
 
 	 .button-style:hover {
@@ -133,10 +134,10 @@
          <button onclick="seekBack()">-10s</button>
          <button onclick="seekForward()">+10s</button>
          <button title="s" onclick="findCurrentPosition()">Seek▼</button>
-         <button title="inside: Shift-Backspace; outside: t" onclick="toggleCurrentLine()">(un)❌</button>  
+         <button title="inside: Shift-Backspace; outside: x" onclick="toggleCurrentLine()">(un)X</button>  
          <button title="outside: i" onclick="markInPoint()">IN▼</button> 
          <button title="outside: o" onclick="markOutPoint()">OUT▼</button>  
-         <button title="Ctrl-s" onclick="saveToLocal()">💾 Cache</button>
+         <button title="Ctrl-s" onclick="saveToLocal()">💾 Local</button>
          <span id="currentTimecode">00:00:00,000</span>
          <span id="currentFilename"></span>
       </div>
@@ -150,6 +151,9 @@
             EDL	00:03:14,394	00:03:17,030	| VideoClip1 |	Group. He's a staff security engineer.
 	    "></textarea>
       </div>
+      <div>
+	      <details open> <summary> ADVANCED CONFIGURATION </summary>
+
       <div class="toolbar">
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2roughcut.py" target="_blank" class="button-style"> tsv2roughcut.py </a>
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/srt2tsv.py" target="_blank" class="button-style"> srt2tsv.py </a>
@@ -157,10 +161,8 @@
 	      <a href="https://github.com/scateu/tsv_edl.vim" target="_blank" class="button-style"> Project Homepage </a>
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2fcpxml.py" target="_blank" class="button-style"> tsv2fcpxml.py </a>
          <button onclick="reloadMedia()">Reload Media</button> 
-         <button onclick="clearSavedContent()" >🗑 Cache</button> 
+         <button onclick="clearSavedContent()" >🗑 Local</button> 
       </div>
-      <div>
-	      <details open> <summary> ADVANCED CONFIGURATION </summary>
 		      <div class="config-zone" style="margin-top: 10px; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
 			  <span class="item">
 			    Media URL: <span id="currentMediaURL" style="font-family: monospace;">will be PREFIX/path/clipname.mp4</span></span>
@@ -173,13 +175,14 @@
 			  </span>
 			  <span class="item">
 			  <span class="separator">  </span>
-			    <span>ext. name Suffix: <span id="currentSuffix" style="font-family: monospace;"></span></span>
-			    <button onclick="setSuffix()">SET</button>
-			    <button onclick="clearSuffix()">CLR</button>
+			    <span>ext. name Suffix: <span id="currentSuffix" style="font-family: monospace;">.mp4</span></span>
+			    <!--<button onclick="setSuffix()">SET</button>
+			    <button onclick="clearSuffix()">CLR</button> -->
 			  </span>
 			</div>
 		      <div class="toolbar">
-			      <button onclick="loadTextFromURL()"> Load Sample </button>
+			      <button onclick="loadTextFromURL()"> Load Sample EDL file</button>
+	                     <a href="https://youtu.be/p7HuFz-RwsI" target="_blank" class="button-style"> Youtube Demo </a>
 		      </div>
 		      <!--<div>
 			 <textarea id="debug1" placeholder="Debug Info 1"></textarea>
@@ -207,7 +210,7 @@
          	if (video.paused) {
          		video.play();
          		playPauseButton.textContent = '⏸︎';
-         		playPauseButton.style.backgroundColor = '#ffcccc'; // Optional: visual feedback
+         		playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
          	} else {
          		video.pause();
          		playPauseButton.textContent = '▶';
@@ -218,6 +221,7 @@
          // Update button text when video state changes
          video.addEventListener('play', () => {
          	playPauseButton.textContent = '⏸︎';
+		playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
          });
          
          video.addEventListener('pause', () => {
@@ -621,7 +625,7 @@
          		e.preventDefault(); // Prevent browser's save dialog
          		saveToLocal();
          	}
-         	if ((e.key === 't' || e.key === 'T') && e.target.tagName !== 'TEXTAREA') {
+         	if ((e.key === 'x' || e.key === 'X') && e.target.tagName !== 'TEXTAREA') {
          		e.preventDefault();
          		toggleCurrentLine();
          	}
