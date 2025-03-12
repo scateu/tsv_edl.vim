@@ -15,3 +15,4 @@
  - [ ] preview play: cursor automation with the help of javascript timeout.
  - [X] Add an Save button to save this html to local disk. courtesy of xujie04
 
+ - [ ] CORS - localhost 
