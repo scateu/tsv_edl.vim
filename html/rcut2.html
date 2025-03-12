@@ -129,15 +129,14 @@
          </video>
       </div>
       <div class="toolbar">
-         <button id="playPauseButton" onclick="togglePlayPause()">▶</button>
+         <button title="outside: Space; inside: Shift-Space" id="playPauseButton" onclick="togglePlayPause()">▶</button>
          <button onclick="seekBack()">-10s</button>
          <button onclick="seekForward()">+10s</button>
-         <button onclick="findCurrentPosition()">Seek▼</button>
-         <button onclick="toggleCurrentLine()">(un)❌</button>  
-         <button onclick="markInPoint()">IN▼</button> 
-         <button onclick="markOutPoint()">OUT▼</button>  
-         <button onclick="saveToLocal()">💾 Cache</button>
-         <button onclick="clearSavedContent()" class="clear-button">🗑 Cache</button> 
+         <button title="s" onclick="findCurrentPosition()">Seek▼</button>
+         <button title="inside: Shift-Backspace; outside: t" onclick="toggleCurrentLine()">(un)❌</button>  
+         <button title="outside: i" onclick="markInPoint()">IN▼</button> 
+         <button title="outside: o" onclick="markOutPoint()">OUT▼</button>  
+         <button title="Ctrl-s" onclick="saveToLocal()">💾 Cache</button>
          <span id="currentTimecode">00:00:00,000</span>
          <span id="currentFilename"></span>
       </div>
@@ -157,6 +156,8 @@
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/html/rcut2.html" target="_blank" class="button-style"> rcut2.html </a>
 	      <a href="https://github.com/scateu/tsv_edl.vim" target="_blank" class="button-style"> Project Homepage </a>
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2fcpxml.py" target="_blank" class="button-style"> tsv2fcpxml.py </a>
+         <button onclick="reloadMedia()">Reload Media</button> 
+         <button onclick="clearSavedContent()" >🗑 Cache</button> 
       </div>
       <div>
 	      <details open> <summary> ADVANCED CONFIGURATION </summary>
@@ -786,53 +787,55 @@
 	    }
 	}
 
-/////////// Media file url prefix adding
-function setPrefix() {
-    const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
-    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/\n       file:///Users/k/www/some/", currentPrefix);
-    
-    if (prefix !== null) {  // if user didn't click Cancel
-        // Add trailing slash if missing
-        let normalizedPrefix = prefix.trim();
-        if (normalizedPrefix && !normalizedPrefix.endsWith('/')) {
-            normalizedPrefix += '/';
-        }
-        localStorage.setItem('videoUrlPrefix', normalizedPrefix);
-        updatePrefixDisplay();
 
-        //reload video
-        currentClipName = ""; // make it sure to invoke changeVideo()
-	const currentLine = getCurrentLineContent();
-	if (currentLine) {
-		processEDLLine(currentLine);
+        function reloadMedia(){
+		//reload video
+		currentClipName = ""; // make it sure to invoke changeVideo()
+		const currentLine = getCurrentLineContent();
+		if (currentLine) {
+			processEDLLine(currentLine);
+		}
 	}
-    }
-}
 
-function clearPrefix() {
-    localStorage.removeItem('videoUrlPrefix');
-    updatePrefixDisplay();
-	//reload video
-	currentClipName = ""; // make it sure to invoke changeVideo()
-	const currentLine = getCurrentLineContent();
-	if (currentLine) {
-		processEDLLine(currentLine);
+	/////////// Media file url prefix adding
+	function setPrefix() {
+	    const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
+	    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/\n       file:///Users/k/www/some/", currentPrefix);
+	    
+	    if (prefix !== null) {  // if user didn't click Cancel
+		// Add trailing slash if missing
+		let normalizedPrefix = prefix.trim();
+		if (normalizedPrefix && !normalizedPrefix.endsWith('/')) {
+		    normalizedPrefix += '/';
+		}
+		localStorage.setItem('videoUrlPrefix', normalizedPrefix);
+		updatePrefixDisplay();
+
+		//reload video
+		reloadMedia();
+	    }
 	}
-}
 
-function updatePrefixDisplay() {
-    const prefixDisplay = document.getElementById('currentPrefix');
-    const currentPrefix = localStorage.getItem('videoUrlPrefix');
-    prefixDisplay.textContent = currentPrefix || '(none)';
-}
+	function clearPrefix() {
+	    localStorage.removeItem('videoUrlPrefix');
+	    updatePrefixDisplay();
+            reloadMedia();
+	}
 
-// Load saved prefix when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    updatePrefixDisplay();
-});
+	function updatePrefixDisplay() {
+	    const prefixDisplay = document.getElementById('currentPrefix');
+	    const currentPrefix = localStorage.getItem('videoUrlPrefix');
+	    prefixDisplay.textContent = currentPrefix || '(none)';
+	}
+
+	// Load saved prefix when page loads
+	document.addEventListener('DOMContentLoaded', () => {
+	    updatePrefixDisplay();
+	});
 
 
       </script>
    </body>
 </html>
 <!-- with the help of claude35_sonnet2, Thank you! -->
+<!-- !tidy -mi -html -wrap 0 % -->
