@@ -20,7 +20,7 @@ SHORTCUTS:
     Shift -:           Decrease Video size 
     Shift +:           Increase Video size
     Shift 0:           Reset Video size
-    CLICK on line:     set Playhead to the text position (will calulate an interpolation according to IN/OUT)
+    CLICK on line:     set Playhead to the text position (will calculate an interpolation according to IN/OUT)
     UP/DOWN:           same as above
     ESC:               Focus on/off textarea
   OUTSIDE:
