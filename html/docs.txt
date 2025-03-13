@@ -6,6 +6,7 @@ INSTALL FFMPEG:
 EXPORT ROUGH CUT VIDEO:
   First copy EDL lines, then:
   $ pbpaste | python3 tsv2roughcut.py
+  Will ONLY select lines starts with 'EDL'
 
 EXPORT ROUGH CUT VIDEO, CHOOSE SOME WORDS:
   $ pbpaste | grep -e keyword1 -e keyword2 -e keyword3 | python3 tsv2roughcut.py
