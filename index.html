@@ -2,6 +2,7 @@
 <html lang="en">
    <head>
       <meta charset="UTF-8">
+      <meta http-equiv="Content-Security-Policy" content="media-src http: https: 'self' 'unsafe-inline'">
       <title>rCut</title>
       <style>
 	html, body {
@@ -143,7 +144,7 @@
    <body>
       <div class="container">
       <div class="video-container">
-         <video id="videoPlayer" controls>
+         <video id="videoPlayer" controls crossorigin="anonymous">
             <source src="" type="video/mp4">
 	    
             Your browser does not support the video element.
