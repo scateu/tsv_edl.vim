@@ -7,7 +7,7 @@
       <style>
 	html, body {
 		overscroll-behavior: none;
-		//overflow: hidden;
+		/*overflow: hidden;*/
 		-webkit-overflow-scrolling: auto;
 		overflow-scrolling: auto;
 	}
@@ -16,124 +16,144 @@
 		margin: 20px;
 		background-color: #f0f0f0;
 	}
-	 .container {
-		 max-width: 1200px;
-		 margin: 0 auto;
-	 }
-	 .video-container {
-		 width: 100%;
-		 margin-bottom: 20px;
-	 }
-	 video {
-		 width: 100%;
-		 background: #000;
-	 }
-	 .toolbar {
-		 background: #333;
-		 padding: 10px;
-		 margin: 10px 0;
-		 border-radius: 5px;
-		 color: white;
-	 }
-	 .toolbar button {
-		 padding: 5px 15px;
-		 margin: 0 5px;
-		 cursor: pointer;
-		 //height: 20px;
-	 }
-	 textarea {
-		 width: 100%;
-		 height: 300px;
-		 margin-top: 20px;
-		 padding: 10px;
-		 font-family: monospace;
-		 font-size: 14px;
-		 line-height: 1.5;
-		 /* Add these properties for better selection visibility */
-		 caret-color: blue;
-		 selection-background-color: #b3d4fc;
-	 }
-	 /* For webkit browsers */
-	 textarea::selection {
-		 background: #b3d4fc;
-	 }
-	 #contentArea {
-		 resize: both;
-	 }
-	 #currentTimecode {
-		 display: inline-block;
-		 margin-left: 20px;
-		 font-family: monospace;
-	 }
-	 #currentFilename {
-		 display: inline-block;
-		 margin-left: 20px;
-		 font-family: monospace;
-	 }
-	 button[onclick="saveToLocal()"] {
-		 transition: background-color 0.3s;
-	 }
-	 /* Optional: Add save indicator */
-	 button[onclick="saveToLocal()"]::after {
-		 content: '';
-		 display: inline-block;
-		 border-radius: 50%;
-		 margin-left: 5px;
-		 background-color: transparent;
-	 }
-	 button[onclick="saveToLocal()"].saving::after {
-		 background-color: #ffb700;
-	 }
-	 button[onclick="saveToLocal()"].saved::after {
-		 background-color: #00ff00;
-	 }
-	 .clear-button {
-		 transition: background-color 0.3s;
-	 }
-	 .clear-button:hover {
-		 background-color: #ffeeee; /* Light red hover effect */
-	 }
-	 button[onclick="toggleCurrentLine()"] {
-		 transition: background-color 0.3s;
-	 }
-	 button[onclick="toggleCurrentLine()"].toggled {
-		 background-color: #e0e0e0;
-	 }
+	.container {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+	.video-container {
+		width: 100%;
+		margin-bottom: 20px;
+		border: 1px solid #666; /* Basic border */
 
-	 .button-style {
-		 display: inline-block;
-		 padding: 4px 8px;
-		 background-color: #f0f0f0;
-		 border: 1px solid #ccc;
-		 border-radius: 4px;
-		 text-decoration: none;
-		 color: black;
-		 cursor: pointer;
-		 margin-left: 5px;
-		 margin-right: 5px;
-	 }
+	}
+	video {
+		width: 100%;
+		/*background: #000;*/
+	}
+	#videoPlayer::-webkit-media-controls {  /* Hide Progress Bar even paused */
+		opacity: 0;
+		transition: opacity 0.3s;
+	}
 
-	 .button-style:hover {
-		 background-color: #e0e0e0;
-	 }
+	#videoPlayer:hover::-webkit-media-controls {
+		opacity: 1;
+	}
 
-	 .item {
-		 display: inline-block;
-		 padding: 0 15px;
-		 border-right: 1px solid #ccc;
-	 }
-	 .item:last-child {
-		 border-right: none;
-	 }
+	/* Optional: For Firefox */
+	#videoPlayer {
+		-moz-user-select: none;
+	}
+
+	/* Alternative method if the above doesn't work */
+	.video-container:hover #videoPlayer::-webkit-media-controls {
+		opacity: 1;
+	}
+	.toolbar {
+		background: #333;
+		padding: 10px;
+		margin: 10px 0;
+		border-radius: 5px;
+		color: white;
+	}
+	.toolbar button {
+		padding: 5px 15px;
+		margin: 0 5px;
+		cursor: pointer;
+		//height: 20px;
+	}
+	textarea {
+		width: 100%;
+		height: 300px;
+		margin-top: 20px;
+		padding: 10px;
+		font-family: monospace;
+		font-size: 14px;
+		line-height: 1.5;
+		/* Add these properties for better selection visibility */
+		caret-color: blue;
+		selection-background-color: #b3d4fc;
+	}
+	/* For webkit browsers */
+	textarea::selection {
+		background: #b3d4fc;
+	}
+	#contentArea {
+		resize: both;
+	}
+	#currentTimecode {
+		display: inline-block;
+		margin-left: 20px;
+		font-family: monospace;
+	}
+	#currentFilename {
+		display: inline-block;
+		margin-left: 20px;
+		font-family: monospace;
+	}
+	button[onclick="saveToLocal()"] {
+		transition: background-color 0.3s;
+	}
+	/* Optional: Add save indicator */
+	button[onclick="saveToLocal()"]::after {
+		content: '';
+		display: inline-block;
+		border-radius: 50%;
+		margin-left: 5px;
+		background-color: transparent;
+	}
+	button[onclick="saveToLocal()"].saving::after {
+		background-color: #ffb700;
+	}
+	button[onclick="saveToLocal()"].saved::after {
+		background-color: #00ff00;
+	}
+	.clear-button {
+		transition: background-color 0.3s;
+	}
+	.clear-button:hover {
+		background-color: #ffeeee; /* Light red hover effect */
+	}
+	button[onclick="toggleCurrentLine()"] {
+		transition: background-color 0.3s;
+	}
+	button[onclick="toggleCurrentLine()"].toggled {
+		background-color: #e0e0e0;
+	}
+
+	.button-style {
+		display: inline-block;
+		padding: 4px 8px;
+		background-color: #f0f0f0;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		text-decoration: none;
+		color: black;
+		cursor: pointer;
+		margin-left: 5px;
+		margin-right: 5px;
+	}
+
+	.button-style:hover {
+		background-color: #e0e0e0;
+	}
+
+	.item {
+		display: inline-block;
+		padding: 0 15px;
+		border-right: 1px solid #ccc;
+	}
+	.item:last-child {
+		border-right: none;
+	}
 	#dropZone {
-	    background: #f8f9fa;
-	    border-radius: 4px;
-	    cursor: pointer;
-	    transition: all 0.3s ease;
+		background: #f8f9fa;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.3s ease;
 	}
 
 	#dropZone:hover {
-	    background: #e9ecef;
+		background: #e9ecef;
 	}
 
 	summary {
@@ -660,23 +680,23 @@
 
 		      // Shift + minus: decrease video size
 		      if (e.shiftKey && e.key === '_') {  // Shift + minus key
-			      const currentWidth = videoPlayer.offsetWidth;
+			      const currentHeight = videoPlayer.offsetHeight;
 			      e.preventDefault();
-			      videoPlayer.style.width = (currentWidth * 0.9) + 'px';  // Decrease by 10%
+			      videoPlayer.style.height = (currentHeight * 0.9) + 'px';  // Decrease by 10%
 		      }
 
 		      // Shift + plus: increase video size
 		      if (e.shiftKey && e.key === '+') {  // Shift + plus key
-			      const currentWidth = videoPlayer.offsetWidth;
+			      const currentHeight = videoPlayer.offsetHeight;
 			      e.preventDefault();
-			      videoPlayer.style.width = (currentWidth * 1.1) + 'px';  // Increase by 10%
+			      videoPlayer.style.height = (currentHeight * 1.1) + 'px';  // Increase by 10%
 		      }
 
 		      // Shift + 0: reset to default size
 		      if (e.shiftKey && e.key === ')') {  // Shift + 0 key
-			      const currentWidth = videoPlayer.offsetWidth;
+			      const currentHeight = videoPlayer.offsetHeight;
 			      e.preventDefault();
-			      videoPlayer.style.width = '100%';  // Reset to original size
+			      videoPlayer.style.height = '100%';  // Reset to original size
 		      }                
 
 		      // ESC
