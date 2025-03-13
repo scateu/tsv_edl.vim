@@ -44,25 +44,26 @@ START A LOCAL HTTP SERVER:
                                   file:///Users/Jeff/www/  (only works when locally open this HTML file)
 
 EXAMPLE:
-  Prefix: https://storage.googleapis.com/gtv-videos-bucket/sample/
-  or
-  Prefix: http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/
 
+Prefix: https://storage.googleapis.com/gtv-videos-bucket/sample/
+or
+Prefix: http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/
 
+EDL	00:00:03,019	00:00:03,019	| BigBuckBunny |	BigBuckBunny
+EDL	00:00:03,019	00:00:07,033	| ElephantsDream |	ElephantsDream
+EDL	00:00:09,528	00:00:11,169	| ForBiggerBlazes |	ForBiggerBlazes
+EDL	00:00:03,019	00:00:03,019	| ForBiggerEscapes |	ForBiggerEscapes
+EDL	00:00:03,019	00:00:07,033	| ForBiggerFun |	ForBiggerFun
+EDL	00:00:09,528	00:00:11,169	| ForBiggerJoyrides |	ForBiggerJoyrides
+EDL	00:00:03,019	00:00:03,019	| ForBiggerMeltdowns |	ForBiggerMeltdowns
+EDL	00:00:03,019	00:00:07,033	| Sintel |	Sintel
+EDL	00:00:09,528	00:00:11,169	| SubaruOutbackOnStreetAndDirt |	SubaruOutbackOnStreetAndDirt
+EDL	00:00:03,019	00:00:03,019	| TearsOfSteel |	TearsOfSteel
+EDL	00:00:03,019	00:00:07,033	| VolkswagenGTIReview |	VolkswagenGTIReview
+EDL	00:00:09,528	00:00:11,169	| WeAreGoingOnBullrun |	WeAreGoingOnBullrun
+EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand |	WhatCarCanYouGetForAGrand
 
-EDL	00:00:03,019	00:00:03,019	| BigBuckBunny |	 Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him, something snaps... and the rabbit ain't no bunny anymore! In the typical cartoon tradition he prepares the nasty rodents a comical revenge.
-EDL	00:00:03,019	00:00:07,033	| ElephantsDream |	 The first Blender Open Movie from 2006,
-EDL	00:00:09,528	00:00:11,169	| ForBiggerBlazes |	 HBO GO now works with Chromecast -- the easiest way to enjoy online video on your TV. For when you want to settle into your Iron Throne to watch the latest episodes. For $35.
-EDL	00:00:03,019	00:00:03,019	| ForBiggerEscapes |	 Introducing Chromecast. The easiest way to enjoy online video and music on your TV—for when Batman's escapes aren't quite big enough. For $35. Learn how to use Chromecast with Google Play Movies and more at google.com/chromecast.,
-EDL	00:00:03,019	00:00:07,033	| ForBiggerFun |	 Introducing Chromecast. The easiest way to enjoy online video and music on your TV. For $35.  Find out more at google.com/chromecast.,
-EDL	00:00:09,528	00:00:11,169	| ForBiggerJoyrides |	 Introducing Chromecast. The easiest way to enjoy online video and music on your TV—for the times that call for bigger joyrides. For $35. Learn how to use Chromecast with YouTube and more at google.com/chromecast.,
-EDL	00:00:03,019	00:00:03,019	| ForBiggerMeltdowns |	Introducing Chromecast. The easiest way to enjoy online video and music on your TV—for when you want to make Buster's big meltdowns even bigger. For $35. Learn how to use Chromecast with Netflix and more at google.com/chromecast., 
-EDL	00:00:03,019	00:00:07,033	| Sintel |	 Sintel is an independently produced short film, initiated by the Blender Foundation as a means to further improve and validate the free/open source 3D creation suite Blender. With initial funding provided by 1000s of donations via the internet community, it has again proven to be a viable development model for both open 3D technology as for independent animation film.
-EDL	00:00:09,528	00:00:11,169	| SubaruOutbackOnStreetAndDirt |	 Smoking Tire takes the all-new Subaru Outback to the highest point we can find in hopes our customer-appreciation Balloon Launch will get some free T-shirts into the hands of our viewers.,
-EDL	00:00:03,019	00:00:03,019	| TearsOfSteel |	 Tears of Steel was realized with crowd-funding by users of the open source 3D creation tool Blender. Target was to improve and test a complete open and free pipeline for visual effects in film - and to make a compelling sci-fi film in Amsterdam, the Netherlands.  The film itself, and all raw material used for making it, have been released under the Creatieve Commons 3.0 Attribution license. Visit the tearsofsteel.org website to find out more about this, or to purchase the 4-DVD box with a lot of extras.  (CC) Blender Foundation - http
-EDL	00:00:03,019	00:00:07,033	| VolkswagenGTIReview |	 The Smoking Tire heads out to Adams Motorsports Park in Riverside, CA to test the most requested car of 2010, the Volkswagen GTI. Will it beat the Mazdaspeed3's standard-setting lap time? Watch and see...,
-EDL	00:00:09,528	00:00:11,169	| WeAreGoingOnBullrun |	 The Smoking Tire is going on the 2010 Bullrun Live Rally in a 2011 Shelby GT500, and posting a video from the road every single day! The only place to watch them is by subscribing to The Smoking Tire or watching at BlackMagicShine.com,
-EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand |	 The Smoking Tire meets up with Chris and Jorge from CarsForAGrand.com to see just how far $1,000 can go when looking for a car.The Smoking Tire meets up with Chris and Jorge from CarsForAGrand.com to see just how far $1,000 can go when looking for a car.,
+from https://gist.github.com/jsturgis/3b19447b304616f18657
 
 古腾堡印刷机的出现，本意是方便圣经的印刷，之前一个教区只买得起一本手抄版。但它客观上使得写作变得触手可及，人人可写作。
 这个项目的目标是提供一把剪刀、一沓纸、一卷胶带、一支笔(如Bic Cristal廉价且好用)、一部打字机、一个键盘、一部印刷机。
