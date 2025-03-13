@@ -219,6 +219,8 @@
          const textarea = document.getElementById('contentArea');
          const timecodeDisplay = document.getElementById('currentTimecode');
          const playPauseButton = document.getElementById('playPauseButton');
+
+	 let isTextAreaFocused = false;  // Track focus state
          
          // Set initial filename when page loads
          filenameDisplay.textContent = currentFilename;
@@ -666,6 +668,19 @@
 			 videoPlayer.style.width = '100%';  // Reset to original size
 		 }                
 
+		 // ESC
+		 if (e.key === 'Escape') {
+			 e.preventDefault();
+			 if (isTextAreaFocused) {
+				 // If textarea is focused, blur it
+				 textarea.blur();
+				 isTextAreaFocused = false;
+			 } else {
+				 // If textarea is not focused, focus it
+				 textarea.focus();
+				 isTextAreaFocused = true;
+			 }
+		 }
          });
          // Update timecode display
          videoPlayer.addEventListener('timeupdate', function() {
