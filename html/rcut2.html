@@ -193,6 +193,7 @@
 			</div>
 		      <div id="dropZone" style="border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 10px 0;">
 			  Drag & Drop .srt file here to convert into tsv EDL lines. Will append to edit area.
+			      <input type="file" id="fileInput" accept=".srt" style="display: none;">
                      </div>
 		      <div class="toolbar">
 			      <button onclick="loadTextFromURL()"> Load Sample EDL file</button>
@@ -856,6 +857,16 @@
 
 function setupDropZone() {
     const dropZone = document.getElementById('dropZone');
+
+    // Make dropZone clickable
+    dropZone.addEventListener('click', () => {
+        fileInput.click();
+    });
+
+    // Handle file selection via click
+    fileInput.addEventListener('change', (e) => {
+        handleFiles(e.target.files);
+    });
 
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
