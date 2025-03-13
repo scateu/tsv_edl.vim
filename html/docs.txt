@@ -1,17 +1,17 @@
 INSTALL FFMPEG:
   https://www.ffmpeg.org/download.html
   mac: https://evermeet.cx/ffmpeg/
-  sudo mv ffmpeg /usr/local/bin/; sudo chmod +x /usr/local/bin/ffmpeg;
+  $ sudo mv ffmpeg /usr/local/bin/; sudo chmod +x /usr/local/bin/ffmpeg;
 
 EXPORT ROUGH CUT VIDEO:
-  first copy EDL lines, then:
+  First copy EDL lines, then:
   $ pbpaste | python3 tsv2roughcut.py
 
 EXPORT ROUGH CUT VIDEO, CHOOSE SOME WORDS:
   $ pbpaste | grep -e keyword1 -e keyword2 -e keyword3 | python3 tsv2roughcut.py
 
 EXPORT TO FCPXML FOR FURTHER EDITING:
-  pbpaste | python3 tsv2fcpxml.py > export.fcpxml
+  $ pbpaste | python3 tsv2fcpxml.py > export.fcpxml
 
 SHORTCUTS:
   INSIDE TEXTAREA:
@@ -27,10 +27,11 @@ SHORTCUTS:
 
 
 START A LOCAL HTTP SERVER:
-  python3 -m http.server
+  $ python3 -m http.server
   or
   $ ./go-http-server
-
+  Then set Prefix as, for example http://127.0.0.1/
+                                  http://192.168.10.3/
 
 古腾堡印刷机的出现，本意是方便圣经的印刷，之前一个教区只买得起一本手抄版。但它客观上使得写作变得触手可及，人人可写作。
 这个项目的目标是提供一支笔(如Bic Cristal，廉价但好用)、一部打字机。
