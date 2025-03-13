@@ -17,6 +17,9 @@ SHORTCUTS:
   INSIDE TEXTAREA:
     Shift - Space:     Pause / Play
     Shift - Backspace: change EDL / xxx status
+    Shift -:           Decrease Video size 
+    Shift +:           Increase Video size
+    Shift 0:           Reset Video size
   OUTSIDE:
     Space:             Pause / Play
     x:                 change EDL / xxx status

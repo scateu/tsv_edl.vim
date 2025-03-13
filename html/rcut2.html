@@ -215,7 +215,7 @@
          let currentClipName = ""; // Remove .mp4 extension for comparison
 	 let lastKnownCursorPosition = 0; // to maintain cursor position of textarea contentArea
          
-         const video = document.getElementById('videoPlayer');
+         const videoPlayer = document.getElementById('videoPlayer');
          const textarea = document.getElementById('contentArea');
          const timecodeDisplay = document.getElementById('currentTimecode');
          const playPauseButton = document.getElementById('playPauseButton');
@@ -224,24 +224,24 @@
          filenameDisplay.textContent = currentFilename;
          
          function togglePlayPause() {
-         	if (video.paused) {
-         		video.play();
+         	if (videoPlayer.paused) {
+         		videoPlayer.play();
          		playPauseButton.textContent = '⏸︎';
          		playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
          	} else {
-         		video.pause();
+         		videoPlayer.pause();
          		playPauseButton.textContent = '▶';
          		playPauseButton.style.backgroundColor = ''; // Reset button color
          	}
          }
          
          // Update button text when video state changes
-         video.addEventListener('play', () => {
+         videoPlayer.addEventListener('play', () => {
          	playPauseButton.textContent = '⏸︎';
 		playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
          });
          
-         video.addEventListener('pause', () => {
+         videoPlayer.addEventListener('pause', () => {
          	playPauseButton.textContent = '▶'; //U+25B6
          });
 
@@ -359,28 +359,26 @@
          
          			// After changing video, we need to wait for the video to load
          			// before seeking to the correct timecode
-         			video.addEventListener('loadeddata', function seekAfterLoad() {
-         				video.currentTime = timeAtCursor;
-         				video.removeEventListener('loadeddata', seekAfterLoad);
+         			videoPlayer.addEventListener('loadeddata', function seekAfterLoad() {
+         				videoPlayer.currentTime = timeAtCursor;
+         				videoPlayer.removeEventListener('loadeddata', seekAfterLoad);
          			});
          		} else {
          			// If same video, just seek to the new position
-         			video.currentTime = timeAtCursor;
+         			videoPlayer.currentTime = timeAtCursor;
          		}
          
          		// Update filename display
          		filenameDisplay.textContent = currentClipName;
 
 			// Update Media URL
-			mediaURLDisplay.textContent = video.src;
+			mediaURLDisplay.textContent = videoPlayer.src;
          
          		console.log(`Seeking to ${timecodeIn} (${timecodeToSeconds(timecodeIn)} seconds)`);
          	}
          }
          
          function changeVideo(videoPath) {
-         	const videoPlayer = document.getElementById('videoPlayer');
-
 	        const prefix = localStorage.getItem('videoUrlPrefix') || '';
 	        const fullPath = prefix + videoPath;
 
@@ -412,11 +410,11 @@
  
          
          function seekBack() {
-         	video.currentTime = Math.max(0, video.currentTime - 10);
+         	videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
          }
          
          function seekForward() {
-         	video.currentTime = Math.min(video.duration, video.currentTime + 10);
+         	videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
          }
 
 	 textarea.addEventListener('blur', () => {
@@ -473,7 +471,7 @@
          
          function findCurrentPosition() {
 		 //video bar postion to edl file position
-         	const currentTime = video.currentTime;
+         	const currentTime = videoPlayer.currentTime;
          	const currentClip = filenameDisplay.textContent; // Get current filename
          	const lines = textarea.value.split('\n');
          	let nearestLine = null;
@@ -545,7 +543,7 @@
          
          function markInPoint() {
          	// Get current video time
-         	const currentTime = video.currentTime;
+         	const currentTime = videoPlayer.currentTime;
          	const timecode = secondsToTimecode(currentTime);
          
          
@@ -572,7 +570,7 @@
          
          function markOutPoint() {
          	// Get current video time
-         	const currentTime = video.currentTime;
+         	const currentTime = videoPlayer.currentTime;
          	const timecode = secondsToTimecode(currentTime);
          
          	// Get all lines, ensuring we handle empty textarea and trailing newlines properly
@@ -645,12 +643,33 @@
          	if ((e.key === 'x' || e.key === 'X') && e.target.tagName !== 'TEXTAREA') {
          		e.preventDefault();
          		toggleCurrentLine();
-         	}
+        	}
+
+		 // Shift + minus: decrease video size
+		 if (e.shiftKey && e.key === '_') {  // Shift + minus key
+			 const currentWidth = videoPlayer.offsetWidth;
+			 e.preventDefault();
+			 videoPlayer.style.width = (currentWidth * 0.9) + 'px';  // Decrease by 10%
+		 }
+
+		 // Shift + plus: increase video size
+		 if (e.shiftKey && e.key === '+') {  // Shift + plus key
+			 const currentWidth = videoPlayer.offsetWidth;
+			 e.preventDefault();
+			 videoPlayer.style.width = (currentWidth * 1.1) + 'px';  // Increase by 10%
+		 }
+
+		 // Shift + 0: reset to default size
+		 if (e.shiftKey && e.key === ')') {  // Shift + 0 key
+			 const currentWidth = videoPlayer.offsetWidth;
+			 e.preventDefault();
+			 videoPlayer.style.width = '100%';  // Reset to original size
+		 }                
 
          });
          // Update timecode display
-         video.addEventListener('timeupdate', function() {
-         	timecodeDisplay.textContent = secondsToTimecode(video.currentTime);
+         videoPlayer.addEventListener('timeupdate', function() {
+         	timecodeDisplay.textContent = secondsToTimecode(videoPlayer.currentTime);
          });
          
          // Process EDL line when cursor moves
