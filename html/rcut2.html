@@ -209,6 +209,7 @@
                      </div>
 		      <div class="toolbar">
 			      <button onclick="loadTextFromURL()"> Load Sample EDL file</button>
+			      <button onclick="loadSample2()"> Load Sample 2</button>
 	                     <a href="https://youtu.be/p7HuFz-RwsI" target="_blank" class="button-style"> Youtube Demo </a>
 		      </div>
 		      <!--<div>
@@ -217,812 +218,832 @@
 	      </details>
       </div>
       <script>
-         const filenameDisplay = document.getElementById('currentFilename');
-         const mediaURLDisplay = document.getElementById('currentMediaURL');
-         //let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
-         let currentFilename = ""; // Default filename
-         //let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
-         let currentClipName = ""; // Remove .mp4 extension for comparison
-	 let lastKnownCursorPosition = 0; // to maintain cursor position of textarea contentArea
-         
-         const videoPlayer = document.getElementById('videoPlayer');
-         const textarea = document.getElementById('contentArea');
-         const timecodeDisplay = document.getElementById('currentTimecode');
-         const playPauseButton = document.getElementById('playPauseButton');
-
-	 let isTextAreaFocused = false;  // Track focus state
-         
-         // Set initial filename when page loads
-         filenameDisplay.textContent = currentFilename;
-         
-         function togglePlayPause() {
-         	if (videoPlayer.paused) {
-         		videoPlayer.play();
-         		playPauseButton.textContent = '⏸︎';
-         		playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
-         	} else {
-         		videoPlayer.pause();
-         		playPauseButton.textContent = '▶';
-         		playPauseButton.style.backgroundColor = ''; // Reset button color
-         	}
-         }
-         
-         // Update button text when video state changes
-         videoPlayer.addEventListener('play', () => {
-         	playPauseButton.textContent = '⏸︎';
-		playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
-         });
-         
-         videoPlayer.addEventListener('pause', () => {
-         	playPauseButton.textContent = '▶'; //U+25B6
-         });
-
-	 //utils
-	 function isValidTimecode(timecode) {
-		 // Check format: HH:MM:SS,mmm
-		 //   const regex = /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]),([0-9]{3})$/;
-		 const regex = /^\d\d:\d\d:\d\d,\d\d\d$/;
-		 return regex.test(timecode);
-	 }
-         function timecodeToSeconds(timecode) {
-	     if (!isValidTimecode(timecode)) {
-		console.error('timecodeToSeconds: Invalid timecode format. Expected HH:MM:SS,mmm' + '   ' + timecode);
-		return 0;
-	    }
-         	const parts = timecode.split(/[:,]/);
-         	const hours = parseInt(parts[0], 10);
-         	const minutes = parseInt(parts[1], 10);
-         	const seconds = parseInt(parts[2], 10);
-         	const milliseconds = parseInt(parts[3], 10);
-         	return (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 1000);
-         }
-         
-         function secondsToTimecode(seconds) {
-         	const hours = Math.floor(seconds / 3600);
-         	seconds %= 3600;
-         	const minutes = Math.floor(seconds / 60);
-         	seconds %= 60;
-         	const wholeSeconds = Math.floor(seconds);
-         	const milliseconds = Math.floor((seconds - wholeSeconds) * 1000);
-         
-         	return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(wholeSeconds).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
-         }
-         
-         
-	function getCurrentLineContent() {
-	    // Get the full content of the textarea
-	    const fullText = textarea.value;
-	    const cursorPosition = textarea.selectionStart;
-
-	    // Find the start of the current line by searching backwards for a newline
-	    const lineStart = fullText.lastIndexOf('\n', cursorPosition - 1) + 1;
-
-	    // Find the end of the current line by searching forwards for a newline
-	    let lineEnd = fullText.indexOf('\n', cursorPosition);
-	    if (lineEnd === -1) {
-		lineEnd = fullText.length; // If no newline is found, it's the end of the text
-	    }
-
-	    // Extract the line content
-	    const lineContent = fullText.substring(lineStart, lineEnd);
-
-	    // Calculate relative cursor position
-	    let relativePosition = 0;
-	    const parts = lineContent.split('\t');
-	    
-	    if (parts.length >= 5) {  // Valid EDL line with at least 5 columns
-		// Calculate tab positions
-		let subtitleColumnStart = 0;
-		for (let i = 0; i < 4; i++) {  // Sum lengths of first 4 columns plus tabs
-		    subtitleColumnStart += parts[i].length + 1;  // +1 for tab
-		}
-		
-		const subtitleColumnEnd = lineEnd;
-		const subtitleLength = lineEnd - lineStart - subtitleColumnStart;
-		
-		// Calculate relative position
-		if (cursorPosition <= lineStart + subtitleColumnStart) {
-		    relativePosition = 0;
-		} else if (cursorPosition >= lineEnd) {
-		    relativePosition = 1.0;
-		} else {
-		    // Calculate position within subtitle
-		    const positionInSubtitle = cursorPosition - (lineStart + subtitleColumnStart);
-		    relativePosition = positionInSubtitle / subtitleLength;
-		}
-	    }
-
-	    return {
-		content: lineContent,
-		cursorRelativePosition: relativePosition
-	    };
-	}
-
-         function processEDLLine(lineResult) {
-		const line = lineResult.content;
-		const linePosition = lineResult.cursorRelativePosition;
-
-         	const parts = line.split('\t');
-         	if (parts.length >= 5 && parts[0] === 'EDL') {
-         		const timecodeIn = parts[1].trim();
-         		const timecodeOut = parts[2].trim();
-         		const clipName = parts[3].replace(/\|/g, '').trim();
-         		const subtitle = parts[4];
-
-			// Validate timecodeIn
-			    if (!isValidTimecode(timecodeIn)) {
-				console.log('Invalid timecode format:', timecodeIn, '(Expected HH:MM:SS,mmm)');
-				return 'Invalid timecode format';
-			    }
-
-			const timeAtCursor = timecodeToSeconds(timecodeIn) + linePosition * (timecodeToSeconds(timecodeOut) - timecodeToSeconds(timecodeIn));
-         
-         		// Check if clipName is different than current
-         		if (clipName && clipName !== currentClipName) {
-         			// Update current clip name
-         			currentClipName = clipName;
-         
-         			// Construct new video path
-         			const newVideoPath = clipName + ".mp4";
-         
-         			// Change video
-         			console.log(`Changing video to: ${newVideoPath}`);
-         			changeVideo(newVideoPath);
-         
-         			// After changing video, we need to wait for the video to load
-         			// before seeking to the correct timecode
-         			videoPlayer.addEventListener('loadeddata', function seekAfterLoad() {
-         				videoPlayer.currentTime = timeAtCursor;
-         				videoPlayer.removeEventListener('loadeddata', seekAfterLoad);
-         			});
-         		} else {
-         			// If same video, just seek to the new position
-         			videoPlayer.currentTime = timeAtCursor;
-         		}
-         
-         		// Update filename display
-         		filenameDisplay.textContent = currentClipName;
-
-			// Update Media URL
-			mediaURLDisplay.textContent = videoPlayer.src;
-         
-         		console.log(`Seeking to ${timecodeIn} (${timecodeToSeconds(timecodeIn)} seconds)`);
-         	}
-         }
-         
-         function changeVideo(videoPath) {
-	        const prefix = localStorage.getItem('videoUrlPrefix') || '';
-	        const fullPath = prefix + videoPath;
-
-		// Store current play state before changing source
-		const wasPlaying = !videoPlayer.paused;
-
-         	//videoPlayer.play(); // maintain previous play status
-
-
-		// Remove any existing canplay listeners
-		const playHandler = () => {
-		if (wasPlaying) {
-		    videoPlayer.play();
-		}
-		videoPlayer.removeEventListener('canplay', playHandler);
-		};
-
-		// Add listener before changing source
-		videoPlayer.addEventListener('canplay', playHandler);
-
-         	videoPlayer.src = fullPath;
-
-		// Update currentClipName (remove .mp4 extension)
-		currentClipName = videoPath.replace('.mp4', '');
-	 
-		// Update filename display
-		filenameDisplay.textContent = currentClipName;
-	 }
- 
-         
-         function seekBack() {
-         	videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
-         }
-         
-         function seekForward() {
-         	videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
-         }
-
-	 textarea.addEventListener('blur', () => {
-		 lastKnownCursorPosition = textarea.selectionStart;
-	 });
-
-	 textarea.addEventListener('click', () => {
-		 lastKnownCursorPosition = textarea.selectionStart;
-	 });
-
-	 textarea.addEventListener('keyup', () => {
-		 lastKnownCursorPosition = textarea.selectionStart;
-	 });
- 
-         function toggleCurrentLine() {
-		// Use the last known position if textarea is not focused
-		const cursorPosition = textarea.matches(':focus') ? 
-			 textarea.selectionStart : 
-			 lastKnownCursorPosition;
-
-         	const lines = textarea.value.split('\n');
-         	let currentLineIndex = textarea.value.substr(0, cursorPosition).split('\n').length - 1;
-         	const currentLine = lines[currentLineIndex];
-         
-         	if (currentLine) {
-         		const parts = currentLine.split('\t');
-         		if (parts.length >= 1) {
-         			// Toggle between 'EDL' and 'xxx'
-         			parts[0] = (parts[0] === 'EDL') ? 'xxx' : 'EDL';
-         
-         			// Rejoin the line with tabs
-         			const newLine = parts.join('\t');
-         
-         			// Replace the current line in the array
-         			lines[currentLineIndex] = newLine;
-         
-         			// Update textarea content
-         			textarea.value = lines.join('\n');
-         
-         			// Maintain cursor position
-         			const beforeText = lines.slice(0, currentLineIndex).join('\n');
-         			const newCursorPosition = beforeText.length + (currentLineIndex > 0 ? 1 : 0) + newLine.length;
-         			textarea.setSelectionRange(newCursorPosition, newCursorPosition);
-         
-         			// Visual feedback
-         			textarea.style.backgroundColor = '#ffffd0';
-         			setTimeout(() => {
-         				textarea.style.backgroundColor = '';
-         			}, 200);
-         		}
-         	}
-		textarea.focus();
-         }
-         
-         function findCurrentPosition() {
-		 //video bar postion to edl file position
-         	const currentTime = videoPlayer.currentTime;
-         	const currentClip = filenameDisplay.textContent; // Get current filename
-         	const lines = textarea.value.split('\n');
-         	let nearestLine = null;
-         	let nearestDiff = Infinity;
-         	let nearestIndex = -1;
-         
-         	lines.forEach((line, index) => {
-         		const parts = line.split('\t');
-         		if (parts.length >= 3 && parts[0] === 'EDL') {
-         			const inTime = timecodeToSeconds(parts[1]);
-         			const outTime = timecodeToSeconds(parts[2]);
-         			const clipName = parts[3].replace(/\|/g, '').trim();
-         
-         			// Only consider lines that match the current clip
-         			if (clipName === currentClip) {
-         				// Check if current time is within this segment
-         				if (currentTime >= inTime && currentTime <= outTime) {
-         					nearestLine = line;
-         					nearestIndex = index;
-         					nearestDiff = 0;
-         					return;
-         				}
-         
-         				// If not within any segment, find the nearest one
-         				const diffIn = Math.abs(currentTime - inTime);
-         				const diffOut = Math.abs(currentTime - outTime);
-         				const minDiff = Math.min(diffIn, diffOut);
-         
-         				if (minDiff < nearestDiff) {
-         					nearestDiff = minDiff;
-         					nearestLine = line;
-         					nearestIndex = index;
-         				}
-         			}
-         		}
-         	});
-         
-         	if (nearestLine) {
-         		// Calculate the position to place the cursor
-         		const lineStartPosition = textarea.value.split('\n')
-         			.slice(0, nearestIndex)
-         			.join('\n').length + (nearestIndex > 0 ? 1 : 0);
-         		const lineEndPosition = lineStartPosition + nearestLine.length;
-         
-         		// Focus and select the line
-         		textarea.focus();
-         		textarea.setSelectionRange(lineStartPosition, lineEndPosition);
-         
-         		// Scroll to the line
-         		const lineHeight = textarea.scrollHeight / lines.length;
-         		const scrollPosition = lineHeight * nearestIndex;
-         
-         		// Center the line in the textarea viewport
-         		textarea.scrollTop = scrollPosition - (textarea.clientHeight / 2) + (lineHeight / 2);
-         
-         		// Optional: Add temporary highlight effect
-         		const originalColor = textarea.style.backgroundColor;
-         		textarea.style.backgroundColor = '#ffffd0'; // Light yellow highlight
-         		setTimeout(() => {
-         			textarea.style.backgroundColor = originalColor;
-         		}, 1000); // Remove highlight after 1 second
-         
-         		console.log(`Found matching line for clip ${currentClip} at time ${currentTime}`);
-         	} else {
-         		console.log(`No matching line found for clip ${currentClip} at time ${currentTime}`);
-         	}
-         }
-         
-         
-         function markInPoint() {
-         	// Get current video time
-         	const currentTime = videoPlayer.currentTime;
-         	const timecode = secondsToTimecode(currentTime);
-         
-         
-         	// Get current filename and remove extension
-         	let clipName = filenameDisplay.textContent;
-         	clipName = clipName.replace(/\.[^.]+$/, ''); // Remove any extension after the last dot
-         
-         
-         	// Create new EDL line
-         	const newEDLLine = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
-         
-         	// Append to textarea
-         	textarea.value += (textarea.value && !textarea.value.endsWith('\n') ? '\n' : '') + newEDLLine;
-         
-         	// Optional: Scroll textarea to bottom to show new line
-         	textarea.scrollTop = textarea.scrollHeight;
-         
-         	// Optional: Flash feedback to user
-         	textarea.style.backgroundColor = '#ffffd0';
-         	setTimeout(() => {
-         		textarea.style.backgroundColor = '';
-         	}, 200);
-         }
-         
-         function markOutPoint() {
-         	// Get current video time
-         	const currentTime = videoPlayer.currentTime;
-         	const timecode = secondsToTimecode(currentTime);
-         
-         	// Get all lines, ensuring we handle empty textarea and trailing newlines properly
-         	let content = textarea.value;
-         	if (!content) {
-         		// If textarea is empty, create new EDL line
-         		let clipName = filenameDisplay.textContent;
-         		clipName = clipName.replace(/\.[^.]+$/, '');
-         		textarea.value = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
-         		return;
-         	}
-         
-         	// Remove trailing newline if exists for consistent handling
-         	content = content.replace(/\n$/, '');
-         	const lines = content.split('\n');
-         	const lastLine = lines[lines.length - 1];
-         
-         	if (lastLine.startsWith('EDL')) {
-         		// Split and preserve all tabs
-         		const parts = lastLine.split('\t');
-         		// Update only the out timecode (index 2)
-         		parts[2] = timecode;
-         		// Replace last line while preserving exact tab structure
-         		lines[lines.length - 1] = parts.join('\t');
-         		// Update textarea with proper line ending
-         		textarea.value = lines.join('\n') + '\n';
-         	} else {
-         		// If last line is not EDL, append new line
-         		let clipName = filenameDisplay.textContent;
-         		clipName = clipName.replace(/\.[^.]+$/, '');
-         		textarea.value = content + (content ? '\n' : '') +
-         			`EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
-         	}
-         
-         	// Scroll to bottom and set cursor at end
-         	textarea.scrollTop = textarea.scrollHeight;
-         	textarea.setSelectionRange(textarea.value.length, textarea.value.length);
-         
-         	// Visual feedback
-         	textarea.style.backgroundColor = '#ffffd0';
-         	setTimeout(() => {
-         		textarea.style.backgroundColor = '';
-         	}, 200);
-         }
-         
-         // Optional: Add keyboard shortcut (e.g., 'F' key) to find current position
-         document.addEventListener('keydown', function(e) {
-         	if ((e.key === 's' || e.key === 'S') && e.target.tagName !== 'TEXTAREA') {
-         		e.preventDefault(); // Prevent default 'find' dialog in browser
-         		findCurrentPosition();
-         	}
-         	// Check if the pressed key is spacebar and the target is not the textarea
-         	if (e.code === 'Space' && e.target.tagName !== 'TEXTAREA') {
-         		e.preventDefault(); // Prevent page scrolling
-         		togglePlayPause();
-         	}
-         	// Optional: Add keyboard shortcut (e.g., 'I' key)
-         	if ((e.key === 'i' || e.key === 'I') && e.target.tagName !== 'TEXTAREA') {
-         		e.preventDefault();
-         		markInPoint();
-         	}
-         	if ((e.key === 'o' || e.key === 'O') && e.target.tagName !== 'TEXTAREA') {
-         		e.preventDefault();
-         		markOutPoint();
-         	}
-         	if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-         		e.preventDefault(); // Prevent browser's save dialog
-         		saveToLocal();
-         	}
-         	if ((e.key === 'x' || e.key === 'X') && e.target.tagName !== 'TEXTAREA') {
-         		e.preventDefault();
-         		toggleCurrentLine();
-        	}
-
-		 // Shift + minus: decrease video size
-		 if (e.shiftKey && e.key === '_') {  // Shift + minus key
-			 const currentWidth = videoPlayer.offsetWidth;
-			 e.preventDefault();
-			 videoPlayer.style.width = (currentWidth * 0.9) + 'px';  // Decrease by 10%
-		 }
-
-		 // Shift + plus: increase video size
-		 if (e.shiftKey && e.key === '+') {  // Shift + plus key
-			 const currentWidth = videoPlayer.offsetWidth;
-			 e.preventDefault();
-			 videoPlayer.style.width = (currentWidth * 1.1) + 'px';  // Increase by 10%
-		 }
-
-		 // Shift + 0: reset to default size
-		 if (e.shiftKey && e.key === ')') {  // Shift + 0 key
-			 const currentWidth = videoPlayer.offsetWidth;
-			 e.preventDefault();
-			 videoPlayer.style.width = '100%';  // Reset to original size
-		 }                
-
-		 // ESC
-		 if (e.key === 'Escape') {
-			 e.preventDefault();
-			 if (isTextAreaFocused) {
-				 // If textarea is focused, blur it
-				 textarea.blur();
-				 isTextAreaFocused = false;
-			 } else {
-				 // If textarea is not focused, focus it
-				 textarea.focus();
-				 isTextAreaFocused = true;
-			 }
-		 }
-         });
-         // Update timecode display
-         videoPlayer.addEventListener('timeupdate', function() {
-         	timecodeDisplay.textContent = secondsToTimecode(videoPlayer.currentTime);
-         });
-         
-         // Process EDL line when cursor moves
-         textarea.addEventListener('click', function() {
-         	const currentLine = getCurrentLineContent();
-         	if (currentLine) {
-         		processEDLLine(currentLine);
-         	}
-         });
-         
-         textarea.addEventListener('keyup', function(e) {
-         	if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
-         		const currentLine = getCurrentLineContent();
-         		if (currentLine) {
-         			processEDLLine(currentLine);
-         		}
-         	}
-         });
-
-	textarea.addEventListener('keydown', function(e) {
-		if (e.key === 'Tab') {
-			e.preventDefault(); // Prevent default tab behavior
-
-			// Get cursor position
-			const start = this.selectionStart;
-			const end = this.selectionEnd;
-
-			// Insert tab at cursor position
-			this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);
-
-			// Move cursor after tab
-			this.selectionStart = this.selectionEnd = start + 1;
-		}
-
-	        if (e.key === 'Backspace' && e.shiftKey && !e.ctrlKey && !e.altKey) {
-         		e.preventDefault();
-         		toggleCurrentLine();
-         	}
-	        if (e.key === ' ' && e.shiftKey && !e.ctrlKey && !e.altKey) {
-         		e.preventDefault();
-         		togglePlayPause();
-         	}
-	});
-         
-         //////////////////// localStorage
-         
-         // Function to save content to localStorage
-         function saveToLocal() {
-         	const content = textarea.value;
-         	try {
-         		localStorage.setItem('edlContent', content);
-         
-         		// Visual feedback
-         		const saveButton = document.querySelector('button[onclick="saveToLocal()"]');
-         		const originalText = saveButton.textContent;
-         		saveButton.textContent = 'Saved!';
-         		saveButton.style.backgroundColor = '#90EE90'; // Light green
-         
-         		setTimeout(() => {
-         			saveButton.textContent = originalText;
-         			saveButton.style.backgroundColor = '';
-         		}, 1000);
-         
-         		console.log('Content saved to local storage');
-         	} catch (e) {
-         		console.error('Error saving to local storage:', e);
-         		alert('Failed to save content!');
-         	}
-         }
-         
-         // Function to load content from localStorage
-         function loadFromLocal() {
-         	try {
-         		const savedContent = localStorage.getItem('edlContent');
-         		if (savedContent) {
-         			textarea.value = savedContent;
-         			console.log('Content loaded from local storage');
-         		}
-         	} catch (e) {
-         		console.error('Error loading from local storage:', e);
-         	}
-         }
-         
-         
-         // Auto-save functionality (optional)
-         let autoSaveTimeout;
-         textarea.addEventListener('input', () => {
-         	clearTimeout(autoSaveTimeout);
-         	autoSaveTimeout = setTimeout(() => {
-         		saveToLocal();
-         	}, 2000); // Auto-save 2 seconds after last input
-         });
-         
-         // Load content when page loads
-         document.addEventListener('DOMContentLoaded', loadFromLocal);
-         
-         function clearSavedContent() {
-         	// Show confirmation dialog
-         	if (confirm('Are you sure you want to clear saved content? This cannot be undone.')) {
-         		try {
-         			// Clear localStorage
-         			localStorage.removeItem('edlContent');
-         
-         			// Clear textarea
-         			textarea.value = '';
-         
-         			// Visual feedback
-         			const clearButton = document.querySelector('.clear-button');
-         			const originalText = clearButton.textContent;
-         			clearButton.textContent = 'Cleared!';
-         			clearButton.style.backgroundColor = '#ff9999'; // Light red
-         
-         			setTimeout(() => {
-         				clearButton.textContent = originalText;
-         				clearButton.style.backgroundColor = '';
-         			}, 1000);
-         
-         			console.log('Content cleared from local storage');
-         		} catch (e) {
-         			console.error('Error clearing local storage:', e);
-         			alert('Failed to clear content!');
-         		}
-         	}
-         }
-	async function loadTextFromURL() {
-	    // You can either hardcode the URL or use a prompt
-	    const url = prompt("Enter URL of the text file:", "textarea.txt");
-	    
-	    if (!url) return; // User cancelled the prompt
-
-	    try {
-		const response = await fetch(url);
-		if (!response.ok) {
-		    throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		const text = await response.text();
-		
-		// Get the textarea and set its value
-		const textarea = document.getElementById('contentArea');
-		textarea.value = text;
-		
-		// Trigger any necessary update events
-		const inputEvent = new Event('input');
-		textarea.dispatchEvent(inputEvent);
-		
-		// Optional: Visual feedback
-		textarea.style.backgroundColor = '#ffffd0';
-		setTimeout(() => {
-		    textarea.style.backgroundColor = '';
-		}, 200);
-
-	    } catch (error) {
-		console.error('Error loading text:', error);
-		alert('Error loading text file. Check console for details.');
-	    }
-	}
-
-
-        function reloadMedia(){
-		//reload video
-		currentClipName = ""; // make it sure to invoke changeVideo()
-		const currentLine = getCurrentLineContent();
-		if (currentLine) {
-			processEDLLine(currentLine);
-		}
-	}
-
-	/////////// Media file url prefix adding
-	function setPrefix() {
-	    const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
-	    const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/\n       file:///Users/k/www/some/", currentPrefix);
-	    
-	    if (prefix !== null) {  // if user didn't click Cancel
-		// Add trailing slash if missing
-		let normalizedPrefix = prefix.trim();
-		if (normalizedPrefix && !normalizedPrefix.endsWith('/')) {
-		    normalizedPrefix += '/';
-		}
-		localStorage.setItem('videoUrlPrefix', normalizedPrefix);
-		updatePrefixDisplay();
-
-		//reload video
-		reloadMedia();
-	    }
-	}
-
-	function clearPrefix() {
-	    localStorage.removeItem('videoUrlPrefix');
-	    updatePrefixDisplay();
-            reloadMedia();
-	}
-
-	function updatePrefixDisplay() {
-	    const prefixDisplay = document.getElementById('currentPrefix');
-	    const currentPrefix = localStorage.getItem('videoUrlPrefix');
-	    prefixDisplay.textContent = currentPrefix || '(none)';
-	}
-
-	// Load saved prefix when page loads
-	document.addEventListener('DOMContentLoaded', () => {
-	    updatePrefixDisplay();
-	});
-
-
-	 //////////////// Drop zone to do srt2tsv
-
-function setupDropZone() {
-    const dropZone = document.getElementById('dropZone');
-
-    // Make dropZone clickable
-    dropZone.addEventListener('click', () => {
-        fileInput.click();
-    });
-
-    // Handle file selection via click
-    fileInput.addEventListener('change', (e) => {
-        handleFiles(e.target.files);
-    });
-
-    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, preventDefaults, false);
-    });
-
-    function preventDefaults (e) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-
-    ['dragenter', 'dragover'].forEach(eventName => {
-        dropZone.addEventListener(eventName, highlight, false);
-    });
-
-    ['dragleave', 'drop'].forEach(eventName => {
-        dropZone.addEventListener(eventName, unhighlight, false);
-    });
-
-    function highlight(e) {
-        dropZone.style.backgroundColor = '#e3f2fd';
-    }
-
-    function unhighlight(e) {
-        dropZone.style.backgroundColor = '';
-    }
-
-    dropZone.addEventListener('drop', handleDrop, false);
-
-    function handleDrop(e) {
-        const dt = e.dataTransfer;
-        const files = dt.files;
-        handleFiles(files);
-    }
-
-    function handleFiles(files) {
-        const file = files[0];
-        if (file.name.toLowerCase().endsWith('.srt')) {
-            // Get filename without extension for clipname
-            const clipName = file.name.replace(/\.[^/.]+$/, "");
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const srtContent = e.target.result;
-                const edlLines = convertSrtToEdl(srtContent, clipName);
-                
-                // Append to textarea
-                textarea.value += (textarea.value ? '\n' : '') + edlLines;
-                
-                // Success message
-                dropZone.innerHTML = `Converted ${file.name} and appended!`;
-                setTimeout(() => {
-                    dropZone.innerHTML = 'Drag & Drop .srt file here';
-                }, 2000);
-            };
-            reader.readAsText(file);
-        } else {
-            alert('Please drop a .srt file');
-        }
-    }
-}
-
-function convertSrtToEdl(srtContent, clipName) {
-    const lines = srtContent.split('\n');
-    let edlLines = [];
-    let currentEntry = {};
-
-    for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        
-        if (!line) continue;
-
-        if (/^\d+$/.test(line)) {
-            if (currentEntry.timeIn) {
-                edlLines.push(formatEdlLine(currentEntry, clipName));
-            }
-            currentEntry = {};
-            continue;
-        }
-
-        if (line.includes('-->')) {
-            const times = line.split('-->').map(t => t.trim());
-            currentEntry.timeIn = convertSrtTimeToEdlTime(times[0]);
-            currentEntry.timeOut = convertSrtTimeToEdlTime(times[1]);
-            continue;
-        }
-
-        if (currentEntry.timeIn && !currentEntry.text) {
-            currentEntry.text = line;
-        } else if (currentEntry.text) {
-            currentEntry.text += ' ' + line;
-        }
-    }
-
-    if (currentEntry.timeIn) {
-        edlLines.push(formatEdlLine(currentEntry, clipName));
-    }
-
-    return edlLines.join('\n');
-}
-
-function convertSrtTimeToEdlTime(srtTime) {
-    return srtTime.replace('.', ',');
-}
-
-function formatEdlLine(entry, clipName) {
-    // Use the filename as clipname
-    return `EDL\t${entry.timeIn}\t${entry.timeOut}\t| ${clipName} |\t${entry.text}`;
-}
-
-document.addEventListener('DOMContentLoaded', setupDropZone);
+	      const filenameDisplay = document.getElementById('currentFilename');
+	      const mediaURLDisplay = document.getElementById('currentMediaURL');
+	      //let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
+	      let currentFilename = ""; // Default filename
+	      //let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
+	      let currentClipName = ""; // Remove .mp4 extension for comparison
+	      let lastKnownCursorPosition = 0; // to maintain cursor position of textarea contentArea
+
+	      const videoPlayer = document.getElementById('videoPlayer');
+	      const textarea = document.getElementById('contentArea');
+	      const timecodeDisplay = document.getElementById('currentTimecode');
+	      const playPauseButton = document.getElementById('playPauseButton');
+
+	      let isTextAreaFocused = false;  // Track focus state
+
+	      // Set initial filename when page loads
+	      filenameDisplay.textContent = currentFilename;
+
+	      function togglePlayPause() {
+		      if (videoPlayer.paused) {
+			      videoPlayer.play();
+			      playPauseButton.textContent = '⏸︎';
+			      playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
+		      } else {
+			      videoPlayer.pause();
+			      playPauseButton.textContent = '▶';
+			      playPauseButton.style.backgroundColor = ''; // Reset button color
+		      }
+	      }
+
+	      // Update button text when video state changes
+	      videoPlayer.addEventListener('play', () => {
+		      playPauseButton.textContent = '⏸︎';
+		      playPauseButton.style.backgroundColor = '#ccffcc'; // Optional: visual feedback
+	      });
+
+	      videoPlayer.addEventListener('pause', () => {
+		      playPauseButton.textContent = '▶'; //U+25B6
+	      });
+
+	      //utils
+	      function isValidTimecode(timecode) {
+		      // Check format: HH:MM:SS,mmm
+		      //   const regex = /^([0-1][0-9]|2[0-3]):([0-5][0-9]):([0-5][0-9]),([0-9]{3})$/;
+		      const regex = /^\d\d:\d\d:\d\d,\d\d\d$/;
+		      return regex.test(timecode);
+	      }
+	      function timecodeToSeconds(timecode) {
+		      if (!isValidTimecode(timecode)) {
+			      console.error('timecodeToSeconds: Invalid timecode format. Expected HH:MM:SS,mmm' + '   ' + timecode);
+			      return 0;
+		      }
+		      const parts = timecode.split(/[:,]/);
+		      const hours = parseInt(parts[0], 10);
+		      const minutes = parseInt(parts[1], 10);
+		      const seconds = parseInt(parts[2], 10);
+		      const milliseconds = parseInt(parts[3], 10);
+		      return (hours * 3600) + (minutes * 60) + seconds + (milliseconds / 1000);
+	      }
+
+	      function secondsToTimecode(seconds) {
+		      const hours = Math.floor(seconds / 3600);
+		      seconds %= 3600;
+		      const minutes = Math.floor(seconds / 60);
+		      seconds %= 60;
+		      const wholeSeconds = Math.floor(seconds);
+		      const milliseconds = Math.floor((seconds - wholeSeconds) * 1000);
+
+		      return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(wholeSeconds).padStart(2, '0')},${String(milliseconds).padStart(3, '0')}`;
+	      }
+
+
+	      function getCurrentLineContent() {
+		      // Get the full content of the textarea
+		      const fullText = textarea.value;
+		      const cursorPosition = textarea.selectionStart;
+
+		      // Find the start of the current line by searching backwards for a newline
+		      const lineStart = fullText.lastIndexOf('\n', cursorPosition - 1) + 1;
+
+		      // Find the end of the current line by searching forwards for a newline
+		      let lineEnd = fullText.indexOf('\n', cursorPosition);
+		      if (lineEnd === -1) {
+			      lineEnd = fullText.length; // If no newline is found, it's the end of the text
+		      }
+
+		      // Extract the line content
+		      const lineContent = fullText.substring(lineStart, lineEnd);
+
+		      // Calculate relative cursor position
+		      let relativePosition = 0;
+		      const parts = lineContent.split('\t');
+
+		      if (parts.length >= 5) {  // Valid EDL line with at least 5 columns
+			      // Calculate tab positions
+			      let subtitleColumnStart = 0;
+			      for (let i = 0; i < 4; i++) {  // Sum lengths of first 4 columns plus tabs
+				      subtitleColumnStart += parts[i].length + 1;  // +1 for tab
+			      }
+
+			      const subtitleColumnEnd = lineEnd;
+			      const subtitleLength = lineEnd - lineStart - subtitleColumnStart;
+
+			      // Calculate relative position
+			      if (cursorPosition <= lineStart + subtitleColumnStart) {
+				      relativePosition = 0;
+			      } else if (cursorPosition >= lineEnd) {
+				      relativePosition = 1.0;
+			      } else {
+				      // Calculate position within subtitle
+				      const positionInSubtitle = cursorPosition - (lineStart + subtitleColumnStart);
+				      relativePosition = positionInSubtitle / subtitleLength;
+			      }
+		      }
+
+		      return {
+			      content: lineContent,
+			      cursorRelativePosition: relativePosition
+		      };
+	      }
+
+	      function processEDLLine(lineResult) {
+		      const line = lineResult.content;
+		      const linePosition = lineResult.cursorRelativePosition;
+
+		      const parts = line.split('\t');
+		      if (parts.length >= 5 && parts[0] === 'EDL') {
+			      const timecodeIn = parts[1].trim();
+			      const timecodeOut = parts[2].trim();
+			      const clipName = parts[3].replace(/\|/g, '').trim();
+			      const subtitle = parts[4];
+
+			      // Validate timecodeIn
+			      if (!isValidTimecode(timecodeIn)) {
+				      console.log('Invalid timecode format:', timecodeIn, '(Expected HH:MM:SS,mmm)');
+				      return 'Invalid timecode format';
+			      }
+
+			      const timeAtCursor = timecodeToSeconds(timecodeIn) + linePosition * (timecodeToSeconds(timecodeOut) - timecodeToSeconds(timecodeIn));
+
+			      // Check if clipName is different than current
+			      if (clipName && clipName !== currentClipName) {
+				      // Update current clip name
+				      currentClipName = clipName;
+
+				      // Construct new video path
+				      const newVideoPath = clipName + ".mp4";
+
+				      // Change video
+				      console.log(`Changing video to: ${newVideoPath}`);
+				      changeVideo(newVideoPath);
+
+				      // After changing video, we need to wait for the video to load
+				      // before seeking to the correct timecode
+				      videoPlayer.addEventListener('loadeddata', function seekAfterLoad() {
+					      videoPlayer.currentTime = timeAtCursor;
+					      videoPlayer.removeEventListener('loadeddata', seekAfterLoad);
+				      });
+			      } else {
+				      // If same video, just seek to the new position
+				      videoPlayer.currentTime = timeAtCursor;
+			      }
+
+			      // Update filename display
+			      filenameDisplay.textContent = currentClipName;
+
+			      // Update Media URL
+			      mediaURLDisplay.textContent = videoPlayer.src;
+
+			      console.log(`Seeking to ${timecodeIn} (${timecodeToSeconds(timecodeIn)} seconds)`);
+		      }
+	      }
+
+	      function changeVideo(videoPath) {
+		      const prefix = localStorage.getItem('videoUrlPrefix') || '';
+		      const fullPath = prefix + videoPath;
+
+		      // Store current play state before changing source
+		      const wasPlaying = !videoPlayer.paused;
+
+		      //videoPlayer.play(); // maintain previous play status
+
+
+		      // Remove any existing canplay listeners
+		      const playHandler = () => {
+			      if (wasPlaying) {
+				      videoPlayer.play();
+			      }
+			      videoPlayer.removeEventListener('canplay', playHandler);
+		      };
+
+		      // Add listener before changing source
+		      videoPlayer.addEventListener('canplay', playHandler);
+
+		      videoPlayer.src = fullPath;
+
+		      // Update currentClipName (remove .mp4 extension)
+		      currentClipName = videoPath.replace('.mp4', '');
+
+		      // Update filename display
+		      filenameDisplay.textContent = currentClipName;
+	      }
+
+
+	      function seekBack() {
+		      videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 10);
+	      }
+
+	      function seekForward() {
+		      videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + 10);
+	      }
+
+	      textarea.addEventListener('blur', () => {
+		      lastKnownCursorPosition = textarea.selectionStart;
+	      });
+
+	      textarea.addEventListener('click', () => {
+		      lastKnownCursorPosition = textarea.selectionStart;
+	      });
+
+	      textarea.addEventListener('keyup', () => {
+		      lastKnownCursorPosition = textarea.selectionStart;
+	      });
+
+	      function toggleCurrentLine() {
+		      // Use the last known position if textarea is not focused
+		      const cursorPosition = textarea.matches(':focus') ? 
+			      textarea.selectionStart : 
+			      lastKnownCursorPosition;
+
+		      const lines = textarea.value.split('\n');
+		      let currentLineIndex = textarea.value.substr(0, cursorPosition).split('\n').length - 1;
+		      const currentLine = lines[currentLineIndex];
+
+		      if (currentLine) {
+			      const parts = currentLine.split('\t');
+			      if (parts.length >= 1) {
+				      // Toggle between 'EDL' and 'xxx'
+				      parts[0] = (parts[0] === 'EDL') ? 'xxx' : 'EDL';
+
+				      // Rejoin the line with tabs
+				      const newLine = parts.join('\t');
+
+				      // Replace the current line in the array
+				      lines[currentLineIndex] = newLine;
+
+				      // Update textarea content
+				      textarea.value = lines.join('\n');
+
+				      // Maintain cursor position
+				      const beforeText = lines.slice(0, currentLineIndex).join('\n');
+				      const newCursorPosition = beforeText.length + (currentLineIndex > 0 ? 1 : 0) + newLine.length;
+				      textarea.setSelectionRange(newCursorPosition, newCursorPosition);
+
+				      // Visual feedback
+				      textarea.style.backgroundColor = '#ffffd0';
+				      setTimeout(() => {
+					      textarea.style.backgroundColor = '';
+				      }, 200);
+			      }
+		      }
+		      textarea.focus();
+	      }
+
+	      function findCurrentPosition() {
+		      //video bar postion to edl file position
+		      const currentTime = videoPlayer.currentTime;
+		      const currentClip = filenameDisplay.textContent; // Get current filename
+		      const lines = textarea.value.split('\n');
+		      let nearestLine = null;
+		      let nearestDiff = Infinity;
+		      let nearestIndex = -1;
+
+		      lines.forEach((line, index) => {
+			      const parts = line.split('\t');
+			      if (parts.length >= 3 && parts[0] === 'EDL') {
+				      const inTime = timecodeToSeconds(parts[1]);
+				      const outTime = timecodeToSeconds(parts[2]);
+				      const clipName = parts[3].replace(/\|/g, '').trim();
+
+				      // Only consider lines that match the current clip
+				      if (clipName === currentClip) {
+					      // Check if current time is within this segment
+					      if (currentTime >= inTime && currentTime <= outTime) {
+						      nearestLine = line;
+						      nearestIndex = index;
+						      nearestDiff = 0;
+						      return;
+					      }
+
+					      // If not within any segment, find the nearest one
+					      const diffIn = Math.abs(currentTime - inTime);
+					      const diffOut = Math.abs(currentTime - outTime);
+					      const minDiff = Math.min(diffIn, diffOut);
+
+					      if (minDiff < nearestDiff) {
+						      nearestDiff = minDiff;
+						      nearestLine = line;
+						      nearestIndex = index;
+					      }
+				      }
+			      }
+		      });
+
+		      if (nearestLine) {
+			      // Calculate the position to place the cursor
+			      const lineStartPosition = textarea.value.split('\n')
+				      .slice(0, nearestIndex)
+				      .join('\n').length + (nearestIndex > 0 ? 1 : 0);
+			      const lineEndPosition = lineStartPosition + nearestLine.length;
+
+			      // Focus and select the line
+			      textarea.focus();
+			      textarea.setSelectionRange(lineStartPosition, lineEndPosition);
+
+			      // Scroll to the line
+			      const lineHeight = textarea.scrollHeight / lines.length;
+			      const scrollPosition = lineHeight * nearestIndex;
+
+			      // Center the line in the textarea viewport
+			      textarea.scrollTop = scrollPosition - (textarea.clientHeight / 2) + (lineHeight / 2);
+
+			      // Optional: Add temporary highlight effect
+			      const originalColor = textarea.style.backgroundColor;
+			      textarea.style.backgroundColor = '#ffffd0'; // Light yellow highlight
+			      setTimeout(() => {
+				      textarea.style.backgroundColor = originalColor;
+			      }, 1000); // Remove highlight after 1 second
+
+			      console.log(`Found matching line for clip ${currentClip} at time ${currentTime}`);
+		      } else {
+			      console.log(`No matching line found for clip ${currentClip} at time ${currentTime}`);
+		      }
+	      }
+
+
+	      function markInPoint() {
+		      // Get current video time
+		      const currentTime = videoPlayer.currentTime;
+		      const timecode = secondsToTimecode(currentTime);
+
+
+		      // Get current filename and remove extension
+		      let clipName = filenameDisplay.textContent;
+		      clipName = clipName.replace(/\.[^.]+$/, ''); // Remove any extension after the last dot
+
+
+		      // Create new EDL line
+		      const newEDLLine = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+
+		      // Append to textarea
+		      textarea.value += (textarea.value && !textarea.value.endsWith('\n') ? '\n' : '') + newEDLLine;
+
+		      // Optional: Scroll textarea to bottom to show new line
+		      textarea.scrollTop = textarea.scrollHeight;
+
+		      // Optional: Flash feedback to user
+		      textarea.style.backgroundColor = '#ffffd0';
+		      setTimeout(() => {
+			      textarea.style.backgroundColor = '';
+		      }, 200);
+	      }
+
+	      function markOutPoint() {
+		      // Get current video time
+		      const currentTime = videoPlayer.currentTime;
+		      const timecode = secondsToTimecode(currentTime);
+
+		      // Get all lines, ensuring we handle empty textarea and trailing newlines properly
+		      let content = textarea.value;
+		      if (!content) {
+			      // If textarea is empty, create new EDL line
+			      let clipName = filenameDisplay.textContent;
+			      clipName = clipName.replace(/\.[^.]+$/, '');
+			      textarea.value = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+			      return;
+		      }
+
+		      // Remove trailing newline if exists for consistent handling
+		      content = content.replace(/\n$/, '');
+		      const lines = content.split('\n');
+		      const lastLine = lines[lines.length - 1];
+
+		      if (lastLine.startsWith('EDL')) {
+			      // Split and preserve all tabs
+			      const parts = lastLine.split('\t');
+			      // Update only the out timecode (index 2)
+			      parts[2] = timecode;
+			      // Replace last line while preserving exact tab structure
+			      lines[lines.length - 1] = parts.join('\t');
+			      // Update textarea with proper line ending
+			      textarea.value = lines.join('\n') + '\n';
+		      } else {
+			      // If last line is not EDL, append new line
+			      let clipName = filenameDisplay.textContent;
+			      clipName = clipName.replace(/\.[^.]+$/, '');
+			      textarea.value = content + (content ? '\n' : '') +
+				      `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+		      }
+
+		      // Scroll to bottom and set cursor at end
+		      textarea.scrollTop = textarea.scrollHeight;
+		      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+
+		      // Visual feedback
+		      textarea.style.backgroundColor = '#ffffd0';
+		      setTimeout(() => {
+			      textarea.style.backgroundColor = '';
+		      }, 200);
+	      }
+
+	      // Optional: Add keyboard shortcut (e.g., 'F' key) to find current position
+	      document.addEventListener('keydown', function(e) {
+		      if ((e.key === 's' || e.key === 'S') && e.target.tagName !== 'TEXTAREA') {
+			      e.preventDefault(); // Prevent default 'find' dialog in browser
+			      findCurrentPosition();
+		      }
+		      // Check if the pressed key is spacebar and the target is not the textarea
+		      if (e.code === 'Space' && e.target.tagName !== 'TEXTAREA') {
+			      e.preventDefault(); // Prevent page scrolling
+			      togglePlayPause();
+		      }
+		      // Optional: Add keyboard shortcut (e.g., 'I' key)
+		      if ((e.key === 'i' || e.key === 'I') && e.target.tagName !== 'TEXTAREA') {
+			      e.preventDefault();
+			      markInPoint();
+		      }
+		      if ((e.key === 'o' || e.key === 'O') && e.target.tagName !== 'TEXTAREA') {
+			      e.preventDefault();
+			      markOutPoint();
+		      }
+		      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+			      e.preventDefault(); // Prevent browser's save dialog
+			      saveToLocal();
+		      }
+		      if ((e.key === 'x' || e.key === 'X') && e.target.tagName !== 'TEXTAREA') {
+			      e.preventDefault();
+			      toggleCurrentLine();
+		      }
+
+		      // Shift + minus: decrease video size
+		      if (e.shiftKey && e.key === '_') {  // Shift + minus key
+			      const currentWidth = videoPlayer.offsetWidth;
+			      e.preventDefault();
+			      videoPlayer.style.width = (currentWidth * 0.9) + 'px';  // Decrease by 10%
+		      }
+
+		      // Shift + plus: increase video size
+		      if (e.shiftKey && e.key === '+') {  // Shift + plus key
+			      const currentWidth = videoPlayer.offsetWidth;
+			      e.preventDefault();
+			      videoPlayer.style.width = (currentWidth * 1.1) + 'px';  // Increase by 10%
+		      }
+
+		      // Shift + 0: reset to default size
+		      if (e.shiftKey && e.key === ')') {  // Shift + 0 key
+			      const currentWidth = videoPlayer.offsetWidth;
+			      e.preventDefault();
+			      videoPlayer.style.width = '100%';  // Reset to original size
+		      }                
+
+		      // ESC
+		      if (e.key === 'Escape') {
+			      e.preventDefault();
+			      if (isTextAreaFocused) {
+				      // If textarea is focused, blur it
+				      textarea.blur();
+				      isTextAreaFocused = false;
+			      } else {
+				      // If textarea is not focused, focus it
+				      textarea.focus();
+				      isTextAreaFocused = true;
+			      }
+		      }
+	      });
+	      // Update timecode display
+	      videoPlayer.addEventListener('timeupdate', function() {
+		      timecodeDisplay.textContent = secondsToTimecode(videoPlayer.currentTime);
+	      });
+
+	      // Process EDL line when cursor moves
+	      textarea.addEventListener('click', function() {
+		      const currentLine = getCurrentLineContent();
+		      if (currentLine) {
+			      processEDLLine(currentLine);
+		      }
+	      });
+
+	      textarea.addEventListener('keyup', function(e) {
+		      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+			      const currentLine = getCurrentLineContent();
+			      if (currentLine) {
+				      processEDLLine(currentLine);
+			      }
+		      }
+	      });
+
+	      textarea.addEventListener('keydown', function(e) {
+		      if (e.key === 'Tab') {
+			      e.preventDefault(); // Prevent default tab behavior
+
+			      // Get cursor position
+			      const start = this.selectionStart;
+			      const end = this.selectionEnd;
+
+			      // Insert tab at cursor position
+			      this.value = this.value.substring(0, start) + '\t' + this.value.substring(end);
+
+			      // Move cursor after tab
+			      this.selectionStart = this.selectionEnd = start + 1;
+		      }
+
+		      if (e.key === 'Backspace' && e.shiftKey && !e.ctrlKey && !e.altKey) {
+			      e.preventDefault();
+			      toggleCurrentLine();
+		      }
+		      if (e.key === ' ' && e.shiftKey && !e.ctrlKey && !e.altKey) {
+			      e.preventDefault();
+			      togglePlayPause();
+		      }
+	      });
+
+	      //////////////////// localStorage
+
+	      // Function to save content to localStorage
+	      function saveToLocal() {
+		      const content = textarea.value;
+		      try {
+			      localStorage.setItem('edlContent', content);
+
+			      // Visual feedback
+			      const saveButton = document.querySelector('button[onclick="saveToLocal()"]');
+			      const originalText = saveButton.textContent;
+			      saveButton.textContent = 'Saved!';
+			      saveButton.style.backgroundColor = '#90EE90'; // Light green
+
+			      setTimeout(() => {
+				      saveButton.textContent = originalText;
+				      saveButton.style.backgroundColor = '';
+			      }, 1000);
+
+			      console.log('Content saved to local storage');
+		      } catch (e) {
+			      console.error('Error saving to local storage:', e);
+			      alert('Failed to save content!');
+		      }
+	      }
+
+	      // Function to load content from localStorage
+	      function loadFromLocal() {
+		      try {
+			      const savedContent = localStorage.getItem('edlContent');
+			      if (savedContent) {
+				      textarea.value = savedContent;
+				      console.log('Content loaded from local storage');
+			      }
+		      } catch (e) {
+			      console.error('Error loading from local storage:', e);
+		      }
+	      }
+
+
+	      // Auto-save functionality (optional)
+	      let autoSaveTimeout;
+	      textarea.addEventListener('input', () => {
+		      clearTimeout(autoSaveTimeout);
+		      autoSaveTimeout = setTimeout(() => {
+			      saveToLocal();
+		      }, 2000); // Auto-save 2 seconds after last input
+	      });
+
+	      // Load content when page loads
+	      document.addEventListener('DOMContentLoaded', loadFromLocal);
+
+	      function clearSavedContent() {
+		      // Show confirmation dialog
+		      if (confirm('Are you sure you want to clear saved content? This cannot be undone.')) {
+			      try {
+				      // Clear localStorage
+				      localStorage.removeItem('edlContent');
+
+				      // Clear textarea
+				      textarea.value = '';
+
+				      // Visual feedback
+				      const clearButton = document.querySelector('.clear-button');
+				      const originalText = clearButton.textContent;
+				      clearButton.textContent = 'Cleared!';
+				      clearButton.style.backgroundColor = '#ff9999'; // Light red
+
+				      setTimeout(() => {
+					      clearButton.textContent = originalText;
+					      clearButton.style.backgroundColor = '';
+				      }, 1000);
+
+				      console.log('Content cleared from local storage');
+			      } catch (e) {
+				      console.error('Error clearing local storage:', e);
+				      alert('Failed to clear content!');
+			      }
+		      }
+	      }
+	      async function loadTextFromURL() {
+		      // You can either hardcode the URL or use a prompt
+		      const url = prompt("Enter URL of the text file:", "textarea.txt");
+
+		      if (!url) return; // User cancelled the prompt
+
+		      try {
+			      const response = await fetch(url);
+			      if (!response.ok) {
+				      throw new Error(`HTTP error! status: ${response.status}`);
+			      }
+			      const text = await response.text();
+
+			      // Get the textarea and set its value
+			      const textarea = document.getElementById('contentArea');
+			      textarea.value = text;
+
+			      // Trigger any necessary update events
+			      const inputEvent = new Event('input');
+			      textarea.dispatchEvent(inputEvent);
+
+			      // Optional: Visual feedback
+			      textarea.style.backgroundColor = '#ffffd0';
+			      setTimeout(() => {
+				      textarea.style.backgroundColor = '';
+			      }, 200);
+
+		      } catch (error) {
+			      console.error('Error loading text:', error);
+			      alert('Error loading text file. Check console for details.');
+		      }
+	      }
+	      function loadSample2(){
+		      const sample2 = `
+EDL	00:00:03,019	00:00:03,019	| BigBuckBunny |	BigBuckBunny
+EDL	00:00:03,019	00:00:07,033	| ElephantsDream |	ElephantsDream
+EDL	00:00:09,528	00:00:11,169	| ForBiggerBlazes |	ForBiggerBlazes
+EDL	00:00:03,019	00:00:03,019	| ForBiggerEscapes |	ForBiggerEscapes
+EDL	00:00:03,019	00:00:07,033	| ForBiggerFun |	ForBiggerFun
+EDL	00:00:09,528	00:00:11,169	| ForBiggerJoyrides |	ForBiggerJoyrides
+EDL	00:00:03,019	00:00:03,019	| ForBiggerMeltdowns |	ForBiggerMeltdowns
+EDL	00:00:03,019	00:00:07,033	| Sintel |	Sintel
+EDL	00:00:09,528	00:00:11,169	| SubaruOutbackOnStreetAndDirt |	SubaruOutbackOnStreetAndDirt
+EDL	00:00:03,019	00:00:03,019	| TearsOfSteel |	TearsOfSteel
+EDL	00:00:03,019	00:00:07,033	| VolkswagenGTIReview |	VolkswagenGTIReview
+EDL	00:00:09,528	00:00:11,169	| WeAreGoingOnBullrun |	WeAreGoingOnBullrun
+EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand |	WhatCarCanYouGetForAGrand
+`;
+		      textarea.value = sample2;
+		      localStorage.setItem('videoUrlPrefix', "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/");
+		      updatePrefixDisplay();
+		      reloadMedia();
+	      }
+
+	      function reloadMedia(){
+		      //reload video
+		      currentClipName = ""; // make it sure to invoke changeVideo()
+		      const currentLine = getCurrentLineContent();
+		      if (currentLine) {
+			      processEDLLine(currentLine);
+		      }
+	      }
+
+	      /////////// Media file url prefix adding
+	      function setPrefix() {
+		      const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
+		      const prefix = prompt("Enter URL prefix for media:\n e.g.: https://video.scateu.me/\n       file:///Users/k/www/some/", currentPrefix);
+
+		      if (prefix !== null) {  // if user didn't click Cancel
+			      // Add trailing slash if missing
+			      let normalizedPrefix = prefix.trim();
+			      if (normalizedPrefix && !normalizedPrefix.endsWith('/')) {
+				      normalizedPrefix += '/';
+			      }
+			      localStorage.setItem('videoUrlPrefix', normalizedPrefix);
+			      updatePrefixDisplay();
+
+			      //reload video
+			      reloadMedia();
+		      }
+	      }
+
+	      function clearPrefix() {
+		      localStorage.removeItem('videoUrlPrefix');
+		      updatePrefixDisplay();
+		      reloadMedia();
+	      }
+
+	      function updatePrefixDisplay() {
+		      const prefixDisplay = document.getElementById('currentPrefix');
+		      const currentPrefix = localStorage.getItem('videoUrlPrefix');
+		      prefixDisplay.textContent = currentPrefix || '(none)';
+	      }
+
+	      // Load saved prefix when page loads
+	      document.addEventListener('DOMContentLoaded', () => {
+		      updatePrefixDisplay();
+	      });
+
+
+	      //////////////// Drop zone to do srt2tsv
+
+	      function setupDropZone() {
+		      const dropZone = document.getElementById('dropZone');
+
+		      // Make dropZone clickable
+		      dropZone.addEventListener('click', () => {
+			      fileInput.click();
+		      });
+
+		      // Handle file selection via click
+		      fileInput.addEventListener('change', (e) => {
+			      handleFiles(e.target.files);
+		      });
+
+		      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+			      dropZone.addEventListener(eventName, preventDefaults, false);
+		      });
+
+		      function preventDefaults (e) {
+			      e.preventDefault();
+			      e.stopPropagation();
+		      }
+
+		      ['dragenter', 'dragover'].forEach(eventName => {
+			      dropZone.addEventListener(eventName, highlight, false);
+		      });
+
+		      ['dragleave', 'drop'].forEach(eventName => {
+			      dropZone.addEventListener(eventName, unhighlight, false);
+		      });
+
+		      function highlight(e) {
+			      dropZone.style.backgroundColor = '#e3f2fd';
+		      }
+
+		      function unhighlight(e) {
+			      dropZone.style.backgroundColor = '';
+		      }
+
+		      dropZone.addEventListener('drop', handleDrop, false);
+
+		      function handleDrop(e) {
+			      const dt = e.dataTransfer;
+			      const files = dt.files;
+			      handleFiles(files);
+		      }
+
+		      function handleFiles(files) {
+			      const file = files[0];
+			      if (file.name.toLowerCase().endsWith('.srt')) {
+				      // Get filename without extension for clipname
+				      const clipName = file.name.replace(/\.[^/.]+$/, "");
+
+				      const reader = new FileReader();
+				      reader.onload = function(e) {
+					      const srtContent = e.target.result;
+					      const edlLines = convertSrtToEdl(srtContent, clipName);
+
+					      // Append to textarea
+					      textarea.value += (textarea.value ? '\n' : '') + edlLines;
+
+					      // Success message
+					      dropZone.innerHTML = `Converted ${file.name} and appended!`;
+					      setTimeout(() => {
+						      dropZone.innerHTML = 'Drag & Drop .srt file here';
+					      }, 2000);
+				      };
+				      reader.readAsText(file);
+			      } else {
+				      alert('Please drop a .srt file');
+			      }
+		      }
+	      }
+
+	      function convertSrtToEdl(srtContent, clipName) {
+		      const lines = srtContent.split('\n');
+		      let edlLines = [];
+		      let currentEntry = {};
+
+		      for (let i = 0; i < lines.length; i++) {
+			      const line = lines[i].trim();
+
+			      if (!line) continue;
+
+			      if (/^\d+$/.test(line)) {
+				      if (currentEntry.timeIn) {
+					      edlLines.push(formatEdlLine(currentEntry, clipName));
+				      }
+				      currentEntry = {};
+				      continue;
+			      }
+
+			      if (line.includes('-->')) {
+				      const times = line.split('-->').map(t => t.trim());
+				      currentEntry.timeIn = convertSrtTimeToEdlTime(times[0]);
+				      currentEntry.timeOut = convertSrtTimeToEdlTime(times[1]);
+				      continue;
+			      }
+
+			      if (currentEntry.timeIn && !currentEntry.text) {
+				      currentEntry.text = line;
+			      } else if (currentEntry.text) {
+				      currentEntry.text += ' ' + line;
+			      }
+		      }
+
+		      if (currentEntry.timeIn) {
+			      edlLines.push(formatEdlLine(currentEntry, clipName));
+		      }
+
+		      return edlLines.join('\n');
+	      }
+
+	      function convertSrtTimeToEdlTime(srtTime) {
+		      return srtTime.replace('.', ',');
+	      }
+
+	      function formatEdlLine(entry, clipName) {
+		      // Use the filename as clipname
+		      return `EDL\t${entry.timeIn}\t${entry.timeOut}\t| ${clipName} |\t${entry.text}`;
+	      }
+
+	      document.addEventListener('DOMContentLoaded', setupDropZone);
 
       </script>
    </body>
