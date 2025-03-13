@@ -16,7 +16,7 @@
  - [X] Add an Save button to save this html to local disk. courtesy of xujie04
 
  - [ ] CORS - localhost 
-
+ - [ ] make local opened HTML local storage multiplexable
 
 
 Compatibility table:
