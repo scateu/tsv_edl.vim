@@ -36,5 +36,4 @@ START A LOCAL HTTP SERVER:
                                   file:///Users/Jeff/www/  (only works when locally open this HTML file)
 
 古腾堡印刷机的出现，本意是方便圣经的印刷，之前一个教区只买得起一本手抄版。但它客观上使得写作变得触手可及，人人可写作。
-这个项目的目标是提供一支笔(如Bic Cristal，廉价但好用)、一部打字机、一部印刷机。
-
+这个项目的目标是提供一把剪刀、一沓纸、一卷胶带、一支笔(如Bic Cristal廉价且好用)、一部打字机、一个键盘、一部印刷机。
