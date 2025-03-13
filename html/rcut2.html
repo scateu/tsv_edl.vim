@@ -118,6 +118,17 @@
 	 .item:last-child {
 		 border-right: none;
 	 }
+	#dropZone {
+	    background: #f8f9fa;
+	    border-radius: 4px;
+	    cursor: pointer;
+	    transition: all 0.3s ease;
+	}
+
+	#dropZone:hover {
+	    background: #e9ecef;
+	}
+
       </style>
    </head>
    <body>
@@ -180,6 +191,9 @@
 			    <button onclick="clearSuffix()">CLR</button> -->
 			  </span>
 			</div>
+		      <div id="dropZone" style="border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 10px 0;">
+			  Drag & Drop .srt file here to convert into tsv EDL lines. Will append to edit area.
+                     </div>
 		      <div class="toolbar">
 			      <button onclick="loadTextFromURL()"> Load Sample EDL file</button>
 	                     <a href="https://youtu.be/p7HuFz-RwsI" target="_blank" class="button-style"> Youtube Demo </a>
@@ -837,6 +851,121 @@
 	    updatePrefixDisplay();
 	});
 
+
+	 //////////////// Drop zone to do srt2tsv
+
+function setupDropZone() {
+    const dropZone = document.getElementById('dropZone');
+
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults (e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+        dropZone.style.backgroundColor = '#e3f2fd';
+    }
+
+    function unhighlight(e) {
+        dropZone.style.backgroundColor = '';
+    }
+
+    dropZone.addEventListener('drop', handleDrop, false);
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+    }
+
+    function handleFiles(files) {
+        const file = files[0];
+        if (file.name.toLowerCase().endsWith('.srt')) {
+            // Get filename without extension for clipname
+            const clipName = file.name.replace(/\.[^/.]+$/, "");
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const srtContent = e.target.result;
+                const edlLines = convertSrtToEdl(srtContent, clipName);
+                
+                // Append to textarea
+                textarea.value += (textarea.value ? '\n' : '') + edlLines;
+                
+                // Success message
+                dropZone.innerHTML = `Converted ${file.name} and appended!`;
+                setTimeout(() => {
+                    dropZone.innerHTML = 'Drag & Drop .srt file here';
+                }, 2000);
+            };
+            reader.readAsText(file);
+        } else {
+            alert('Please drop a .srt file');
+        }
+    }
+}
+
+function convertSrtToEdl(srtContent, clipName) {
+    const lines = srtContent.split('\n');
+    let edlLines = [];
+    let currentEntry = {};
+
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        if (!line) continue;
+
+        if (/^\d+$/.test(line)) {
+            if (currentEntry.timeIn) {
+                edlLines.push(formatEdlLine(currentEntry, clipName));
+            }
+            currentEntry = {};
+            continue;
+        }
+
+        if (line.includes('-->')) {
+            const times = line.split('-->').map(t => t.trim());
+            currentEntry.timeIn = convertSrtTimeToEdlTime(times[0]);
+            currentEntry.timeOut = convertSrtTimeToEdlTime(times[1]);
+            continue;
+        }
+
+        if (currentEntry.timeIn && !currentEntry.text) {
+            currentEntry.text = line;
+        } else if (currentEntry.text) {
+            currentEntry.text += ' ' + line;
+        }
+    }
+
+    if (currentEntry.timeIn) {
+        edlLines.push(formatEdlLine(currentEntry, clipName));
+    }
+
+    return edlLines.join('\n');
+}
+
+function convertSrtTimeToEdlTime(srtTime) {
+    return srtTime.replace('.', ',');
+}
+
+function formatEdlLine(entry, clipName) {
+    // Use the filename as clipname
+    return `EDL\t${entry.timeIn}\t${entry.timeOut}\t| ${clipName} |\t${entry.text}`;
+}
+
+document.addEventListener('DOMContentLoaded', setupDropZone);
 
       </script>
    </body>
