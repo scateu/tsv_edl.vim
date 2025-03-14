@@ -17,6 +17,7 @@
 
  - [ ] CORS - localhost 
  - [ ] make local opened HTML local storage multiplexable
+ - [ ] FIXME Safari can't visit http resource in https page
 
 
 Compatibility table:
