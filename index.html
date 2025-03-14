@@ -83,6 +83,10 @@
 		resize: both;
 		white-space: pre;
 	}
+	#contentArea[readonly] {
+		background-color: #f0f0f0;
+		cursor: default;
+	}
 	#currentTimecode {
 		display: inline-block;
 		margin-left: 20px;
@@ -182,6 +186,7 @@
          <button title="outside: i" onclick="markInPoint()">IN▼</button> 
          <button title="outside: o" onclick="markOutPoint()">OUT▼</button>  
          <button title="Ctrl-s" onclick="saveToLocal()">💾 Local</button>
+         <button id="toggleReadonlyButton" title="Toggle Readonly" onclick="toggleReadonly()">🖋️</button>
          <span id="currentTimecode">00:00:00,000</span>
          <span id="currentFilename"></span>
       </div>
@@ -1067,6 +1072,13 @@ EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand    |	WhatCarCanYouGetF
 	      }
 
 	      document.addEventListener('DOMContentLoaded', setupDropZone);
+
+	      // Toggle Readonly of contentArea; useful in touch screen, like iPad and Tesla.
+	      function toggleReadonly() {
+		      textarea.readOnly = !textarea.readOnly; // Toggle readonly status
+		      document.getElementById('toggleReadonlyButton').textContent = textarea.readOnly ? '🔏' : '🖋️';
+		      textarea.style.backgroundColor = textarea.readOnly ? '#f0f0f0' : 'white';
+	      }
 
       </script>
    </body>
