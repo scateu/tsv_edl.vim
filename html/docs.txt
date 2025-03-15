@@ -27,11 +27,11 @@ SHORTCUTS:
     CLICK on line              set Playhead to the text position (interpolate from IN OUT)
     UP/DOWN                    same as above
 
-    READONLY:
-      SPACE                    Pause / Play
-      Backspace                change EDL / xxx status
-      Enter                    same as CLICK
-      s                        same as s in OUTSIDE
+    WHEN READONLY, ADDITIONAL KEYS AVAILABLE:
+    SPACE                      Pause / Play
+    Backspace                  change EDL / xxx status
+    Enter                      same as CLICK
+    s                          same as s in OUTSIDE
 
   OUTSIDE:
     Space                      Pause / Play
