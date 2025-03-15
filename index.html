@@ -299,6 +299,7 @@
 
 	      videoPlayer.addEventListener('pause', () => {
 		      playPauseButton.textContent = '▶'; //U+25B6
+		      playPauseButton.style.backgroundColor = ''; 
 	      });
 
 	      //utils
@@ -520,16 +521,17 @@
 				      textarea.setSelectionRange(lastKnownCursorPosition, lastKnownCursorPosition);
 
 				      // Visual feedback
-				      textarea.style.backgroundColor = '#ffffd0';
+				      textarea.style.backgroundColor = '#DA70D6';
 				      setTimeout(() => {
 					      textarea.style.backgroundColor = '';
-				      }, 200);
+				      }, 100);
 			      }
 		      }
 		      // preserve textarea.focus status
-		      if (isTextAreaFocused) {
+		      //if (isTextAreaFocused) {
 			      textarea.focus();
-		      }
+		      //}
+		      showCaret();
 	      }
 
 	      function findCurrentPosition() {
@@ -617,7 +619,7 @@
 
 
 		      // Create new EDL line
-		      const newEDLLine = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\t\n`;
+		      const newEDLLine = `EDL\t${timecode}\t${timecode}\t| ${clipName} |\tSELECTION`;
 
 		      // Append to textarea
 		      textarea.value += (textarea.value && !textarea.value.endsWith('\n') ? '\n' : '') + newEDLLine;
@@ -671,8 +673,10 @@
 		      }
 
 		      // Scroll to bottom and set cursor at end
+		      /*
 		      textarea.scrollTop = textarea.scrollHeight;
 		      textarea.setSelectionRange(textarea.value.length, textarea.value.length);
+		      */
 
 		      // Visual feedback
 		      textarea.style.backgroundColor = '#ffffd0';
@@ -1186,8 +1190,14 @@ EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand    |	WhatCarCanYouGetF
 		      const readonlyButton = document.getElementById('toggleReadonlyButton');
 		      readonlyButton.textContent = textarea.readOnly ? '🔏' : '🖋️';
 		      textarea.style.backgroundColor = textarea.readOnly ? '#f0f0f0' : 'white';
-
+		      showCaret();
 		      textarea.focus();
+	      }
+	      function showCaret() { // a simple way to show cursor / caret by selecting a char.
+		      const cursorPosition = textarea.matches(':focus') ? 
+			      textarea.selectionStart : 
+			      lastKnownCursorPosition;
+		      textarea.setSelectionRange(cursorPosition, cursorPosition +1);
 	      }
 
       </script>
