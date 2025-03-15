@@ -15,24 +15,35 @@ EXPORT TO FCPXML FOR FURTHER EDITING:
   $ pbpaste | python3 tsv2fcpxml.py > export.fcpxml
 
 SHORTCUTS:
+
+  ESC                          Go INSIDE TEXTAREA; Toggle READONLY
+
   INSIDE TEXTAREA:
-    Shift - Space     Pause / Play
-    Shift - Backspace change EDL / xxx status
-    Shift -           Decrease Video size 
-    Shift +           Increase Video size
-    Shift 0           Reset Video size
-    CLICK on line     set Playhead to the text position (will calculate an interpolation according to IN/OUT)
-    UP/DOWN           same as above
-    ESC               Focus off textarea
+    Shift Space                Pause / Play
+    Shift Backspace            change EDL / xxx status
+    Shift -                    Decrease Video size 
+    Shift +                    Increase Video size
+    Shift 0                    Reset Video size
+    CLICK on line              set Playhead to the text position (interpolate from IN OUT)
+    UP/DOWN                    same as above
+
+    READONLY:
+      SPACE                    Pause / Play
+      Backspace                change EDL / xxx status
+      Enter                    same as CLICK
+      s                        same as s in OUTSIDE
+
   OUTSIDE:
-    Space             Pause / Play
-    x                 change EDL / xxx status
-    s                 Playhead to EDL line seeking
-    i                 Mark IN point. Add as a new line at bottom
-    o                 Mark OUT point. Overwrite the out point of the last line
-    Ctrl-S / CMD-S    Save to local browser cache.
-    ESC               Focus off textarea
-    `                 Focus on textarea
+    Space                      Pause / Play
+    k                          Pause / Play
+    l                          Play
+    Backspace                  change EDL / xxx status
+    Shift Backspace            change EDL / xxx status
+    s                          Playhead to EDL line seeking
+    i                          Mark IN point. Add as a new line at bottom
+    o                          Mark OUT point. Overwrite the out point of the last line
+    Ctrl-S / CMD-S             Save to local browser cache.
+    `                          Go INSIDE TEXTAREA
 
 
 START A LOCAL HTTP SERVER:
