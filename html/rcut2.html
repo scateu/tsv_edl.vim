@@ -994,19 +994,19 @@
 	      }
 	      function loadSample2(){
 		      const sample2 = `
-EDL	00:00:03,019	00:00:03,019	| BigBuckBunny                 |	BigBuckBunny
-EDL	00:00:03,019	00:00:07,033	| ElephantsDream               |	ElephantsDream
-EDL	00:00:09,528	00:00:11,169	| ForBiggerBlazes              |	ForBiggerBlazes
-EDL	00:00:03,019	00:00:03,019	| ForBiggerEscapes             |	ForBiggerEscapes
-EDL	00:00:03,019	00:00:07,033	| ForBiggerFun                 |	ForBiggerFun
-EDL	00:00:09,528	00:00:11,169	| ForBiggerJoyrides            |	ForBiggerJoyrides
-EDL	00:00:03,019	00:00:03,019	| ForBiggerMeltdowns           |	ForBiggerMeltdowns
-EDL	00:00:03,019	00:00:07,033	| Sintel                       |	Sintel
-EDL	00:00:09,528	00:00:11,169	| SubaruOutbackOnStreetAndDirt |	SubaruOutbackOnStreetAndDirt
-EDL	00:00:03,019	00:00:03,019	| TearsOfSteel                 |	TearsOfSteel
-EDL	00:00:03,019	00:00:07,033	| VolkswagenGTIReview          |	VolkswagenGTIReview
-EDL	00:00:09,528	00:00:11,169	| WeAreGoingOnBullrun          |	WeAreGoingOnBullrun
-EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand    |	WhatCarCanYouGetForAGrand
+EDL	00:00:00,000	00:09:56,474	| BigBuckBunny                 |	..........
+EDL	00:00:00,000	00:10:53,803	| ElephantsDream               |	..........
+EDL	00:00:00,000	00:00:15,022	| ForBiggerBlazes              |	..........
+EDL	00:00:00,000	00:00:15,046	| ForBiggerEscapes             |	..........
+EDL	00:00:00,000	00:01:00,070	| ForBiggerFun                 |	..........
+EDL	00:00:00,000	00:00:15,046	| ForBiggerJoyrides            |	..........
+EDL	00:00:00,000	00:00:15,046	| ForBiggerMeltdowns           |	..........
+EDL	00:00:00,000	00:14:47,999	| Sintel                       |	..........
+EDL	00:00:00,000	00:09:54,570	| SubaruOutbackOnStreetAndDirt |	..........
+EDL	00:00:00,000	00:12:14,260	| TearsOfSteel                 |	..........
+EDL	00:00:00,000	00:09:53,803	| VolkswagenGTIReview          |	..........
+EDL	00:00:00,000	00:00:47,461	| WeAreGoingOnBullrun          |	..........
+EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 `;
 		      textarea.value = sample2;
 		      localStorage.setItem('videoUrlPrefix', "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/");
@@ -1200,6 +1200,10 @@ EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand    |	WhatCarCanYouGetF
 		      textarea.focus();
 	      }
 	      function showCaret() { // a simple way to show cursor / caret by selecting a char.
+		      if (textarea.selectionStart != textarea.selectionEnd) { // region selection
+			      return
+		      }
+
 		      const cursorPosition = textarea.matches(':focus') ? 
 			      textarea.selectionStart : 
 			      lastKnownCursorPosition;
