@@ -23,7 +23,7 @@ SHORTCUTS:
     Shift 0           Reset Video size
     CLICK on line     set Playhead to the text position (will calculate an interpolation according to IN/OUT)
     UP/DOWN           same as above
-    ESC               Focus on/off textarea
+    ESC               Focus off textarea
   OUTSIDE:
     Space             Pause / Play
     x                 change EDL / xxx status
@@ -31,7 +31,7 @@ SHORTCUTS:
     i                 Mark IN point. Add as a new line at bottom
     o                 Mark OUT point. Overwrite the out point of the last line
     Ctrl-S / CMD-S    Save to local browser cache.
-    ESC               Focus on/off textarea
+    ESC               Focus off textarea
     `                 Focus on textarea
 
 
