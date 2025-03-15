@@ -90,7 +90,7 @@
 	}
 	#contentArea[readonly]:focus {
 		border-color: #f0f0f0;
-		box-shadow: 0 0 80px rgba(51, 51, 51, 0.8);
+		box-shadow: 0 0 80px rgba(243, 33, 150 , 0.4);
 	}
 	#contentArea:focus {
 		border-color: #2196F3;
@@ -1089,6 +1089,7 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 
 	      function setupDropZone() {
 		      const dropZone = document.getElementById('dropZone');
+		      const fileInput = document.getElementById('fileInput');
 
 		      // Make dropZone clickable
 		      dropZone.addEventListener('click', () => {
