@@ -88,9 +88,13 @@
 		background-color: #f0f0f0;
 		cursor: default;
 	}
+	#contentArea[readonly]:focus {
+		border-color: #f0f0f0;
+		box-shadow: 0 0 80px rgba(51, 51, 51, 0.8);
+	}
 	#contentArea:focus {
 		border-color: #2196F3;
-		box-shadow: 0 0 20px rgba(33, 150, 243, 0.4);
+		box-shadow: 0 0 80px rgba(33, 150, 243, 0.4);
 	}
 	#currentTimecode {
 		display: inline-block;
@@ -483,6 +487,7 @@
 
 	      textarea.addEventListener('click', () => {
 		      lastKnownCursorPosition = textarea.selectionStart;
+		      showCaret();
 	      });
 
 	      textarea.addEventListener('keyup', () => {
@@ -803,6 +808,7 @@
 			      if (currentLine) {
 				      processEDLLine(currentLine);
 			      }
+			      showCaret();
 		      }
 	      });
 
@@ -1197,7 +1203,16 @@ EDL	00:00:09,528	00:00:11,169	| WhatCarCanYouGetForAGrand    |	WhatCarCanYouGetF
 		      const cursorPosition = textarea.matches(':focus') ? 
 			      textarea.selectionStart : 
 			      lastKnownCursorPosition;
-		      textarea.setSelectionRange(cursorPosition, cursorPosition +1);
+		      if (cursorPosition < textarea.value.length) {
+			      if (textarea.value[cursorPosition] === '\n') {
+				      textarea.setSelectionRange(cursorPosition-1, cursorPosition);
+			      } else {
+				      textarea.setSelectionRange(cursorPosition, cursorPosition +1);
+			      } 
+		       }else { // last char
+			       //textarea.setSelectionRange(cursorPosition-1, cursorPosition);
+		       }
+
 	      }
 
       </script>
