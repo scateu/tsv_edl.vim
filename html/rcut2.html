@@ -241,8 +241,8 @@
 			      <input type="file" id="fileInput" accept=".srt" style="display: none;">
                      </div>
 		      <div class="toolbar">
-			      <button onclick="loadTextFromURL()"> Load Sample EDL file</button>
-			      <button onclick="loadSample2()"> Load Sample 2</button>
+			      <button onclick="loadTextFromURL()"> Load Sample EDL</button>
+			      <button onclick="loadSample2()"> Sample: Bunny</button>
 	                     <a href="https://youtu.be/p7HuFz-RwsI" target="_blank" class="button-style"> Youtube Demo </a>
 		      </div>
 		      <!--<div>
@@ -662,33 +662,45 @@
 		      }, 200);
 	      }
 
-	      // Optional: Add keyboard shortcut (e.g., 'F' key) to find current position
 	      document.addEventListener('keydown', function(e) {
-		      if ((e.key === 's' || e.key === 'S') && e.target.tagName !== 'TEXTAREA') {
-			      e.preventDefault(); // Prevent default 'find' dialog in browser
-			      findCurrentPosition();
-		      }
-		      // Check if the pressed key is spacebar and the target is not the textarea
-		      if (e.code === 'Space' && e.target.tagName !== 'TEXTAREA') {
-			      e.preventDefault(); // Prevent page scrolling
-			      togglePlayPause();
-		      }
-		      // Optional: Add keyboard shortcut (e.g., 'I' key)
-		      if ((e.key === 'i' || e.key === 'I') && e.target.tagName !== 'TEXTAREA') {
-			      e.preventDefault();
-			      markInPoint();
-		      }
-		      if ((e.key === 'o' || e.key === 'O') && e.target.tagName !== 'TEXTAREA') {
-			      e.preventDefault();
-			      markOutPoint();
-		      }
+		      if (e.target.tagName !== 'TEXTAREA') { // outside only
+			      if (e.key === 's' || e.key === 'S') {
+				      e.preventDefault(); // Prevent default 'find' dialog in browser
+				      findCurrentPosition();
+			      }
+			      // Check if the pressed key is spacebar and the target is not the textarea
+			      if (e.code === 'Space') {
+				      e.preventDefault(); // Prevent page scrolling
+				      togglePlayPause();
+			      }
+			      // Optional: Add keyboard shortcut (e.g., 'I' key)
+			      if (e.key === 'i' || e.key === 'I') {
+				      e.preventDefault();
+				      markInPoint();
+			      }
+			      if (e.key === 'o' || e.key === 'O') {
+				      e.preventDefault();
+				      markOutPoint();
+			      }
+			      if (e.key === 'x' || e.key === 'X') {
+				      e.preventDefault();
+				      toggleCurrentLine();
+			      }
+			      if (e.key === '`') { // focus in textarea
+				      e.preventDefault();
+				      textarea.focus();
+				      isTextAreaFocused = true;
+			      }
+			      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') { // prevent unnecessary scrolling by arrow up/down
+				      e.preventDefault();
+			      }
+		      } 
+		      // inside only key handled in textarea.addEventListener('keydown', ....)
+
+		      // both inside and outside textarea
 		      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
 			      e.preventDefault(); // Prevent browser's save dialog
 			      saveToLocal();
-		      }
-		      if ((e.key === 'x' || e.key === 'X') && e.target.tagName !== 'TEXTAREA') {
-			      e.preventDefault();
-			      toggleCurrentLine();
 		      }
 
 		      // Shift + minus: decrease video size
@@ -715,16 +727,18 @@
 		      // ESC
 		      if (e.key === 'Escape') {
 			      e.preventDefault();
-			      if (isTextAreaFocused) {
-				      // If textarea is focused, blur it
-				      textarea.blur();
+			      /*if (isTextAreaFocused) {
+				      // If textarea is focused, blur it 
+		              */
+				      textarea.blur(); // Esc explicitly bind to UnFocus textarea. As in Vim.
 				      isTextAreaFocused = false;
-			      } else {
+			      /*} else {
 				      // If textarea is not focused, focus it
 				      textarea.focus();
 				      isTextAreaFocused = true;
-			      }
+			      }*/
 		      }
+
 	      });
 	      // Update timecode display
 	      videoPlayer.addEventListener('timeupdate', function() {
@@ -749,7 +763,7 @@
 	      });
 
 	      textarea.addEventListener('keydown', function(e) {
-		      if (e.key === 'Tab') {
+		      if (e.key === 'Tab') { //input a Tab
 			      e.preventDefault(); // Prevent default tab behavior
 
 			      // Get cursor position
@@ -763,11 +777,11 @@
 			      this.selectionStart = this.selectionEnd = start + 1;
 		      }
 
-		      if (e.key === 'Backspace' && e.shiftKey && !e.ctrlKey && !e.altKey) {
+		      if (e.key === 'Backspace' && e.shiftKey && !e.ctrlKey && !e.altKey) { //Shift-Backspace
 			      e.preventDefault();
 			      toggleCurrentLine();
 		      }
-		      if (e.key === ' ' && e.shiftKey && !e.ctrlKey && !e.altKey) {
+		      if (e.key === ' ' && e.shiftKey && !e.ctrlKey && !e.altKey) { // Shift-Space
 			      e.preventDefault();
 			      togglePlayPause();
 		      }

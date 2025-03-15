@@ -32,6 +32,7 @@ SHORTCUTS:
     o                 Mark OUT point. Overwrite the out point of the last line
     Ctrl-S / CMD-S    Save to local browser cache.
     ESC               Focus on/off textarea
+    `                 Focus on textarea
 
 
 START A LOCAL HTTP SERVER:
