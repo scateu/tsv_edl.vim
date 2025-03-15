@@ -188,7 +188,7 @@
       </div>
       <div class="toolbar">
          <button title="outside: Space; inside: Shift-Space" id="playPauseButton" onclick="togglePlayPause()">▶</button>
-         <button title="outside: Left" onclick="seekBack()">-6s</button>
+         <button title="outside: Left" onclick="seekBack()">-3s</button>
          <button title="outside: Right" onclick="seekForward()">+6s</button>
          <button title="s" onclick="findCurrentPosition()">Seek▼</button>
          <button title="inside: Shift-Backspace; outside: (Shift)-Backspace" onclick="toggleCurrentLine()">(un)X</button>  
@@ -474,7 +474,7 @@
 
 
 	      function seekBack() {
-		      videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 6);
+		      videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 3);
 	      }
 
 	      function seekForward() {
