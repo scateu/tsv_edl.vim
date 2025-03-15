@@ -196,6 +196,7 @@
          <button title="outside: o" onclick="markOutPoint()">OUT▼</button>  
          <button title="Ctrl-s" onclick="saveToLocal()">💾 Local</button>
          <button id="toggleReadonlyButton" title="Toggle Readonly" onclick="toggleReadonly()">🖋️</button>
+         <button id="toggleSeekUpButton" title="Toggle Seek Up" onclick="toggleSeekUp()">🔗▲</button>
          <span id="currentTimecode">00:00:00,000</span>
          <span id="currentFilename"></span>
       </div>
@@ -271,6 +272,7 @@
 	      const playPauseButton = document.getElementById('playPauseButton');
 
 	      let isTextAreaFocused = false;  // Track focus state
+	      let doSeekUp = true; // 🔗▲ ⛓️
 
 	      // Set initial filename when page loads
 	      filenameDisplay.textContent = currentFilename;
@@ -537,6 +539,7 @@
 		      // preserve textarea.focus status
 		      //if (isTextAreaFocused) {
 			      textarea.focus();
+			      isTextAreaFocused = true;
 		      //}
 		      showCaret();
 	      }
@@ -749,6 +752,7 @@
 			      document.getElementById('toggleReadonlyButton').focus();  // first unfocus. otherwise caret won't preserve
 			      toggleReadonly();
 			      textarea.focus();
+			      isTextAreaFocused = true;
 		      }
 		      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
 			      e.preventDefault(); // Prevent browser's save dialog
@@ -798,6 +802,9 @@
 
 	      // Process EDL line when cursor moves
 	      textarea.addEventListener('click', function() {
+		      if (!doSeekUp) { 
+			      return // do nothing
+		      }
 		      const currentLine = getCurrentLineContent();
 		      if (currentLine) {
 			      processEDLLine(currentLine);
@@ -805,6 +812,9 @@
 	      });
 
 	      textarea.addEventListener('keyup', function(e) {
+		      if (!doSeekUp) {
+			      return // do nothing 
+		      }
 		      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
 			      const currentLine = getCurrentLineContent();
 			      if (currentLine) {
@@ -830,7 +840,7 @@
 			      }
 		      }
 
-		      // no matter if write allowed
+		      // RED / BLUE MODE
 		      if (e.key === 'Backspace' && e.shiftKey && !e.ctrlKey && !e.altKey) { //Shift-Backspace
 			      e.preventDefault();
 			      toggleCurrentLine();
@@ -841,7 +851,7 @@
 		      }
 
 
-		      if (this.readOnly) { // can't write
+		      if (this.readOnly) { // can't write. RED MODE
 			      if (e.key === ' ')  { // Space
 				      e.preventDefault();
 				      togglePlayPause();
@@ -1219,10 +1229,20 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 		      textarea.style.backgroundColor = textarea.readOnly ? '#f0f0f0' : 'white';
 		      showCaret();
 		      textarea.focus();
+		      isTextAreaFocused = true;
+	      }
+	      function toggleSeekUp() {
+		      doSeekUp = !doSeekUp;
+		      const seekUpButton = document.getElementById('toggleSeekUpButton');
+		      seekUpButton.textContent = doSeekUp ? '🔗▲' : '⛓️‍💥▲';
 	      }
 	      function showCaret() { // a simple way to show cursor / caret by selecting a char.
 		      if (textarea.selectionStart != textarea.selectionEnd) { // region selection
 			      return
+		      }
+
+		      if (!textarea.readOnly) { // NOT READONLY, BLUE MODE
+			      return // do nothing in BLUE mode
 		      }
 
 		      const cursorPosition = textarea.matches(':focus') ? 
