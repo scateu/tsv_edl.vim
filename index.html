@@ -221,7 +221,7 @@
 	      <a href="https://github.com/scateu/tsv_edl.vim" target="_blank" class="button-style"> Project Home </a>
 	      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/html/docs.txt" target="_blank" class="button-style"> HELP </a>
          <button onclick="reloadMedia()">Reload Media</button> 
-         <button onclick="clearSavedContent()" >🗑 Local</button> 
+         <button class="clear-button" onclick="clearSavedContent()" >🗑 Local</button> 
       </div>
 		      <div class="config-zone" style="margin-top: 10px; margin-bottom: 10px; padding: 10px; border: 1px solid #ccc;">
 			  <span class="item">
@@ -977,7 +977,25 @@
 
 			      // Get the textarea and set its value
 			      const textarea = document.getElementById('contentArea');
-			      textarea.value = text;
+			      
+			      // Check if line one is PREFIX
+			      let lines = text.split('\n');
+			      let prefix = "";
+			      let filteredLines = [];
+			      for (let i = 0;i < lines.length; i++) {
+				      const line = lines[i].trim();
+				      if (line.startsWith("PREFIX:")) {
+					      prefix = line.replace("PREFIX:","").trim();
+					      console.log("[loadTextFromURL] PREFIX: " + prefix);
+				      } else {
+					      filteredLines.push(line);
+				      }
+			      }
+
+			      localStorage.setItem('videoUrlPrefix', prefix);
+			      updatePrefixDisplay();
+
+			      textarea.value = filteredLines.join('\n');
 
 			      // Trigger any necessary update events
 			      const inputEvent = new Event('input');
