@@ -41,9 +41,18 @@ func main() {
 		port = os.Args[2]
 	}
 
+	changeHeaderThenServe := func(h http.Handler) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			// Set some header.
+			w.Header().Set("Access-Control-Allow-Origin", "*")
+			// Serve with the actual handler.
+			h.ServeHTTP(w, r)
+		}
+	}
+
 	fileServer := http.FileServer(http.Dir(dir))
 
-	http.Handle("/", fileServer)
+	http.Handle("/", changeHeaderThenServe(fileServer))
 
 	fmt.Printf("Starting server on port %s, serving directory: %s\n", port, dir)
 	err := http.ListenAndServe(":"+port, nil)
