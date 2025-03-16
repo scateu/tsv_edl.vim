@@ -17,6 +17,7 @@ EXPORT TO FCPXML FOR FURTHER EDITING:
 SHORTCUTS:
 
   ESC                          Go INSIDE TEXTAREA; Toggle READONLY
+  ` (Backquote/Backtick)       Toggle Text to Video (Seek Up) Link
 
   INSIDE TEXTAREA:
     Shift Space                Pause / Play

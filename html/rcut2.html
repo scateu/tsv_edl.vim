@@ -196,7 +196,7 @@
          <button title="outside: o" onclick="markOutPoint()">OUT▼</button>  
          <button title="Ctrl-s" onclick="saveToLocal()">💾 Local</button>
          <button id="toggleReadonlyButton" title="Toggle Readonly: ESC" onclick="toggleReadonly()">🖋️</button>
-         <button id="toggleSeekUpButton" title="Toggle Seek Up" onclick="toggleSeekUp()">🔗▲</button>
+         <button id="toggleSeekUpButton" title="Toggle Seek Up: ` Backquote " onclick="toggleSeekUp()">🔗▲</button>
          <span id="currentTimecode">00:00:00,000</span>
          <span id="currentFilename"></span>
       </div>
@@ -789,12 +789,10 @@
 				      isTextAreaFocused = false;
 			      } else {
 				      // If textarea is not focused, focus it
-		              */
 				      textarea.focus();
 				      isTextAreaFocused = true;
-			      /*
-			      }
-			      */
+			      }*/
+			      toggleSeekUp();
 		      }
 
 	      });
