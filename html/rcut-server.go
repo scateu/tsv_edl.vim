@@ -43,7 +43,7 @@ func handlePost(pythonScript string) http.HandlerFunc {
 		r.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
 
 		// Create command to run Python script
-		cmd := exec.Command("python3", pythonScript)
+		cmd := exec.Command("python3", pythonScript, "roughcut")
 
 		// Get stdin pipe
 		stdin, err := cmd.StdinPipe()
@@ -125,7 +125,7 @@ func main() {
 		port = os.Args[2]
 	}
 
-	pythonScript := "script.py"
+	pythonScript := "tsv2roughcut.py"
 	if len(os.Args) > 3 {
 		pythonScript = os.Args[3]
 	}

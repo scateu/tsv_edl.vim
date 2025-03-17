@@ -1487,7 +1487,7 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 		      const originalText = button.textContent;
 
 		      try {
-			      button.textContent = '⏳ Posting...';
+			      button.textContent = '⏳ Rendering...';
 			      button.disabled = true;
 
 			      const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
@@ -1508,12 +1508,16 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 			      }
 
 			      // Visual feedback for success
-			      button.textContent = '✓ Posted!';
+			      button.textContent = '✓ Done!';
 			      button.style.backgroundColor = '#ccffcc';
 
 			      // Optional: handle response
 			      const result = await response.text();
 			      console.log('Server response:', result);
+
+			      if (confirm('Do you want to load roughcut.mp4 to the player?')) {
+				     videoPlayer.src = currentPrefix + "roughcut.mp4"; 
+			      }
 
 		      } catch (error) {
 			      console.error('Error:', error);
