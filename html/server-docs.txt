@@ -1,7 +1,28 @@
 USAGE:
+======
     go run /Users/k/.vim/pack/plugins/start/tsv_edl.vim/html/rcut-server.go . 8081  /Users/k/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2roughcut.py
 
+
+SHORTCUT FOR MAC
+================
+
+$ sudo ln -sf $(pwd)/rcutserver-mac-arm64 /usr/local/bin/rcutserver
+$ sudo ln -sf $(pwd)../utils/tsv2roughcut.py /usr/local/bin/tsv2roughcut
+$ #download and install ffmpeg to PATH; type python ENTER to install dev tools
+
+ - Run AppleScript with _Shortcut Input_
+
+tell application "Finder" to set currentDir to (target of front Finder window) as text
+
+tell application "Terminal"
+	set currentTab to do script ("export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin/; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/rcutserver . 80 /usr/local/bin/tsv2roughcut")
+end tell
+
+ - Use as Quick Action - Services Menu
+
+
 NGINX EXAMPLE, with HTTPS and WebAuthn:
+=======================================
 
 worker_processes  1;
 events {
@@ -26,6 +47,7 @@ http {
                         proxy_pass http://127.0.0.1:8080;
                 }
                 location /tsv2roughcut {
+                        auth_request /webauthn/auth; 
                         proxy_pass http://127.0.0.1:8081;
                 }
 
