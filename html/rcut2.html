@@ -252,7 +252,7 @@
 		line-height: 1.5;
 		left: -15px;  /* Adjust this value to position the indicator */
 		pointer-events: none;  /* Makes the indicator non-interactive */
-		transition: top 0.1s;  /* Smooth movement */
+		/* transition: top 0.1s;  /* Smooth movement */ */
 	}
 	/* cursor-indicator END */
 
@@ -737,7 +737,7 @@ OUTSIDE:
 			      textarea.style.backgroundColor = '#ffffd0'; // Light yellow highlight
 			      setTimeout(() => {
 				      textarea.style.backgroundColor = originalColor;
-			      }, 1000); // Remove highlight after 1 second
+			      }, 200); // Remove highlight after 1 second
 
 			      console.log(`Found matching line for clip ${currentClip} at time ${currentTime}`);
 		      } else {
@@ -1471,7 +1471,7 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 
 	      textarea.addEventListener('blur', () => {
 		      isTextAreaFocused = false;
-		      lastKnownCursorPosition = textarea.selectionStart;
+	//	      lastKnownCursorPosition = textarea.selectionStart; // Already done previously
 		      updateCursorIndicator();
 	      });
 
