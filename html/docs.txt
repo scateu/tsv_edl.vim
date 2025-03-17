@@ -18,6 +18,7 @@ SHORTCUTS:
 
   ESC                          Go INSIDE TEXTAREA; Toggle READONLY
   ` (Backquote/Backtick)       Toggle Text to Video (Seek Up) Link
+  ?                            Show/Hide Help
 
   INSIDE TEXTAREA:
     Shift Space                Pause / Play
