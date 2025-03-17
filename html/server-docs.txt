@@ -1,0 +1,42 @@
+USAGE:
+    go run /Users/k/.vim/pack/plugins/start/tsv_edl.vim/html/rcut-server.go . 8081  /Users/k/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2roughcut.py
+
+NGINX EXAMPLE, with HTTPS and WebAuthn:
+
+worker_processes  1;
+events {
+        worker_connections  1024;
+}
+http {
+        include       mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        keepalive_timeout  65;
+        server {
+                server_name  mbp.scateu.me;
+                location / {
+                        root /Users/k/www;
+                        index index.html;
+                        auth_request /webauthn/auth; 
+                        error_page 401 = /webauthn/login?redirect_url=$uri; 
+                }
+                location /webauthn/ {  
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_set_header Host $host;
+                        proxy_pass http://127.0.0.1:8080;
+                }
+                location /tsv2roughcut {
+                        proxy_pass http://127.0.0.1:8081;
+                }
+
+                listen [::]:443 ssl;
+                listen 443 ssl;
+                ssl_certificate /opt/homebrew/etc/letsencrypt/live/mbp.scateu.me/fullchain.pem;
+                ssl_certificate_key /opt/homebrew/etc/letsencrypt/live/mbp.scateu.me/privkey.pem;
+                error_page   500 502 503 504  /50x.html;
+                location = /50x.html {
+                        root   html;
+                }
+        }
+        include servers/*;
+}
