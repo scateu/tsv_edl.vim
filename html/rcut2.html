@@ -356,22 +356,21 @@ EDL	00:03:14,394	00:03:17,030	| VideoClip1 |	Group. He's a staff security engine
 			      <div class="shortcut-row"> <span class="key">Space</span> <span class="description">Play/Pause (when outside textarea)</span> </div>
 		      </div> -->
 		      <pre>
-ESC                          Go INSIDE TEXTAREA; Toggle READONLY
+ESC                          Toggle READONLY and Go INSIDE TEXTAREA
 ` (Backquote/Backtick)       Toggle Text to Video (Seek Up) Link
-?                            Show/Hide Help
 
 INSIDE TEXTAREA:
   Shift Space                Pause / Play
   Shift Backspace            change EDL / xxx status
   Shift -/+/0                Decrease/Increase/Reset Video size
-  CLICK on line              set Playhead to the text position (interpolate from IN OUT)
+  CLICK on line              set video position to cursor's (interpolate from IN OUT)
   UP/DOWN                    same as above
 
-  WHEN READONLY, ADDITIONAL KEYS AVAILABLE:
+  READONLY - additional keys available:
     SPACE                    Pause / Play
     Backspace                change EDL / xxx status
-    Enter                    same as CLICK
-    s                       
+    Enter                    same as CLICK, set video position to cursor's
+    s                         
     i, o
 
 OUTSIDE:
@@ -380,10 +379,11 @@ OUTSIDE:
   l                          Play
   Backspace                  change EDL / xxx status
   Shift Backspace            change EDL / xxx status
-  s                          Playhead to EDL line seeking
+  s                          Playhead to EDL line seeking (Video -> Text)
   i                          Mark IN point. Add as a new line at bottom
   o                          Mark OUT point. Overwrite the out point of the last line
   Ctrl-S / CMD-S             Save to local browser cache.
+  ?                            Show/Hide Help
 		      </pre>
 		      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/html/docs.txt"> More ... </a>
 	      </div>
