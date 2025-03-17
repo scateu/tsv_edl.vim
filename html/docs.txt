@@ -29,11 +29,12 @@ SHORTCUTS:
     CLICK on line              set Playhead to the text position (interpolate from IN OUT)
     UP/DOWN                    same as above
 
-    WHEN READONLY, ADDITIONAL KEYS AVAILABLE:
-    SPACE                      Pause / Play
-    Backspace                  change EDL / xxx status
-    Enter                      same as CLICK
-    s                          same as s in OUTSIDE
+    READONLY - additional keys available:
+      SPACE                    Pause / Play
+      Backspace                change EDL / xxx status
+      Enter                    same as CLICK
+      s                         
+      i, o
 
   OUTSIDE:
     Space                      Pause / Play
@@ -41,11 +42,10 @@ SHORTCUTS:
     l                          Play
     Backspace                  change EDL / xxx status
     Shift Backspace            change EDL / xxx status
-    s                          Playhead to EDL line seeking
+    s                          Playhead to EDL line seeking (Video -> Text)
     i                          Mark IN point. Add as a new line at bottom
     o                          Mark OUT point. Overwrite the out point of the last line
     Ctrl-S / CMD-S             Save to local browser cache.
-    `                          Go INSIDE TEXTAREA
 
 
 START A LOCAL HTTP SERVER:
