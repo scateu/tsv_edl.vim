@@ -252,7 +252,7 @@
 		line-height: 1.5;
 		left: -15px;  /* Adjust this value to position the indicator */
 		pointer-events: none;  /* Makes the indicator non-interactive */
-		transition: top 0.1s;  /* Smooth movement */
+		/* transition: top 0.1s;  /* Smooth movement */ */
 	}
 	/* cursor-indicator END */
 
@@ -298,6 +298,7 @@ EDL	00:03:14,394	00:03:17,030	| VideoClip1 |	Group. He's a staff security engine
 	      <div style="margin-top: 10px;">
 		      <details open> <summary> ADVANCED CONFIGURATION </summary>
 			      <div class="toolbar">
+				      <button id="sendAllTextToRenderServiceButton" onclick="sendAllTextToRenderService()" title="Send All Text to Render Service">🎥 Render! </button>
 				      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/tsv2roughcut.py" target="_blank" class="button-style"> tsv2roughcut.py </a>
 				      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/utils/srt2tsv.py" target="_blank" class="button-style"> srt2tsv.py </a>
 				      <a href="https://github.com/scateu/tsv_edl.vim/blob/main/html/rcut2.html" target="_blank" class="button-style"> rcut2.html </a>
@@ -737,7 +738,7 @@ OUTSIDE:
 			      textarea.style.backgroundColor = '#ffffd0'; // Light yellow highlight
 			      setTimeout(() => {
 				      textarea.style.backgroundColor = originalColor;
-			      }, 1000); // Remove highlight after 1 second
+			      }, 200); // Remove highlight after 1 second
 
 			      console.log(`Found matching line for clip ${currentClip} at time ${currentTime}`);
 		      } else {
@@ -1471,7 +1472,7 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 
 	      textarea.addEventListener('blur', () => {
 		      isTextAreaFocused = false;
-		      lastKnownCursorPosition = textarea.selectionStart;
+	//	      lastKnownCursorPosition = textarea.selectionStart; // Already done previously
 		      updateCursorIndicator();
 	      });
 
@@ -1479,6 +1480,59 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 	      updateCursorIndicator();
 	      /* Cursor indicator END */
 
+	      /* RENDER */
+	      async function sendAllTextToRenderService() {
+		      const textarea = document.getElementById('contentArea');
+		      const button = document.getElementById('sendAllTextToRenderServiceButton');
+		      const originalText = button.textContent;
+
+		      try {
+			      button.textContent = '⏳ Rendering...';
+			      button.disabled = true;
+
+			      const currentPrefix = localStorage.getItem('videoUrlPrefix') || '';
+			      const response = await fetch(currentPrefix + 'tsv2roughcut', {
+				      method: 'POST',
+				      headers: {
+					      'Content-Type': 'text/plain',
+					      // or use 'application/json' if you prefer JSON
+					      // 'Content-Type': 'application/json',
+				      },
+				      body: textarea.value,
+				      // If you prefer JSON:
+				      // body: JSON.stringify({ content: textarea.value }),
+			      });
+
+			      if (!response.ok) {
+				      throw new Error(`HTTP error! status: ${response.status}`);
+			      }
+
+			      // Visual feedback for success
+			      button.textContent = '✓ Done!';
+			      button.style.backgroundColor = '#ccffcc';
+
+			      // Optional: handle response
+			      const result = await response.text();
+			      console.log('Server response:', result);
+
+			      if (confirm('Do you want to load roughcut.mp4 to the player?')) {
+				     videoPlayer.src = currentPrefix + "roughcut.mp4"; 
+			      }
+
+		      } catch (error) {
+			      console.error('Error:', error);
+			      // Visual feedback for error
+			      button.textContent = '❌ Error';
+			      button.style.backgroundColor = '#ffcccc';
+		      } finally {
+			      // Reset button after 2 seconds
+			      setTimeout(() => {
+				      button.textContent = originalText;
+				      button.style.backgroundColor = '';
+				      button.disabled = false;
+			      }, 2000);
+		      }
+	      }
       </script>
    </body>
 </html>
