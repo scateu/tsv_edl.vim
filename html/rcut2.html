@@ -1304,44 +1304,72 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 		      }
 	      }
 
-	      function convertSrtToEdl(srtContent, clipName) {
-		      const lines = srtContent.split('\n');
-		      let edlLines = [];
-		      let currentEntry = {};
+function convertSrtToEdl(srtContent, clipName) {
+    const lines = srtContent.split('\n');
+    let edlLines = [];
+    let currentEntry = {};
+    let entries = [];
 
-		      for (let i = 0; i < lines.length; i++) {
-			      const line = lines[i].trim();
+    // First, collect all entries
+    for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
 
-			      if (!line) continue;
+        if (!line) continue;
 
-			      if (/^\d+$/.test(line)) {
-				      if (currentEntry.timeIn) {
-					      edlLines.push(formatEdlLine(currentEntry, clipName));
-				      }
-				      currentEntry = {};
-				      continue;
-			      }
+        if (/^\d+$/.test(line)) {
+            if (currentEntry.timeIn) {
+                entries.push(currentEntry);
+            }
+            currentEntry = {};
+            continue;
+        }
 
-			      if (line.includes('-->')) {
-				      const times = line.split('-->').map(t => t.trim());
-				      currentEntry.timeIn = convertSrtTimeToEdlTime(times[0]);
-				      currentEntry.timeOut = convertSrtTimeToEdlTime(times[1]);
-				      continue;
-			      }
+        if (line.includes('-->')) {
+            const times = line.split('-->').map(t => t.trim());
+            currentEntry.timeIn = convertSrtTimeToEdlTime(times[0]);
+            currentEntry.timeOut = convertSrtTimeToEdlTime(times[1]);
+            continue;
+        }
 
-			      if (currentEntry.timeIn && !currentEntry.text) {
-				      currentEntry.text = line;
-			      } else if (currentEntry.text) {
-				      currentEntry.text += ' ' + line;
-			      }
-		      }
+        if (currentEntry.timeIn && !currentEntry.text) {
+            currentEntry.text = line;
+        } else if (currentEntry.text) {
+            currentEntry.text += ' ' + line;
+        }
+    }
 
-		      if (currentEntry.timeIn) {
-			      edlLines.push(formatEdlLine(currentEntry, clipName));
-		      }
+    if (currentEntry.timeIn) {
+        entries.push(currentEntry);
+    }
 
-		      return edlLines.join('\n');
-	      }
+    // Process entries and add spacing lines
+    for (let i = 0; i < entries.length; i++) {
+        // Add current subtitle entry
+        edlLines.push(`EDL\t${entries[i].timeIn}\t${entries[i].timeOut}\t| ${clipName} |\t${entries[i].text}`);
+
+        // If there's a next entry, check for gap
+        if (i < entries.length - 1) {
+            const currentEndTime = parseTimeToSeconds(entries[i].timeOut);
+            const nextStartTime = parseTimeToSeconds(entries[i + 1].timeIn);
+            const spacingSeconds = nextStartTime - currentEndTime;
+            
+            if (entries[i].timeOut != entries[i + 1].timeIn) {
+            //if (spacingSeconds > 0.01) {
+                // Add spacing line
+                edlLines.push(`EDL\t${entries[i].timeOut}\t${entries[i + 1].timeIn}\t| ${clipName} |\t[ SPACE ${spacingSeconds.toFixed(2)} secs ]`);
+            }
+        }
+    }
+
+    return edlLines.join('\n');
+}
+
+function parseTimeToSeconds(timeStr) {
+    const [time, ms] = timeStr.split(',');
+    const [hours, minutes, seconds] = time.split(':').map(Number);
+    return hours * 3600 + minutes * 60 + seconds + parseInt(ms) / 1000;
+}
+
 
 	      function convertSrtTimeToEdlTime(srtTime) {
 		      return srtTime.replace('.', ',');
