@@ -49,11 +49,19 @@ SHORTCUTS:
 START A LOCAL HTTP SERVER:
   $ python3 -m http.server
   or
-  $ ./go-http-server
+  $ ./rcutserver # with tsv2roughcut support. The 🎥 Render!  Button will need this.
   Then set Prefix as, for example http://127.0.0.1/
                                   http://192.168.10.3/
                                   https://cdn.yourcompany.com/project1/
                                   file:///Users/Jeff/www/  (only works when locally open this HTML file)
+
+LOAD Sample EDL BUTTON: 
+                        EDL Files that contain the following 
+                        (one or more, only the last one wins) 
+                        lines will be loaded into Prefix area:
+  PREFIX: http://example.com/path/
+
+
 
 EXAMPLE:
 
