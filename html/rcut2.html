@@ -254,6 +254,9 @@
 		pointer-events: none;  /* Makes the indicator non-interactive */
 		/* transition: top 0.1s;  /* Smooth movement */ */
 	}
+	#durationDisplay {
+		left: -80px;
+	}
 	/* cursor-indicator END */
 
       </style>
@@ -283,7 +286,8 @@
 		 <span id="currentFilename"></span>
 	      </div>
 	      <div class="textarea-container">
-		          <div id="cursorIndicator" class="cursor-indicator">▶</div>
+		      <div id="durationDisplay" class="cursor-indicator"></div> 
+		      <div id="cursorIndicator" class="cursor-indicator">▶</div>
 
 		 <textarea id="contentArea" spellCheck="false" placeholder="Paste tsv EDL content here... 
 (Or drag into the bottom of this page to append.)
@@ -391,6 +395,7 @@ OUTSIDE:
       <script>
 	      const filenameDisplay = document.getElementById('currentFilename');
 	      const mediaURLDisplay = document.getElementById('currentMediaURL');
+	      const durationDisplay = document.getElementById('durationDisplay');
 	      //let currentFilename = "Authenticate2023-alibaba.mp4"; // Default filename
 	      let currentFilename = ""; // Default filename
 	      //let currentClipName = "Authenticate2023-alibaba"; // Remove .mp4 extension for comparison
@@ -530,7 +535,7 @@ OUTSIDE:
 		      const linePosition = lineResult.cursorRelativePosition;
 
 		      const parts = line.split('\t');
-		      if (parts.length >= 5 && parts[0] === 'EDL') {
+		      if (parts.length >= 5 && (parts[0] === 'EDL' || parts[0] === 'xxx')) {
 			      const timecodeIn = parts[1].trim();
 			      const timecodeOut = parts[2].trim();
 			      const clipName = parts[3].replace(/\|/g, '').trim();
@@ -543,37 +548,45 @@ OUTSIDE:
 			      }
 
 			      const timeAtCursor = timecodeToSeconds(timecodeIn) + linePosition * (timecodeToSeconds(timecodeOut) - timecodeToSeconds(timecodeIn));
+			      const duration = timecodeToSeconds(timecodeOut) - timecodeToSeconds(timecodeIn);
 
-			      // Check if clipName is different than current
-			      if (clipName && clipName !== currentClipName) {
-				      // Update current clip name
-				      currentClipName = clipName;
+			      if (doSeekUp) { 
+				      // Check if clipName is different than current
+				      if (clipName && clipName !== currentClipName) {
+					      // Update current clip name
+					      currentClipName = clipName;
 
-				      // Construct new video path
-				      const newVideoPath = clipName + ".mp4";
+					      // Construct new video path
+					      const newVideoPath = clipName + ".mp4";
 
-				      // Change video
-				      console.log(`Changing video to: ${newVideoPath}`);
-				      changeVideo(newVideoPath);
+					      // Change video
+					      console.log(`Changing video to: ${newVideoPath}`);
+					      changeVideo(newVideoPath);
 
-				      // After changing video, we need to wait for the video to load
-				      // before seeking to the correct timecode
-				      videoPlayer.addEventListener('loadeddata', function seekAfterLoad() {
+					      // After changing video, we need to wait for the video to load
+					      // before seeking to the correct timecode
+					      videoPlayer.addEventListener('loadeddata', function seekAfterLoad() {
+						      videoPlayer.currentTime = timeAtCursor;
+						      videoPlayer.removeEventListener('loadeddata', seekAfterLoad);
+					      });
+				      } else {
+					      // If same video, just seek to the new position
 					      videoPlayer.currentTime = timeAtCursor;
-					      videoPlayer.removeEventListener('loadeddata', seekAfterLoad);
-				      });
-			      } else {
-				      // If same video, just seek to the new position
-				      videoPlayer.currentTime = timeAtCursor;
+				      }
+
+				      // Update filename display
+				      filenameDisplay.textContent = currentClipName;
+
+				      // Update Media URL
+				      mediaURLDisplay.textContent = videoPlayer.src;
+				      console.log(`Seeking to ${timecodeIn} (${timecodeToSeconds(timecodeIn)} seconds)`);
 			      }
+			      
+			      // Update Duration
+			      durationDisplay.textContent = duration.toFixed(2) + "s";
 
-			      // Update filename display
-			      filenameDisplay.textContent = currentClipName;
-
-			      // Update Media URL
-			      mediaURLDisplay.textContent = videoPlayer.src;
-
-			      console.log(`Seeking to ${timecodeIn} (${timecodeToSeconds(timecodeIn)} seconds)`);
+		      } else { // "not EDL nor xxx line"
+			      durationDisplay.textContent = "";
 		      }
 	      }
 
@@ -935,9 +948,6 @@ OUTSIDE:
 
 	      // Process EDL line when cursor moves
 	      textarea.addEventListener('click', function() {
-		      if (!doSeekUp) { 
-			      return // do nothing
-		      }
 		      const currentLine = getCurrentLineContent();
 		      if (currentLine) {
 			      processEDLLine(currentLine);
@@ -945,9 +955,6 @@ OUTSIDE:
 	      });
 
 	      textarea.addEventListener('keyup', function(e) {
-		      if (!doSeekUp) {
-			      return // do nothing 
-		      }
 		      if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
 			      const currentLine = getCurrentLineContent();
 			      if (currentLine) {
@@ -1480,11 +1487,15 @@ function parseTimeToSeconds(timeStr) {
 		      const textareaHeight = textarea.clientHeight;
 		      if (topOffset < 0) {
 			      indicator.style.display = 'none';
+			      durationDisplay.style.display = 'none';
 		      } else if (topOffset > textareaHeight) {
 			      indicator.style.display = 'none';
+			      durationDisplay.style.display = 'none';
 		      } else {
 			      indicator.style.display = 'block';
 			      indicator.style.top = `${topOffset}px`;
+			      durationDisplay.style.display = 'block';
+			      durationDisplay.style.top = `${topOffset}px`;
 		      }
 	      }
 	      textarea.addEventListener('scroll', updateCursorIndicator);
