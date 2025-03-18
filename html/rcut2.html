@@ -67,8 +67,8 @@
 	#contentArea{
 		width: 100%;
 		height: 300px;
-		/*margin-top: 20px;
-		padding: 10px;*/
+		/*margin-top: 20px;*/
+		padding: 10px;
 		font-family: monospace;
 		font-size: 14px;
 		line-height: 1.5;
@@ -1481,7 +1481,7 @@ function parseTimeToSeconds(timeStr) {
 
 		      // Calculate vertical position
 		      const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight);
-		      const topOffset = (linesBeforeCursor * lineHeight) - textarea.scrollTop;
+		      const topOffset = (linesBeforeCursor * lineHeight) - textarea.scrollTop + 10; // #contentArea padding
 
 		      // Keep the indicator within the visible area of textarea
 		      const textareaHeight = textarea.clientHeight;
