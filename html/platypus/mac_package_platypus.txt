@@ -1,0 +1,27 @@
+App Name: Rcutserver
+
+Script Type: bash  /bin/bash
+Args: None
+
+Script Path: +New
+
+	export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin/; 
+	cp rcut2.html "$1"/index.html
+	RESOURCE_PWD="$(pwd)"
+	cd "$1"
+	"${RESOURCE_PWD}"/rcutserver-mac-arm64 -d "$1" -p 80 -l 0.0.0.0 -s "${RESOURCE_PWD}"/tsv2roughcut.py
+
+Interface: Text Window
+
+[X] Remain running after execution
+
+[X] Accept dropped items
+Settings: [X] Prompt for file on launch
+          UTIs: public.folder (only)
+
+
+Bundled Files (copied into the application's Resources folder)
+
+ - rcutserver-mac-arm64
+ - rcut2.html
+ - tsv2roughcut.py
