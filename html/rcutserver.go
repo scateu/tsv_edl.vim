@@ -1,17 +1,52 @@
 package main
 
-// Usage:
-// go run /Users/k/.vim/pack/plugins/start/tsv_edl.vim/html/rcut-server.go . 80  /Users/k/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2roughcut.py
-
 import (
 	"bufio"
 	"bytes"
+	"flag"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"os/exec"
 )
+
+type Config struct {
+	dir          string
+	host         string
+	port         string
+	pythonScript string
+}
+
+func parseArgs() Config {
+	var config Config
+
+	// Define flags
+	flag.StringVar(&config.dir, "d", ".", "Directory to serve")
+	flag.StringVar(&config.host, "l", "0.0.0.0", "Host to listen on")
+	flag.StringVar(&config.port, "p", "80", "Port to listen on")
+	flag.StringVar(&config.pythonScript, "s", "/usr/local/bin/tsv2roughcut", "Python script to handle POST requests")
+
+	// Custom usage message
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "Usage: %s [options]\n\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "rcutserver: A simple HTTP server that can serve static files and handle POST requests with Python scripts\n\n")
+		fmt.Fprintf(os.Stderr, "Options:\n")
+		flag.PrintDefaults()
+		fmt.Fprintf(os.Stderr, "\nExamples:\n")
+		fmt.Fprintf(os.Stderr, "  Serve current directory on default host and port:\n")
+		fmt.Fprintf(os.Stderr, "    %s\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  Serve specific directory on custom port:\n")
+		fmt.Fprintf(os.Stderr, "    %s -d /path/to/dir -p 8080\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "  Handle POST requests with Python script:\n")
+		fmt.Fprintf(os.Stderr, "    %s -s /path/to/script.py\n", os.Args[0])
+	}
+
+	// Parse flags
+	flag.Parse()
+
+	return config
+}
 
 // Helper function to read from a pipe and print in realtime
 func pipeReader(pipe io.Reader, prefix string) {
@@ -115,20 +150,7 @@ func (f WriteFunc) Write(p []byte) (int, error) {
 }
 
 func main() {
-	dir := "."
-	if len(os.Args) > 1 {
-		dir = os.Args[1]
-	}
-
-	port := "80"
-	if len(os.Args) > 2 {
-		port = os.Args[2]
-	}
-
-	pythonScript := "tsv2roughcut.py"
-	if len(os.Args) > 3 {
-		pythonScript = os.Args[3]
-	}
+	config := parseArgs()
 
 	changeHeaderThenServe := func(h http.Handler) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
@@ -137,18 +159,21 @@ func main() {
 		}
 	}
 
-	fileServer := http.FileServer(http.Dir(dir))
+	fileServer := http.FileServer(http.Dir(config.dir))
 
 	// Handle static files
 	http.Handle("/", changeHeaderThenServe(fileServer))
 
-	// Handle POST requests to /process endpoint
-	http.HandleFunc("/tsv2roughcut", handlePost(pythonScript))
+	// Only set up POST handling if a Python script was specified
+	if config.pythonScript != "" {
+		http.HandleFunc("/tsv2roughcut", handlePost(config.pythonScript))
+		fmt.Printf("POST requests to /tsv2roughcut will be handled by Python script: %s\n", config.pythonScript)
+	}
 
-	fmt.Printf("Starting server on port %s, serving directory: %s\n", port, dir)
-	fmt.Printf("POST requests to /tsv2roughcut will be handled by Python script: %s\n", pythonScript)
+	address := fmt.Sprintf("%s:%s", config.host, config.port)
+	fmt.Printf("Starting server at http://%s, serving directory: %s\n", address, config.dir)
 
-	err := http.ListenAndServe(":"+port, nil)
+	err := http.ListenAndServe(address, nil)
 	if err != nil {
 		fmt.Printf("Error starting server: %s\n", err)
 		os.Exit(1)

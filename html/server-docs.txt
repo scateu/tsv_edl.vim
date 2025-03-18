@@ -1,6 +1,6 @@
 USAGE:
 ======
-    go run /Users/k/.vim/pack/plugins/start/tsv_edl.vim/html/rcut-server.go . 8081  /Users/k/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2roughcut.py
+    go run /Users/k/.vim/pack/plugins/start/tsv_edl.vim/html/rcutserver.go -d . -p 8081 -l 0.0.0.0 -s /Users/k/.vim/pack/plugins/start/tsv_edl.vim/utils/tsv2roughcut.py
 
 
 SHORTCUT FOR MAC
@@ -15,7 +15,7 @@ $ #download and install ffmpeg to PATH; type python ENTER to install dev tools
 tell application "Finder" to set currentDir to (target of front Finder window) as text
 
 tell application "Terminal"
-	set currentTab to do script ("export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin/; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/rcutserver . 80 /usr/local/bin/tsv2roughcut")
+	set currentTab to do script ("export LANG=en_US.UTF-8; export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin/; cd " & (quoted form of POSIX path of currentDir) & ";/usr/local/bin/rcutserver -d . -p 80 -l 0.0.0.0 -s /usr/local/bin/tsv2roughcut")
 end tell
 
  - Use as Quick Action - Services Menu
