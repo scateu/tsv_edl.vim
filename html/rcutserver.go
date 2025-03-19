@@ -167,7 +167,7 @@ func main() {
 	// Only set up POST handling if a Python script was specified
 	if config.pythonScript != "" {
 		http.HandleFunc("/tsv2roughcut", handlePost(config.pythonScript))
-		fmt.Printf("POST requests to /tsv2roughcut will be handled by Python script: %s\n", config.pythonScript)
+		fmt.Printf("POST requests to /tsv2roughcut will be handled by: %s\n", config.pythonScript)
 	}
 
 	address := fmt.Sprintf("%s:%s", config.host, config.port)

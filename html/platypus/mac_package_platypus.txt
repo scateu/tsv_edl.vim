@@ -25,3 +25,9 @@ Bundled Files (copied into the application's Resources folder)
  - rcutserver-mac-arm64
  - rcut2.html
  - tsv2roughcut.py
+
+
+
+Codesign:
+$ codesign -s 8J69FR3DR8  /Applications/rcutserver.app
+ (here to find: Keychain Access -> login -> Certificates -> apple development)
