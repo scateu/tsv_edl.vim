@@ -43,7 +43,7 @@ SHORTCUTS:
     i                          Mark IN point. Add as a new line at bottom
     o                          Mark OUT point. Overwrite the out point of the last line
     Ctrl-S / CMD-S             Save to local browser cache.
-    ?                            Show/Hide Help
+    ?                          Show/Hide Help
 
 
 START A LOCAL HTTP SERVER:
