@@ -940,7 +940,7 @@ func main() {
 				srtFilename = newname + ".srt" // for play
 			}
 		} else {
-			eprint(fmt.Sprintf("{filename} & {filename_srt} generated", roughcutFilename, srtFilename))
+			eprint(fmt.Sprintf("%s & %s generated", roughcutFilename, srtFilename))
 		}
 
 		// Play if requested
