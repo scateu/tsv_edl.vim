@@ -3,7 +3,7 @@
  - [Youtube Demo](https://youtu.be/hoAP-0k22zc)
  - [FOSDEM 2024 Talk](https://fosdem.org/2024/schedule/event/fosdem-2024-2804-edit-video-audio-with-or-without-vim/)
  - [A brief metion by podcasters from postmarketOS ](https://cast.postmarketos.org/episode/38-FOSDEM-2024-special/#1192.96)
- - [HTML Version](https://scateu.me/tsv_edl.vim)
+ - [Grab-and-go, Single-file HTML Version](https://scateu.me/tsv_edl.vim)
 
 ![screenshot](screenshots/fcpx.jpg)
 ![screenshot](screenshots/h.png)
