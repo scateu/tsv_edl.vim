@@ -1,9 +1,8 @@
 # | rCut >
- - a wonderful [writeup by zerwuerfnis](https://zerwuerfnis.org/paper-cut-audio-editing-for-radio-journalism), and social media discussions [1](https://chaos.social/@yoshi/112193160985156105) [2](https://social.librem.one/@zachdecook/112085831637406834)
+ - a wonderful [writeup by zerwuerfnis](https://zerwuerfnis.org/paper-cut-audio-editing-for-radio-journalism), [further thoughts](https://zerwuerfnis.org/further-thoughts-on-paper-cut-audio-editing) and social media discussions [1](https://chaos.social/@yoshi/112193160985156105) [2](https://social.librem.one/@zachdecook/112085831637406834), [A brief metion by podcasters from postmarketOS ](https://cast.postmarketos.org/episode/38-FOSDEM-2024-special/#1192.96)
  - [Youtube Demo](https://youtu.be/hoAP-0k22zc)
  - [FOSDEM 2024 Talk](https://fosdem.org/2024/schedule/event/fosdem-2024-2804-edit-video-audio-with-or-without-vim/)
- - [A brief metion by podcasters from postmarketOS ](https://cast.postmarketos.org/episode/38-FOSDEM-2024-special/#1192.96)
- - [Grab-and-go, Single-file HTML Version](https://scateu.me/tsv_edl.vim)
+ - [Grab-and-go, Single-file HTML UI](https://scateu.me/tsv_edl.vim)
 
 ![screenshot](screenshots/fcpx.jpg)
 ![screenshot](screenshots/h.png)
