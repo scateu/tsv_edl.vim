@@ -62,3 +62,15 @@ http {
         }
         include servers/*;
 }
+
+
+
+
+INSTANCES
+=========
+
+https://rcut.scateu.me
+https://scateu.me/tsv_edl.vim
+http://scateu.sdf.org/rcut/
+https://mast-thu.github.io/rcut2.html
+https://scateu-rcut.pgs.sh/
