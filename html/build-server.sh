@@ -12,7 +12,11 @@ GOOS=darwin GOARCH=amd64 go build -o ${APP}-mac-amd64 ${APP}.go
 # Build for Windows
 GOOS=windows GOARCH=amd64 go build -o ${APP}-windows-amd64.exe ${APP}.go
 
+# Build for NAS/Linux
+GOOS=linux GOARCH=amd64 go build -o ${APP}-linux-amd64 ${APP}.go
+
 # Optional: create zip files
 zip ${APP}-mac-arm64.zip ${APP}-mac-arm64
 zip ${APP}-mac-amd64.zip ${APP}-mac-amd64
 zip ${APP}-windows-amd64.zip ${APP}-windows-amd64.exe
+zip ${APP}-linux-amd64.zip ${APP}-linux-amd64
