@@ -888,6 +888,26 @@ OUTSIDE:
 //				      e.preventDefault();
 //				      videoPlayer.seekToNextFrame();
 //			      }
+			      // Shift + minus: decrease video size
+			      if (e.shiftKey && e.key === '_') {  // Shift + minus key
+				      const currentHeight = videoPlayer.offsetHeight;
+				      e.preventDefault();
+				      videoPlayer.style.height = (currentHeight * 0.9) + 'px';  // Decrease by 10%
+			      }
+
+			      // Shift + plus: increase video size
+			      if (e.shiftKey && e.key === '+') {  // Shift + plus key
+				      const currentHeight = videoPlayer.offsetHeight;
+				      e.preventDefault();
+				      videoPlayer.style.height = (currentHeight * 1.1) + 'px';  // Increase by 10%
+			      }
+
+			      // Shift + 0: reset to default size
+			      if (e.shiftKey && e.key === ')') {  // Shift + 0 key
+				      const currentHeight = videoPlayer.offsetHeight;
+				      e.preventDefault();
+				      videoPlayer.style.height = '100%';  // Reset to original size
+			      }                
 		      } 
 		      // inside only key handled in textarea.addEventListener('keydown', ....)
 
@@ -906,27 +926,6 @@ OUTSIDE:
 			      e.preventDefault(); // Prevent browser's save dialog
 			      saveToLocal();
 		      }
-
-		      // Shift + minus: decrease video size
-		      if (e.shiftKey && e.key === '_') {  // Shift + minus key
-			      const currentHeight = videoPlayer.offsetHeight;
-			      e.preventDefault();
-			      videoPlayer.style.height = (currentHeight * 0.9) + 'px';  // Decrease by 10%
-		      }
-
-		      // Shift + plus: increase video size
-		      if (e.shiftKey && e.key === '+') {  // Shift + plus key
-			      const currentHeight = videoPlayer.offsetHeight;
-			      e.preventDefault();
-			      videoPlayer.style.height = (currentHeight * 1.1) + 'px';  // Increase by 10%
-		      }
-
-		      // Shift + 0: reset to default size
-		      if (e.shiftKey && e.key === ')') {  // Shift + 0 key
-			      const currentHeight = videoPlayer.offsetHeight;
-			      e.preventDefault();
-			      videoPlayer.style.height = '100%';  // Reset to original size
-		      }                
 
 		      // ESC
 		      if (e.key === '`') {
