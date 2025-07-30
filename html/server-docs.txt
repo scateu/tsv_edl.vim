@@ -74,3 +74,19 @@ https://scateu.me/tsv_edl.vim
 http://scateu.sdf.org/rcut/
 https://mast-thu.github.io/rcut2.html
 https://scateu-rcut.pgs.sh/
+
+
+SETTING UP A DEMO SITE
+======================
+
+set the following switch in rcut2.html:
+
+```
+const autoLoadDemo = true; // please change to true in demo instance
+```
+
+Then put some EDL lines to `textarea.txt` in the same directory, which is http-served.
+
+When rcut2.html page is opened, if localStorage is empty -- no rCut user data was saved before -- textarea.txt will be loaded for demo purpose.
+
+Media files can also be placed in the same http directory.
