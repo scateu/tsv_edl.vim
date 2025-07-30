@@ -393,6 +393,7 @@ OUTSIDE:
 	      </div>
       </div>
       <script>
+	      const autoLoadDemo = false; // please change to true in demo instance
 	      const filenameDisplay = document.getElementById('currentFilename');
 	      const mediaURLDisplay = document.getElementById('currentMediaURL');
 	      const durationDisplay = document.getElementById('durationDisplay');
@@ -1111,11 +1112,15 @@ OUTSIDE:
 			      }
 		      }
 	      }
-	      async function loadTextFromURL() {
-		      // You can either hardcode the URL or use a prompt
-		      const url = prompt("Enter URL of the text file:", "textarea.txt");
+	      async function loadTextFromURL(needUserInput=true) {
+		      let url = "textarea.txt";
 
-		      if (!url) return; // User cancelled the prompt
+		      if (needUserInput) {
+			      // You can either hardcode the URL or use a prompt
+			       url = prompt("Enter URL of the text file:", "textarea.txt");
+
+			      if (!url) return; // User cancelled the prompt
+		      }
 
 		      try {
 			      const response = await fetch(url);
@@ -1231,6 +1236,14 @@ EDL	00:00:00,000	00:09:27,379	| WhatCarCanYouGetForAGrand    |	..........
 	      // Load saved prefix when page loads
 	      document.addEventListener('DOMContentLoaded', () => {
 		      updatePrefixDisplay();
+		      if (autoLoadDemo) { // load demo
+			      if (localStorage.getItem("edlContent") === null) {
+				      loadTextFromURL(false);
+				      console.log('audoLoadDemo: load from textarea.txt');
+			      } else {
+				      console.log('audoLoadDemo: edlContent has value, abort demo loading');
+			      }
+		      }
 	      });
 
 
