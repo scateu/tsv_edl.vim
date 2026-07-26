@@ -1,3 +1,6 @@
+# Jul 26, 2026
+ - fcpxml2tsv
+
 # May 23, 2024
  - [ ] tsv2fcpxml: Mixed Media FPS issue.
  - [ ] replace 'jq' 'socat' with python standard library, maybe with [this](https://github.com/iwalton3/python-mpv-jsonipc)
