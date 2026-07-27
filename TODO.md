@@ -1,5 +1,7 @@
 # Jul 26, 2026
  - fcpxml2tsv
+ - `| clipname.mp4 |` will be supported, since it specify the ext name explicitly.
+ - tsv2fcpxml, fcpxml2tsv -> html
 
 # May 23, 2024
  - [ ] tsv2fcpxml: Mixed Media FPS issue.
