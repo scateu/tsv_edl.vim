@@ -280,6 +280,7 @@
 		 <button title="outside: i" onclick="markInPoint()">IN▼</button> 
 		 <button title="outside: o" onclick="markOutPoint()">OUT▼</button>  
 		 <button title="Ctrl-s" onclick="saveToLocal()">💾 Local</button>
+		 <button id="tsv2fcpxmlButton" title="Export timeline as Final Cut Pro X .fcpxml" onclick="exportFcpxml()">🎬 fcpxml</button>
 		 <button id="toggleReadonlyButton" title="Toggle Readonly: ESC" onclick="toggleReadonly()">🖋️</button>
 		 <button id="toggleSeekUpButton" title="Toggle Seek Up: ` Backquote " onclick="toggleSeekUp()">🔗▲</button>
 		 <button id="copyToClipboardButton" title="Copy all content" onclick="copyToClipboard()">📋</button>
@@ -1475,6 +1476,332 @@ function parseTimeToSeconds(timeStr) {
 			      console.error('Failed to copy text: ', err);
 		      }
 	      }
+
+	      /* ===== tsv2fcpxml : export the timeline as FCPXML 1.11 =====
+	         Self-contained port of utils/tsv2fcpxml2.py. No external JS.
+	         - Frame rate is measured from the already-loaded videoPlayer via
+	           requestVideoFrameCallback, then snapped to the nearest standard
+	           rate; falls back to 25 fps when it can't be measured.
+	         - Uses an exact per-fps rational timebase (no frame drift).
+	         - [B] lines become B-roll clips nested on lanes above the storyline.
+	         - Media files are assumed to sit next to the .fcpxml (clipname.mp4).
+	      */
+
+	      // fps -> [frameDuration numerator, denominator, FFVideoFormat name]
+	      const FCPX_FRAME_RATES = {
+		      23.98: [1001, 24000, "FFVideoFormat1080p2398"],
+		      24:    [100, 2400, "FFVideoFormat1080p24"],
+		      25:    [100, 2500, "FFVideoFormat1080p25"],
+		      29.97: [1001, 30000, "FFVideoFormat1080p2997"],
+		      30:    [100, 3000, "FFVideoFormat1080p30"],
+		      50:    [100, 5000, "FFVideoFormat1080p50"],
+		      59.94: [1001, 60000, "FFVideoFormat1080p5994"],
+		      60:    [100, 6000, "FFVideoFormat1080p60"],
+	      };
+
+	      function snapFps(measured) {
+		      // Snap a measured fps to the nearest standard rate.
+		      const candidates = [23.98, 24, 25, 29.97, 30, 50, 59.94, 60];
+		      let best = 25, bestDiff = Infinity;
+		      for (const c of candidates) {
+			      const d = Math.abs(c - measured);
+			      if (d < bestDiff) { bestDiff = d; best = c; }
+		      }
+		      // Only trust the measurement if it's reasonably close to a standard.
+		      return bestDiff <= 1.0 ? best : 25;
+	      }
+
+	      // Measure fps from the currently loaded videoPlayer, non-disruptively.
+	      // Resolves to a snapped standard fps, or 25 on any failure.
+	      function detectFps() {
+		      return new Promise((resolve) => {
+			      const v = videoPlayer;
+			      if (!v || !v.src || !('requestVideoFrameCallback' in v) ||
+			          v.readyState < 2) {
+				      console.warn('[fcpxml] fps not measurable; defaulting to 25.');
+				      resolve(25);
+				      return;
+			      }
+			      const samples = [];
+			      let last = null, handle = null;
+			      const wasPaused = v.paused;
+			      const timeout = setTimeout(() => finish(), 1500);
+
+			      function onFrame(now, meta) {
+				      if (last !== null && meta.mediaTime > last) {
+					      samples.push(meta.mediaTime - last);
+				      }
+				      last = meta.mediaTime;
+				      if (samples.length >= 5) { finish(); return; }
+				      handle = v.requestVideoFrameCallback(onFrame);
+			      }
+
+			      function finish() {
+				      clearTimeout(timeout);
+				      if (handle) v.cancelVideoFrameCallback(handle);
+				      if (wasPaused) v.pause();
+				      if (samples.length === 0) {
+					      console.warn('[fcpxml] no frames sampled; defaulting to 25.');
+					      resolve(25);
+					      return;
+				      }
+				      samples.sort((a, b) => a - b);
+				      const median = samples[Math.floor(samples.length / 2)];
+				      const measured = median > 0 ? 1 / median : 25;
+				      const fps = snapFps(measured);
+				      console.log('[fcpxml] measured ~' + measured.toFixed(3) + ' fps -> ' + fps);
+				      resolve(fps);
+			      }
+
+			      // requestVideoFrameCallback only fires while frames advance.
+			      handle = v.requestVideoFrameCallback(onFrame);
+			      if (wasPaused) { v.play().catch(() => finish()); }
+		      });
+	      }
+
+	      function xmlEscape(s) {
+		      return String(s)
+			      .replace(/&/g, '&amp;')
+			      .replace(/</g, '&lt;')
+			      .replace(/>/g, '&gt;')
+			      .replace(/"/g, '&quot;');
+	      }
+
+	      // "HH:MM:SS,mmm" -> whole frame index at fps (rounded).
+	      function timecodeToFrames(tc, frame) {
+		      const seconds = timecodeToSeconds(tc);
+		      return Math.round(seconds / frame);
+	      }
+
+	      function fcpxTime(units, timescale) {
+		      return units === 0 ? "0s" : (units + "/" + timescale + "s");
+	      }
+
+	      // Build the FCPXML string from the textarea's tsv_edl content.
+	      function buildFcpxml(fps) {
+		      const spec = FCPX_FRAME_RATES[fps] || FCPX_FRAME_RATES[25];
+		      const frameUnits = spec[0], timescale = spec[1], formatName = spec[2];
+		      const frame = frameUnits / timescale; // one frame, in seconds
+
+		      const lines = textarea.value.split('\n');
+		      const assets = {};        // clipname -> {refId, hasVideo, hasAudio}
+		      const assetOrder = [];
+		      const aQueue = [];        // primary storyline clips
+		      const bQueue = [];        // B-roll clips
+		      let offset = 0;           // running storyline position, in units
+
+		      for (const rawLine of lines) {
+			      const line = rawLine.replace(/\r$/, '');
+			      if (!line.startsWith('EDL')) continue;
+			      if (line.indexOf('|') === -1) continue;
+			      const parts = line.split('\t');
+			      if (parts.length < 4) continue;
+
+			      const tcIn = (parts[1] || '').trim().replace(/"/g, '');
+			      const tcOut = (parts[2] || '').trim().replace(/"/g, '');
+			      if (!isValidTimecode(tcIn) || !isValidTimecode(tcOut)) {
+				      console.warn('[fcpxml] skipping line with bad timecode:', line);
+				      continue;
+			      }
+			      const clipName = parts[3].replace(/\|/g, '').trim();
+			      const subtitle = (parts[4] !== undefined ? parts[4] : '').trim();
+
+			      if (!(clipName in assets)) {
+				      const refId = 'r' + (assetOrder.length + 2); // r1 is the format
+				      // In-browser we assume video media next to the .fcpxml.
+				      assets[clipName] = { refId: refId, hasVideo: 1, hasAudio: 1 };
+				      assetOrder.push(clipName);
+			      }
+			      const refId = assets[clipName].refId;
+
+			      const recIn = timecodeToFrames(tcIn, frame) * frameUnits;
+			      const recOut = timecodeToFrames(tcOut, frame) * frameUnits;
+			      let duration = recOut - recIn;
+			      if (duration <= 0) duration = frameUnits; // keep at least one frame
+
+			      const isBroll = subtitle.startsWith('[B]');
+			      const clip = {
+				      clipName: clipName, refId: refId,
+				      offset: offset, start: recIn, duration: duration,
+				      lane: 0, subtitle: subtitle,
+			      };
+			      if (isBroll) {
+				      bQueue.push(clip);
+			      } else {
+				      aQueue.push(clip);
+				      offset += duration;
+			      }
+		      }
+
+		      if (aQueue.length === 0) return null;
+
+		      const stitchedA = stitchClips(aQueue);
+		      const stitchedB = bQueue.length ? stitchClips(bQueue) : [];
+		      assignBrollLanes(stitchedB);
+
+		      const totalUnits = stitchedA.reduce((s, c) => s + c.duration, 0);
+
+		      // ---- assemble XML ----
+		      const out = [];
+		      out.push('<?xml version="1.0" encoding="UTF-8"?>');
+		      out.push('<!DOCTYPE fcpxml>');
+		      out.push('<fcpxml version="1.11">');
+		      out.push('    <resources>');
+		      out.push('        <format id="r1" name="' + formatName + '" frameDuration="' + frameUnits + '/' + timescale + 's" width="1920" height="1080" colorSpace="1-1-1 (Rec. 709)"/>');
+		      for (const name of assetOrder) {
+			      const a = assets[name];
+			      const src = 'file://' + encodeURI(name + '.mp4');
+			      out.push('        <asset id="' + a.refId + '" name="' + xmlEscape(name) + '" start="0s" duration="36000s" hasVideo="1" hasAudio="1" format="r1" audioSources="1" audioChannels="2" audioRate="48000">');
+			      out.push('            <media-rep kind="original-media" src="' + xmlEscape(src) + '"/>');
+			      out.push('        </asset>');
+		      }
+		      out.push('    </resources>');
+		      out.push('    <library>');
+		      out.push('        <event name="DEFAULT">');
+		      out.push('            <project name="DEFAULT">');
+		      out.push('                <sequence format="r1" duration="' + fcpxTime(totalUnits, timescale) + '" tcStart="0s" tcFormat="NDF" audioLayout="stereo" audioRate="48k">');
+		      out.push('                    <spine>');
+
+		      let remainingB = stitchedB.slice();
+		      for (const a of stitchedA) {
+			      const nested = [];
+			      remainingB = remainingB.filter((b) => {
+				      if (a.offset <= b.offset && b.offset < a.offset + a.duration) {
+					      nested.push(b); return false;
+				      }
+				      return true;
+			      });
+			      const hasChildren = nested.length > 0 || a.subtitle;
+			      const openTag = '<asset-clip ref="' + a.refId + '" name="' + xmlEscape(a.clipName) + '" offset="' + fcpxTime(a.offset, timescale) + '" start="' + fcpxTime(a.start, timescale) + '" duration="' + fcpxTime(a.duration, timescale) + '" audioRole="dialogue"';
+			      if (!hasChildren) {
+				      out.push('                        ' + openTag + '/>');
+			      } else {
+				      out.push('                        ' + openTag + '>');
+				      if (a.subtitle) {
+					      out.push('                            <note>' + xmlEscape(a.subtitle) + '</note>');
+				      }
+				      for (const b of nested) {
+					      const nestedOffset = b.offset + a.start - a.offset;
+					      out.push('                            <asset-clip ref="' + b.refId + '" name="' + xmlEscape(b.clipName) + '" offset="' + fcpxTime(nestedOffset, timescale) + '" start="' + fcpxTime(b.start, timescale) + '" duration="' + fcpxTime(b.duration, timescale) + '" lane="' + b.lane + '" audioRole="dialogue">');
+					      const bSub = b.subtitle.replace(/^\[B\]/, '').trim();
+					      if (bSub) out.push('                                <note>' + xmlEscape(bSub) + '</note>');
+					      out.push('                            </asset-clip>');
+				      }
+				      out.push('                        </asset-clip>');
+			      }
+		      }
+		      if (remainingB.length) {
+			      console.warn('[fcpxml] ' + remainingB.length + ' B-roll clip(s) fell outside any A clip and were dropped.');
+		      }
+
+		      out.push('                    </spine>');
+		      out.push('                </sequence>');
+		      out.push('            </project>');
+		      out.push('        </event>');
+		      out.push('    </library>');
+		      out.push('</fcpxml>');
+		      return out.join('\n') + '\n';
+	      }
+
+	      // Merge runs of adjacent same-source clips whose source ranges touch.
+	      function stitchClips(queue) {
+		      if (!queue.length) return [];
+		      const out = [];
+		      let i = 0;
+		      while (i < queue.length) {
+			      const cur = {
+				      clipName: queue[i].clipName, refId: queue[i].refId,
+				      offset: queue[i].offset, start: queue[i].start,
+				      duration: queue[i].duration, lane: queue[i].lane,
+				      subtitle: queue[i].subtitle,
+			      };
+			      let j = i + 1;
+			      while (j < queue.length) {
+				      const n = queue[j];
+				      if (n.clipName === cur.clipName && n.refId === cur.refId &&
+				          n.lane === cur.lane && cur.start + cur.duration === n.start) {
+					      cur.duration += n.duration;
+					      cur.subtitle = cur.subtitle + '\n' + n.subtitle;
+					      j++;
+				      } else break;
+			      }
+			      out.push(cur);
+			      i = j;
+		      }
+		      return out;
+	      }
+
+	      // Assign each B-roll clip the lowest positive lane that doesn't overlap.
+	      function assignBrollLanes(bQueue) {
+		      const laneEnds = {};
+		      for (const clip of bQueue) {
+			      let lane = 1;
+			      while (laneEnds[lane] !== undefined && clip.offset < laneEnds[lane]) lane++;
+			      clip.lane = lane;
+			      laneEnds[lane] = clip.offset + clip.duration;
+		      }
+	      }
+
+	      // Save a string to a local .fcpxml via the file picker, with a download fallback.
+	      async function saveFcpxmlToLocal(xml, suggestedName) {
+		      if ('showSaveFilePicker' in window) {
+			      try {
+				      const handle = await window.showSaveFilePicker({
+					      suggestedName: suggestedName,
+					      types: [{
+						      description: 'Final Cut Pro X XML',
+						      accept: { 'application/xml': ['.fcpxml'] },
+					      }],
+				      });
+				      const writable = await handle.createWritable();
+				      await writable.write(xml);
+				      await writable.close();
+				      return true;
+			      } catch (e) {
+				      if (e && e.name === 'AbortError') return false; // user cancelled
+				      console.warn('[fcpxml] save picker failed, falling back to download:', e);
+			      }
+		      }
+		      // Fallback: classic download.
+		      const blob = new Blob([xml], { type: 'application/xml' });
+		      const url = URL.createObjectURL(blob);
+		      const a = document.createElement('a');
+		      a.href = url;
+		      a.download = suggestedName;
+		      document.body.appendChild(a);
+		      a.click();
+		      document.body.removeChild(a);
+		      setTimeout(() => URL.revokeObjectURL(url), 1000);
+		      return true;
+	      }
+
+	      async function exportFcpxml() {
+		      const button = document.getElementById('tsv2fcpxmlButton');
+		      const originalText = button.textContent;
+		      button.textContent = '⏳ fps…';
+		      let fps = 25;
+		      try {
+			      fps = await detectFps();
+		      } catch (e) {
+			      console.warn('[fcpxml] fps detection error; defaulting to 25.', e);
+		      }
+		      const xml = buildFcpxml(fps);
+		      button.textContent = originalText;
+		      if (!xml) {
+			      alert('No EDL lines to export. Add some EDL lines first.');
+			      return;
+		      }
+		      const saved = await saveFcpxmlToLocal(xml, 'export.fcpxml');
+		      if (saved) {
+			      button.textContent = '✓ ' + fps + 'fps';
+			      button.style.backgroundColor = '#ccffcc';
+			      setTimeout(() => {
+				      button.textContent = originalText;
+				      button.style.backgroundColor = '';
+			      }, 2000);
+		      }
+	      }
+	      /* ===== end tsv2fcpxml ===== */
 
 	      /* Cursor indicator START */
 	      function updateCursorIndicator() {
